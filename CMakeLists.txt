@@ -42,8 +42,6 @@ file(GLOB BENCH_FILES benchmarks/*.cpp)
 
 foreach(BENCH_FILE ${BENCH_FILES})
     get_filename_component(BENCH_NAME ${BENCH_FILE} NAME_WE)
-    add_executable(${BENCH_NAME} ${BENCH_FILE}
-            include/Constantinople/CosFunc.h)
     target_link_libraries(${BENCH_NAME} PUBLIC Common)
     target_link_libraries(${BENCH_NAME} PRIVATE benchmark::benchmark benchmark::benchmark_main)
     target_include_directories(${BENCH_NAME} PRIVATE include/)
