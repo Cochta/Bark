@@ -8,16 +8,18 @@ find_package(fmt CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 
-file(GLOB_RECURSE HEADER_COMMON include/*.h)
+file(GLOB_RECURSE HEADER_Engine include/*.h)
 file(GLOB_RECURSE SRC_FILES common/*.cpp)
-add_library(Common ${SRC_FILES} ${HEADER_COMMON})
-set_target_properties(Common PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(Common PUBLIC fmt::fmt $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+add_library(Engine ${SRC_FILES} ${HEADER_Engine})
+set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(Engine PUBLIC fmt::fmt $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
-target_include_directories(Common PUBLIC include/)
+target_include_directories(Engine PUBLIC include/)
+
+add_subdirectory(libs/Math922)
 
 # Tests
-SET(TEST_DIR ${CMAKE_SOURCE_DIR}/tests)
+SET(TEST_DIR ${CMAKE_SOURCE_DIR}/engineTests)
 file(GLOB TEST_FILES ${TEST_DIR}/*.cpp )
 
 foreach(test_file ${TEST_FILES} )
@@ -25,7 +27,7 @@ foreach(test_file ${TEST_FILES} )
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file})
     # Make sure YourLib is linked to each app
-    target_link_libraries(${test_name} PUBLIC Common)
+    target_link_libraries(${test_name} PUBLIC Engine)
     target_link_libraries(${test_name} PRIVATE GTest::gtest GTest::gtest_main)
 
     IF(MSVC)
@@ -42,7 +44,7 @@ file(GLOB BENCH_FILES benchmarks/*.cpp)
 
 foreach(BENCH_FILE ${BENCH_FILES})
     get_filename_component(BENCH_NAME ${BENCH_FILE} NAME_WE)
-    target_link_libraries(${BENCH_NAME} PUBLIC Common)
+    target_link_libraries(${BENCH_NAME} PUBLIC Engine)
     target_link_libraries(${BENCH_NAME} PRIVATE benchmark::benchmark benchmark::benchmark_main)
     target_include_directories(${BENCH_NAME} PRIVATE include/)
     if(MSVC)
@@ -59,4 +61,4 @@ foreach(BENCH_FILE ${BENCH_FILES})
 endforeach(BENCH_FILE ${BENCH_FILES})
 
 add_executable(Main src/main.cpp)
-target_link_libraries(Main Common)
+target_link_libraries(Main Engine)

@@ -1,5 +1,11 @@
 #pragma once
 
+#include <utility>
+#include <vector>
+
+constexpr static float Epsilon = 0.00001f;
+const double e =  2.71828;
+
 template <typename T>
 [[nodiscard]] constexpr T Abs(T nbr) noexcept
 {
@@ -21,10 +27,10 @@ template<typename T>
     return result;
 }
 
-[[nodiscard]] constexpr double GetEulerNumber() noexcept {
-    float result = 0.f;
+[[nodiscard]] constexpr double GetEulerNumber(int taylorIter) noexcept {
+    double result = 0.f;
 
-    for (int i = 0; i < 11; ++i) {
+    for (int i = 0; i < taylorIter; ++i) {
         result += 1.0f / (double)Fact(i);
     }
 

@@ -1,0 +1,6 @@
+[submodule "Libs/Math922"]
+	path = Libs/Math922
+	url = https://github.com/SAE-Geneve/Math922
+[submodule "libs/--force"]
+	path = libs/--force
+	url = https://github.com/SAE-Geneve/Math922
