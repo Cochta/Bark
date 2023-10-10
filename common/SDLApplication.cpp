@@ -68,7 +68,7 @@ void SDLApplication::Run()
                 quit = true;
             }
         }
-        SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_GetMouseState(&MousePos.X, &MousePos.Y);
 
 
         // Clear the renderer
@@ -78,19 +78,11 @@ void SDLApplication::Run()
 
         for (auto &c: circles)
         {
-            Vec2F centerToPlanet = c.Position - Center; // Rotation Center
-            float distanceToCenter = centerToPlanet.Length(); // Rayon
-            float angularSpeed = 2 * MathUtility::Pi / 10 * deltaTime; // Vitesse angulaire
-
-            Vec2F tangentialVelocity = Vec2F(-centerToPlanet.Y, centerToPlanet.X).Normalized() * angularSpeed * distanceToCenter;
-
-            c.Velocity = tangentialVelocity;
-
+            c.RotateAround(static_cast<Vec2F>(MousePos), deltaTime);
             c.Update(deltaTime);
         }
 
-        DrawAllCircles(); // x, y, Radius, Color
-
+        DrawAllCircles();
 
         // Present the renderer
         SDL_RenderPresent(renderer);

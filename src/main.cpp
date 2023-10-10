@@ -7,9 +7,9 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < 15; ++i)
     {
-        Circle c({static_cast<float>(Random::Range(0, app.Width)),
-                   static_cast<float>(Random::Range(0, app.Height))},
-                  Vec2F::Zero, 10, Red);
+        Circle c({static_cast<float>(Random::Range(100, app.Width - 100)),
+                  static_cast<float>(Random::Range(100, app.Height - 100))},
+                 Vec2F::Zero, 10, Red);
         app.AddCircle(c);
     }
 

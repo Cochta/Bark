@@ -32,6 +32,14 @@ struct Circle
     {
         Position += Velocity * deltaTime;
     }
+    void RotateAround(Vec2F point, float deltaTime)
+    {
+        Vec2F centerToPoint = Position - point; // Rotation Center
+        float angularSpeed = 2 * MathUtility::Pi / 10 * deltaTime;
+        float distanceToCenter = centerToPoint.Length();
+        Vec2F tangentialVelocity = Vec2F(-centerToPoint.Y, centerToPoint.X).Normalized() * angularSpeed * distanceToCenter;
+        Velocity = tangentialVelocity;
+    }
 };
 
 
@@ -40,7 +48,7 @@ class SDLApplication
 public:
     Vec2F Center;
     int Width, Height;
-    int mouseX, mouseY;
+    Vec2I MousePos;
     int Time = 0;
     std::vector<Circle> circles;
 
