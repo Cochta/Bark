@@ -1,18 +1,17 @@
 #include "SDLApplication.h"
-
+#include "../libs/Math922/include/Random.h"
 
 int main(int argc, char *argv[])
 {
     SDLApplication app("SDL Application", 800, 600);
 
-    Circle c1(100,100,10, Red);
-    Circle c2(300,200,30, Green);
-    Circle c3(400,300,50, Blue);
-    Circle c4(600,400,100, White);
-    app.AddCircle(c1);
-    app.AddCircle(c2);
-    app.AddCircle(c3);
-    app.AddCircle(c4);
+    for (int i = 0; i < 15; ++i)
+    {
+        Circle c({static_cast<float>(Random::Range(0, app.Width)),
+                   static_cast<float>(Random::Range(0, app.Height))},
+                  Vec2F::Zero, 10, Red);
+        app.AddCircle(c);
+    }
 
     app.Run();
 

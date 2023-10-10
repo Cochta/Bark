@@ -4,6 +4,7 @@
 //
 #include <SDL2/SDL.h>
 #include <vector>
+#include "../libs/Math922/include/Vec2.h"
 
 struct Color
 {
@@ -19,21 +20,28 @@ inline const static Color White = Color(255, 255, 255, 255);
 
 struct Circle
 {
-    int x;
-    int y;
-    int radius;
-    Color color;
+    Vec2F Position = Vec2F(0, 0);
+    Vec2F Velocity = Vec2F(0, 0);
+    int Radius = 1;
+    Color Col;
 
-    Circle(int _x, int _y, int _radius, Color _color)
-            : x(_x), y(_y), radius(_radius), color(_color)
-    {}
+    Circle(Vec2F position, Vec2F velocity = Vec2F::Zero, int radius = 1, Color color = Green) noexcept
+    : Position(position), Velocity(velocity), Radius(radius), Col(color) {}
+
+    void Update(float deltaTime) noexcept
+    {
+        Position += Velocity * deltaTime;
+    }
 };
 
 
 class SDLApplication
 {
 public:
+    Vec2F Center;
+    int Width, Height;
     int mouseX, mouseY;
+    int Time = 0;
     std::vector<Circle> circles;
 
     SDLApplication(const char *title, int width, int height);
@@ -43,7 +51,7 @@ public:
     void Run();
 
     void AddCircle(Circle &c);
-    void DrawCircle(const Circle &c);
+    void DrawCircle(Circle &c);
     void DrawAllCircles();
 
 private:
