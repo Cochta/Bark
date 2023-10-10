@@ -5,51 +5,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include "../libs/Math922/include/Vec2.h"
-
-struct Color
-{
-    int r,g,b,a;
-    Color(int red = 0, int green = 0, int blue = 0, int alpha = 255)
-            : r(red), g(green), b(blue), a(alpha) {}
-};
-inline const static Color Red = Color(255, 0, 0, 255);
-inline const static Color Green = Color(0, 255, 0, 255);
-inline const static Color Blue = Color(0, 0, 255, 255);
-inline const static Color Black = Color(0, 0, 0, 255);
-inline const static Color White = Color(255, 255, 255, 255);
-
-struct Circle
-{
-    Vec2F Position = Vec2F(0, 0);
-    Vec2F Velocity = Vec2F(0, 0);
-    float Radius = 1.f;
-    Color Col;
-
-    Circle(Vec2F position, Vec2F velocity = Vec2F::Zero, float radius = 1.f, Color color = Green) noexcept
-    : Position(position), Velocity(velocity), Radius(radius), Col(color) {}
-
-    void Update(float deltaTime) noexcept
-    {
-        Position += Velocity * deltaTime;
-    }
-    void RotateAround(Vec2F point, float deltaTime)
-    {
-        Vec2F centerToPoint = Position - point; // Rotation Center
-        float angularSpeed = 2 * MathUtility::Pi / 10 * deltaTime;
-        float distanceToCenter = centerToPoint.Length();
-        Vec2F tangentialVelocity = Vec2F(-centerToPoint.Y, centerToPoint.X).Normalized() * angularSpeed * distanceToCenter;
-        Velocity = tangentialVelocity;
-//        Vec2F centerToPoint = Position - point;
-//        float angularSpeed = 2 * MathUtility::Pi / 100 * deltaTime;
-//
-//        float newX = centerToPoint.X * cos(angularSpeed) - centerToPoint.Y * sin(angularSpeed);
-//        float newY = centerToPoint.X * sin(angularSpeed) + centerToPoint.Y * cos(angularSpeed);
-//
-//        Position = Vec2F(newX, newY) + point;
-    }
-};
-
-
+#include "Circle.h"
 class SDLApplication
 {
 public:

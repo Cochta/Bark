@@ -78,7 +78,7 @@ void SDLApplication::Run()
 
         for (auto &c: circles)
         {
-            c.RotateAround(Center, deltaTime);
+            c.RotateAround(Center, deltaTime); //static_cast<Vec2F>(MousePos)
             c.Update(deltaTime);
         }
 
