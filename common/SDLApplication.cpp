@@ -78,7 +78,7 @@ void SDLApplication::Run()
 
         for (auto &c: circles)
         {
-            c.RotateAround(static_cast<Vec2F>(MousePos), deltaTime);
+            c.RotateAround(Center, deltaTime);
             c.Update(deltaTime);
         }
 
@@ -102,8 +102,8 @@ void SDLApplication::DrawCircle(Circle &c)
     {
         for (int h = 0; h < c.Radius * 2; h++)
         {
-            int dx = c.Radius - w; // Horizontal offset
-            int dy = c.Radius - h; // Vertical offset
+            float dx = c.Radius - w; // Horizontal offset
+            float dy = c.Radius - h; // Vertical offset
             if ((dx * dx + dy * dy) <= (c.Radius * c.Radius))
             {
                 SDL_RenderDrawPoint(renderer, c.Position.X + dx, c.Position.Y + dy);

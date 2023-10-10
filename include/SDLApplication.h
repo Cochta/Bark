@@ -22,10 +22,10 @@ struct Circle
 {
     Vec2F Position = Vec2F(0, 0);
     Vec2F Velocity = Vec2F(0, 0);
-    int Radius = 1;
+    float Radius = 1.f;
     Color Col;
 
-    Circle(Vec2F position, Vec2F velocity = Vec2F::Zero, int radius = 1, Color color = Green) noexcept
+    Circle(Vec2F position, Vec2F velocity = Vec2F::Zero, float radius = 1.f, Color color = Green) noexcept
     : Position(position), Velocity(velocity), Radius(radius), Col(color) {}
 
     void Update(float deltaTime) noexcept
@@ -39,6 +39,13 @@ struct Circle
         float distanceToCenter = centerToPoint.Length();
         Vec2F tangentialVelocity = Vec2F(-centerToPoint.Y, centerToPoint.X).Normalized() * angularSpeed * distanceToCenter;
         Velocity = tangentialVelocity;
+//        Vec2F centerToPoint = Position - point;
+//        float angularSpeed = 2 * MathUtility::Pi / 100 * deltaTime;
+//
+//        float newX = centerToPoint.X * cos(angularSpeed) - centerToPoint.Y * sin(angularSpeed);
+//        float newY = centerToPoint.X * sin(angularSpeed) + centerToPoint.Y * cos(angularSpeed);
+//
+//        Position = Vec2F(newX, newY) + point;
     }
 };
 
