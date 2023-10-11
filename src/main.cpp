@@ -1,5 +1,5 @@
 #include "SDLApplication.h"
-#include "../libs/Math922/include/Random.h"
+#include "Random.h"
 
 int main(int argc, char *argv[])
 {

@@ -16,8 +16,8 @@ target_link_libraries(Engine PUBLIC fmt::fmt $<TARGET_NAME_IF_EXISTS:SDL2::SDL2m
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 target_include_directories(Engine PUBLIC include/)
 
-add_subdirectory(libs/Math922)
-
+add_subdirectory(libs/Math)
+target_include_directories(Engine PUBLIC libs/Math/include/)
 # Tests
 SET(TEST_DIR ${CMAKE_SOURCE_DIR}/engineTests)
 file(GLOB TEST_FILES ${TEST_DIR}/*.cpp )

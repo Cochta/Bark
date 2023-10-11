@@ -1,7 +1,7 @@
 //
 // Created by Coch on 10.10.2023.
 //
-#include "../libs/Math922/include/Vec2.h"
+#include "Vec2.h"
 
 struct Color
 {

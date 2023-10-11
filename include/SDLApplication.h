@@ -4,7 +4,6 @@
 //
 #include <SDL2/SDL.h>
 #include <vector>
-#include "../libs/Math922/include/Vec2.h"
 #include "Circle.h"
 class SDLApplication
 {

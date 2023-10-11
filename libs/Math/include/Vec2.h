@@ -8,6 +8,7 @@
 #include "Angle.h"
 #include "Exception.h"
 #include "MathUtility.h"
+#include "cmath"
 
 template <typename T> class Vec2
 {
