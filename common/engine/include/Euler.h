@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../libs/Math922/include/MathUtility.h"
+#include "MathUtility.h"
 
 constexpr double e =  2.718281828459045; // 15 decimales
 

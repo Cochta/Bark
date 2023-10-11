@@ -24,12 +24,15 @@ INSTANTIATE_TEST_SUITE_P(CircleConstructorParams, CircleConstructorParamFixture,
 ));
 
 TEST_P(CircleConstructorParamFixture, ConstructorInitialization) {
-const auto params = GetParam();
-Circle circle(params.position, params.speed, params.radius, params.color);
+    const auto params = GetParam();
+    Circle circle(params.position, params.speed, params.radius, params.color);
 
-// Check if the constructor initializes the Circle object correctly
-EXPECT_EQ(circle.Position, params.position);
-EXPECT_FLOAT_EQ(circle.Speed, params.speed);
-EXPECT_FLOAT_EQ(circle.Radius, params.radius);
-//EXPECT_EQ(circle.Col, params.color);
+    EXPECT_EQ(circle.Position, params.position);
+    EXPECT_FLOAT_EQ(circle.Speed, params.speed);
+    EXPECT_FLOAT_EQ(circle.Radius, params.radius);
+
+    EXPECT_EQ(circle.Col.r, params.color.r);
+    EXPECT_EQ(circle.Col.g, params.color.g);
+    EXPECT_EQ(circle.Col.b, params.color.b);
+    EXPECT_EQ(circle.Col.a, params.color.a);
 }

@@ -7,22 +7,22 @@ struct Color
 {
     int r, g, b, a;
 
-    Color(int red = 0, int green = 0, int blue = 0, int alpha = 255)
+    constexpr Color(int red = 0, int green = 0, int blue = 0, int alpha = 255)
             : r(red), g(green), b(blue), a(alpha)
     {}
 };
 
-inline const static Color Red = Color(255, 0, 0, 255);
-inline const static Color Green = Color(0, 255, 0, 255);
-inline const static Color Blue = Color(0, 0, 255, 255);
-inline const static Color Black = Color(0, 0, 0, 255);
-inline const static Color White = Color(255, 255, 255, 255);
+inline constexpr static Color Red = Color(255, 0, 0, 255);
+inline constexpr static Color Green = Color(0, 255, 0, 255);
+inline constexpr static Color Blue = Color(0, 0, 255, 255);
+inline constexpr static Color Black = Color(0, 0, 0, 255);
+inline constexpr static Color White = Color(255, 255, 255, 255);
 
 class Circle
 {
 public:
     Vec2F Position = Vec2F(0, 0);
-    Vec2F Velocity = Vec2F(0, 0);
+    Vec2F Velocity = Vec2F(0, 0); // add masse inversée
     float Speed = 5;
     float Radius = 1.f;
     Color Col;

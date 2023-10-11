@@ -12,17 +12,17 @@ void Circle::RotateAround(Vec2F point, float deltaTime) noexcept
 {
     Vec2F centerToPoint = point - Position; // Rotation Center
     Velocity = Vec2F(-centerToPoint.Y, centerToPoint.X).Normalized() * Speed;
-    Vec2F a = (Velocity * Velocity) / centerToPoint.Length();
-    Velocity += a.Normalized() * Speed * deltaTime;
+    Vec2F accel = (Velocity * Velocity) / centerToPoint.Length();
+    Velocity += accel.Normalized() * Speed * deltaTime;
 
 //    Vec2F centerToPoint = Position - point; // Rotation Center
-//    float angularSpeed = 2 * MathUtility::Pi / 1000 * deltaTime;
+//    float angularSpeed = 2 * MathUtility::Pi / 10 * deltaTime;
 //    float distanceToCenter = centerToPoint.Length();
 //    Vec2F tangentialVelocity = Vec2F(-centerToPoint.Y, centerToPoint.X).Normalized() * angularSpeed * distanceToCenter;
-//    Velocity += tangentialVelocity;
+//    Velocity = tangentialVelocity * Speed;
 
 //        Vec2F centerToPoint = Position - point;
-//        float angularSpeed = 2 * MathUtility::Pi / 100 * deltaTime;
+//        float angularSpeed = 2 * MathUtility::Pi / 10 * deltaTime;
 //
 //        float newX = centerToPoint.X * cos(angularSpeed) - centerToPoint.Y * sin(angularSpeed);
 //        float newY = centerToPoint.X * sin(angularSpeed) + centerToPoint.Y * cos(angularSpeed);

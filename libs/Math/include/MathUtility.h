@@ -5,7 +5,7 @@
  */
 
 #include "Angle.h"
-#include "lookupTables/LookUpTableSin.h"
+#include "lookupTables/SinLUT.h"
 #include "lookupTables/LookUpTableCos.h"
 #include "lookupTables/LookUpTableCot.h"
 #include "lookupTables/LookUpTableTan.h"

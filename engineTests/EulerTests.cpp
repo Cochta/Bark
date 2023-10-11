@@ -1,4 +1,4 @@
-#include <euler.h>
+#include <Euler.h>
 #include "gtest/gtest.h"
 
 TEST(Euler, OneIteration)
