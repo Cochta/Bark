@@ -27,7 +27,7 @@ foreach(test_file ${TEST_FILES} )
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file})
     # Make sure YourLib is linked to each app
-    target_link_libraries(${test_name} PUBLIC common)
+    target_link_libraries(${test_name} PUBLIC Engine)
     target_link_libraries(${test_name} PRIVATE GTest::gtest GTest::gtest_main)
 
     IF(MSVC)
@@ -44,7 +44,7 @@ file(GLOB BENCH_FILES benchmarks/*.cpp)
 
 foreach(BENCH_FILE ${BENCH_FILES})
     get_filename_component(BENCH_NAME ${BENCH_FILE} NAME_WE)
-    target_link_libraries(${BENCH_NAME} PUBLIC common)
+    target_link_libraries(${BENCH_NAME} PUBLIC Engine)
     target_link_libraries(${BENCH_NAME} PRIVATE benchmark::benchmark benchmark::benchmark_main)
     target_include_directories(${BENCH_NAME} PRIVATE common/engine/include/)
     if(MSVC)

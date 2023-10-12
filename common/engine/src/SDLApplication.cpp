@@ -1,7 +1,7 @@
 //
 // Created by Coch on 09.10.2023.
 //
-#include "../include/SDLApplication.h"
+#include "SDLApplication.h"
 
 SDLApplication::SDLApplication(std::string_view title, int width, int height) : window(nullptr), renderer(nullptr) {
     Width = width;
