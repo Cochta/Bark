@@ -1,25 +1,31 @@
-#include "SDLApp.h"
+
+#include "World.h"
+
 #include "Random.h"
+
+#include "SDLApp.h"
 
 int main(int argc, char *argv[])
 {
-    SDLApp app("SDL Application", 800, 600);
+    World world;
+    world.Init();
+
+    SDLApp app("SDL Application", 800, 600, world);
+
+
+    for (std::size_t i = 0; i < 50; ++i)
+    {
+        Body b({Random::Range(100.f, app.Width - 100.f),
+                Random::Range(100.f, app.Height - 100.f)},
+               Vec2F::Right() * 100);
+        world.AddBody(b);
+    }
 
     app.Init();
 
-    std::vector<Color> colors{Red, Green, Blue, White};
-    for (std::size_t i = 0; i < 50; ++i)
-    {
-        Body c({static_cast<float>(Random::Range(100, app.Width - 100)),
-                static_cast<float>(Random::Range(100, app.Height - 100))},
-               50.f,
-               Random::Range(1.f, 30.f),
-               colors[Random::Range(0, 3)]);
-        app.AddCircle(c);
-    }
-
     app.Run();
 
+    world.UnInit();
     app.UnInit();
 
     return 0;

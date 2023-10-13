@@ -3,7 +3,7 @@
 // Created by Coch on 09.10.2023.
 //
 
-#include "Body.h"
+#include "World.h"
 
 #include <SDL2/SDL.h>
 
@@ -15,10 +15,11 @@ public:
     std::string_view Title;
     int Width, Height;
     Vec2I MousePos;
-    unsigned long long Time = 0;
-    std::vector<Body> Bodies;
 
-    SDLApp(std::string_view title, int width, int height);
+    World &GameWorld;
+
+
+    SDLApp(std::string_view title, int width, int height, World &world);
 
     void Init();
 
@@ -26,9 +27,9 @@ public:
 
     void Run();
 
-    void AddCircle(const Body &c);
-    void DrawCircle(const Body &c);
-    void DrawAllCircles();
+    void DrawCircle(const Body &b);
+
+    void DrawAllBodies();
 
 private:
     SDL_Window *window;
