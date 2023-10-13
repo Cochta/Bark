@@ -5,19 +5,25 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-find_package(benchmark CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 
-file(GLOB_RECURSE HEADER_Engine common/engine/include/*.h)
-file(GLOB_RECURSE SRC_Engine common/engine/src/*.cpp)
-add_library(Engine ${SRC_Engine} ${HEADER_Engine})
+file(GLOB_RECURSE Engine_Files engine/include/*.h engine/src/*.cpp)
+add_library(Engine ${Engine_Files})
 set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(Engine PUBLIC engine/include/)
+target_include_directories(Engine PUBLIC engine/libs/Math/include/)
+
+file(GLOB_RECURSE Common_Files include/*.h src/*.cpp)
+add_library(Common ${Common_Files})
+set_target_properties(Common PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(Engine PUBLIC include/)
+target_link_libraries(Common PUBLIC Engine)
 target_link_libraries(Engine PUBLIC fmt::fmt $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
-target_include_directories(Engine PUBLIC common/engine/include/)
 
-add_subdirectory(libs/Math)
-target_include_directories(Engine PUBLIC libs/Math/include/)
+add_executable(Main Main.cpp)
+target_link_libraries(Main Common)
+
 # Tests
 SET(TEST_DIR ${CMAKE_SOURCE_DIR}/engineTests)
 file(GLOB TEST_FILES ${TEST_DIR}/*.cpp )
@@ -39,26 +45,3 @@ foreach(test_file ${TEST_FILES} )
     set_target_properties (${test_name} PROPERTIES FOLDER Courses)
 endforeach()
 
-# Benchmarks
-file(GLOB BENCH_FILES benchmarks/*.cpp)
-
-foreach(BENCH_FILE ${BENCH_FILES})
-    get_filename_component(BENCH_NAME ${BENCH_FILE} NAME_WE)
-    target_link_libraries(${BENCH_NAME} PUBLIC Engine)
-    target_link_libraries(${BENCH_NAME} PRIVATE benchmark::benchmark benchmark::benchmark_main)
-    target_include_directories(${BENCH_NAME} PRIVATE common/engine/include/)
-    if(MSVC)
-        target_compile_definitions(${BENCH_NAME} PUBLIC "_USE_MATH_DEFINES")
-        target_compile_options(${BENCH_NAME} PUBLIC /arch:AVX2 /Oi /GR- /EHs-c- /FA /Oy- /GL)
-        target_link_options(${BENCH_NAME} PUBLIC /LTCG)
-    else()
-        target_compile_options(${BENCH_NAME} PUBLIC "-march=haswell" "-masm=intel" -fno-rtti -save-temps
-                -fno-omit-frame-pointer -flto -ffast-math)
-        target_link_options(${BENCH_NAME} PUBLIC -flto)
-    endif()
-
-    set_target_properties (${BENCH_NAME} PROPERTIES FOLDER Bench)
-endforeach(BENCH_FILE ${BENCH_FILES})
-
-add_executable(Main common/Main.cpp)
-target_link_libraries(Main Engine)
