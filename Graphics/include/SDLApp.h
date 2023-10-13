@@ -3,29 +3,31 @@
 // Created by Coch on 09.10.2023.
 //
 
-#include "Circle.h"
+#include "Body.h"
 
 #include <SDL2/SDL.h>
 
 #include <vector>
 
-class SDLApplication
+class SDLApp
 {
 public:
-    Vec2F Center;
+    std::string_view Title;
     int Width, Height;
     Vec2I MousePos;
     unsigned long long Time = 0;
-    std::vector<Circle> circles;
+    std::vector<Body> Bodies;
 
-    SDLApplication(std::string_view title, int width, int height);
+    SDLApp(std::string_view title, int width, int height);
 
-    ~SDLApplication();
+    void Init();
+
+    void UnInit();
 
     void Run();
 
-    void AddCircle(const Circle &c);
-    void DrawCircle(const Circle &c);
+    void AddCircle(const Body &c);
+    void DrawCircle(const Body &c);
     void DrawAllCircles();
 
 private:

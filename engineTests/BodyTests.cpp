@@ -2,7 +2,7 @@
 // Created by Coch on 10.10.2023.
 //
 #include "gtest/gtest.h"
-#include "Circle.h"
+#include "Body.h"
 
 
 struct CircleConstructorParams {
@@ -25,7 +25,7 @@ INSTANTIATE_TEST_SUITE_P(CircleConstructorParams, CircleConstructorParamFixture,
 
 TEST_P(CircleConstructorParamFixture, ConstructorInitialization) {
     const auto params = GetParam();
-    Circle circle(params.position, params.speed, params.radius, params.color);
+    Body circle(params.position, params.speed, params.radius, params.color);
 
     EXPECT_EQ(circle.Position, params.position);
     EXPECT_FLOAT_EQ(circle.Speed, params.speed);

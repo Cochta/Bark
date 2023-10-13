@@ -18,7 +18,7 @@ inline constexpr static Color Blue = Color(0, 0, 255, 255);
 inline constexpr static Color Black = Color(0, 0, 0, 255);
 inline constexpr static Color White = Color(255, 255, 255, 255);
 
-class Circle
+class Body
 {
 public:
     Vec2F Position = Vec2F(0, 0);
@@ -27,7 +27,7 @@ public:
     float Radius = 1.f;
     Color Col;
 
-    explicit Circle(Vec2F position, float speed, float radius, Color color = Green) noexcept
+    explicit Body(Vec2F position, float speed, float radius, Color color = Green) noexcept
             : Position(position), Speed(speed), Radius(radius), Col(color)
     {}
 

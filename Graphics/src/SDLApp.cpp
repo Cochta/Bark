@@ -1,19 +1,22 @@
 //
 // Created by Coch on 09.10.2023.
 //
-#include "SDLApplication.h"
+#include "SDLApp.h"
 
-SDLApplication::SDLApplication(std::string_view title, int width, int height) : window(nullptr), renderer(nullptr) {
+SDLApp::SDLApp(std::string_view title, int width, int height) : window(nullptr), renderer(nullptr) {
     Width = width;
     Height = height;
-    Center = {static_cast<float>(Width) / 2, static_cast<float>(Height) / 2};
+    Title = title;
+}
+
+void SDLApp::Init() {
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         // Handle SDL initialization error
         SDL_Log("SDL_Init Error: %s", SDL_GetError());
         return;
     }
-
-    window = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
+    window = SDL_CreateWindow(Title.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height,
                               SDL_WINDOW_SHOWN);
     if (window == nullptr) {
         // Handle window creation error
@@ -31,9 +34,10 @@ SDLApplication::SDLApplication(std::string_view title, int width, int height) : 
         SDL_Log("SDL_CreateRenderer Error: %s", SDL_GetError());
         return;
     }
+
 }
 
-SDLApplication::~SDLApplication() {
+void SDLApp::UnInit() {
     if (renderer != nullptr) {
         SDL_DestroyRenderer(renderer);
     }
@@ -43,7 +47,7 @@ SDLApplication::~SDLApplication() {
     SDL_Quit();
 }
 
-void SDLApplication::Run() {
+void SDLApp::Run() {
     bool quit = false;
     SDL_Event e;
 
@@ -66,8 +70,8 @@ void SDLApplication::Run() {
         SDL_RenderClear(renderer);
 
 
-        for (auto &c: circles) {
-            c.RotateAround(Center, deltaTime); //static_cast<Vec2F>(MousePos)
+        for (auto &c: Bodies) {
+            c.RotateAround(Vec2F(Width / 2,Height / 2), deltaTime); //static_cast<Vec2F>(MousePos)
             c.Update(deltaTime);
         }
 
@@ -78,11 +82,11 @@ void SDLApplication::Run() {
     }
 }
 
-void SDLApplication::AddCircle(const Circle &c) {
-    circles.push_back(c);
+void SDLApp::AddCircle(const Body &c) {
+    Bodies.push_back(c);
 }
 
-void SDLApplication::DrawCircle(const Circle &c) {
+void SDLApp::DrawCircle(const Body &c) {
     SDL_SetRenderDrawColor(renderer, c.Col.r, c.Col.g, c.Col.b, c.Col.a);
 
     for (int w = 0; w < c.Radius * 2; w++) {
@@ -96,10 +100,10 @@ void SDLApplication::DrawCircle(const Circle &c) {
     }
 }
 
-void SDLApplication::DrawAllCircles() {
-    if (circles.empty())
+void SDLApp::DrawAllCircles() {
+    if (Bodies.empty())
         return;
-    for (Circle &circle: circles) {
+    for (Body &circle: Bodies) {
         DrawCircle(circle);
     }
 }
