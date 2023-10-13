@@ -13,10 +13,10 @@ set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Engine PUBLIC engine/include/)
 target_include_directories(Engine PUBLIC engine/libs/Math/include/)
 
-file(GLOB_RECURSE Common_Files include/*.h src/*.cpp)
+file(GLOB_RECURSE Common_Files Graphics/include/*.h Graphics/src/*.cpp)
 add_library(Common ${Common_Files})
 set_target_properties(Common PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Engine PUBLIC include/)
+target_include_directories(Engine PUBLIC Graphics/include/)
 target_link_libraries(Common PUBLIC Engine)
 target_link_libraries(Engine PUBLIC fmt::fmt $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
