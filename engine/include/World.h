@@ -14,7 +14,10 @@ public:
     std::vector<Body> Bodies;
     Timer WorldTimer;
 
+    Body WorldCenter = Body({300, 400}, Vec2F::Zero(), 100);
+
     void Init();
+
     void UnInit();
 
     void AddBody(const Body &body);

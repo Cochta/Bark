@@ -20,6 +20,9 @@ void World::UnInit()
 
 void World::Update()
 {
+
+    //TODO: simulate that WorldCenter is a sun and the bodies rotate around using physics
+    
     WorldTimer.Tick();
     for (auto &body: Bodies)
     {

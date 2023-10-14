@@ -5,6 +5,10 @@
 
 #include "SDLApp.h"
 
+#include "UniquePtr.h"
+
+#include <array>
+
 int main(int argc, char *argv[])
 {
     World world;
@@ -17,7 +21,7 @@ int main(int argc, char *argv[])
     {
         Body b({Random::Range(100.f, app.Width - 100.f),
                 Random::Range(100.f, app.Height - 100.f)},
-               Vec2F::Right() * 100);
+               Vec2F::Right());
         world.AddBody(b);
     }
 

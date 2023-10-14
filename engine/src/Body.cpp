@@ -3,16 +3,20 @@
 //
 #include "Body.h"
 
-void Body::Update(float deltaTime) noexcept
+void Body::ApplyForce(const Vec2F &force) noexcept
 {
-    Position += Velocity * deltaTime;
-    //RotateAround(Vec2F(200, 200), deltaTime);
+    Force += force;
 }
 
-void Body::RotateAround(Vec2F point, float deltaTime) noexcept
+void Body::Update(float deltaTime) noexcept
 {
-    Vec2F centerToPoint = point - Position; // Rotation Center
-    Velocity = Vec2F(-centerToPoint.Y, centerToPoint.X).Normalized();
-    Vec2F accel = (Velocity * Velocity) / centerToPoint.Length();
-    Velocity += accel.Normalized() * deltaTime;
+    // Calculate acceleration based on Newton's second law (F = ma)
+    Acceleration = Force / Mass;
+
+    // Update velocity and position using the calculated acceleration
+    Velocity += Acceleration * deltaTime;
+    Position += Velocity * deltaTime;
+
+    // Reset the force for the next frame
+    Force = Vec2F(0, 0);
 }
