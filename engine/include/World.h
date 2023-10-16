@@ -8,15 +8,21 @@
 
 #include <vector>
 
+struct BodyRef
+{
+    size_t Index;
+};
+
 class World
 {
 public:
     std::vector<Body> Bodies;
+    std::vector<size_t> Indices;
     Timer Timer;
 
     void Init() noexcept;
 
-    void AddBody(const Body &body) noexcept;
-
     void Update() noexcept;
+
+    void AddBody(const Body &body) noexcept;
 };
