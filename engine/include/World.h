@@ -12,15 +12,11 @@ class World
 {
 public:
     std::vector<Body> Bodies;
-    Timer WorldTimer;
+    Timer Timer;
 
-    Body WorldCenter = Body({300, 400}, Vec2F::Zero(), 100);
+    void Init() noexcept;
 
-    void Init();
+    void AddBody(const Body &body) noexcept;
 
-    void UnInit();
-
-    void AddBody(const Body &body);
-
-    void Update();
+    void Update() noexcept;
 };

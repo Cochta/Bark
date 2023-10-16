@@ -3,36 +3,42 @@
 //
 #include "gtest/gtest.h"
 #include "Body.h"
+#include "Random.h"
 
 
-struct CircleConstructorParams {
+struct BodyConstructorParams {
     Vec2F position;
-    float speed;
-    float radius;
-    Color color;
+    Vec2F velocity;
+    float mass;
 };
 
-class CircleConstructorParamFixture : public ::testing::TestWithParam<CircleConstructorParams> {
+class BodyConstructorParamFixture : public ::testing::TestWithParam<BodyConstructorParams> {
 };
 
-INSTANTIATE_TEST_SUITE_P(CircleConstructorParams, CircleConstructorParamFixture, ::testing::Values(
-        CircleConstructorParams{Vec2F(1, 2), 5.0f, 2.0f, Red},
-        CircleConstructorParams{Vec2F(3, 4), 3.0f, 1.5f, Blue},
-        CircleConstructorParams{Vec2F(0, 0), 0.0f, 1.0f, Black},
-        CircleConstructorParams{Vec2F(-1, -1), 10.0f, 0.5f, Green},
-        CircleConstructorParams{Vec2F(10, 10), 7.5f, 3.0f, White}
+INSTANTIATE_TEST_SUITE_P(BodyConstructorParams, BodyConstructorParamFixture, ::testing::Values(
+        BodyConstructorParams{Vec2F(1, 2), Vec2F(3,4), 2.0f},
+        BodyConstructorParams{Vec2F(3, 4), Vec2F(5,6), 1.5f},
+        BodyConstructorParams{Vec2F(0, 0), Vec2F(0,0), 1.0f},
+        BodyConstructorParams{Vec2F(-1,-1),Vec2F(-1,-2), 0.5f},
+        BodyConstructorParams{Vec2F(10,10),Vec2F(67,24), 3.0f}
 ));
 
-TEST_P(CircleConstructorParamFixture, ConstructorInitialization) {
+TEST_P(BodyConstructorParamFixture, ConstructorInitialization) {
     const auto params = GetParam();
-    Body circle(params.position, params.speed, params.radius, params.color);
+    Body Body(params.position, params.velocity, params.mass);
 
-    EXPECT_EQ(circle.Position, params.position);
-    EXPECT_FLOAT_EQ(circle.Speed, params.speed);
-    EXPECT_FLOAT_EQ(circle.Radius, params.radius);
+    EXPECT_EQ(Body.Position, params.position);
+    EXPECT_EQ(Body.Velocity, params.velocity);
+    EXPECT_FLOAT_EQ(Body.Mass, params.mass);
+}
 
-    EXPECT_EQ(circle.Col.r, params.color.r);
-    EXPECT_EQ(circle.Col.g, params.color.g);
-    EXPECT_EQ(circle.Col.b, params.color.b);
-    EXPECT_EQ(circle.Col.a, params.color.a);
+TEST_P(BodyConstructorParamFixture, ApplyForce) {
+    const auto params = GetParam();
+    Body Body(params.position, params.velocity, params.mass);
+    auto force = Vec2F(Random::Range(-100.f,100.f),Random::Range(-100.f,100.f));
+
+    EXPECT_EQ(Body.Force, Vec2F::Zero());
+    Body.ApplyForce(force);
+    EXPECT_EQ(Body.Force, force);
+
 }

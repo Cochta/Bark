@@ -16,22 +16,24 @@ public:
     int Width, Height;
     Vec2I MousePos;
 
-    World &GameWorld;
+    World GameWorld;
 
 
-    SDLApp(std::string_view title, int width, int height, World &world);
+    SDLApp(std::string_view title, int width, int height);
 
     void Init();
 
     void UnInit();
 
+    void SDLUpdate();
+
     void Run();
 
-    void DrawCircle(const Body &b);
+    void DrawCircle(const Body &c, int segments);
 
     void DrawAllBodies();
 
 private:
-    SDL_Window *window;
-    SDL_Renderer *renderer;
+    SDL_Window *window{};
+    SDL_Renderer *renderer{};
 };

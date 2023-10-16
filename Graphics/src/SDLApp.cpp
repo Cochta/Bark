@@ -1,10 +1,10 @@
 //
 // Created by Coch on 09.10.2023.
 //
+#include <array>
 #include "SDLApp.h"
 
-SDLApp::SDLApp(std::string_view title, int width, int height, World &world) : window(nullptr), renderer(nullptr),
-                                                                              GameWorld(world)
+SDLApp::SDLApp(std::string_view title, int width, int height) : window(nullptr), renderer(nullptr)
 {
     Width = width;
     Height = height;
@@ -28,8 +28,7 @@ void SDLApp::Init()
         SDL_Log("SDL_CreateWindow Error: %s", SDL_GetError());
         return;
     }
-    // Enable VSync
-    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == nullptr)
@@ -38,7 +37,7 @@ void SDLApp::Init()
         SDL_Log("SDL_CreateRenderer Error: %s", SDL_GetError());
         return;
     }
-
+    GameWorld.Init();
 }
 
 void SDLApp::UnInit()
@@ -74,15 +73,8 @@ void SDLApp::Run()
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-
-
-
-
-
-
-
-
         GameWorld.Update();
+        SDLUpdate();
 
         DrawAllBodies();
 
@@ -91,23 +83,36 @@ void SDLApp::Run()
     }
 }
 
-
-void SDLApp::DrawCircle(const Body &c)
+void SDLApp::DrawCircle(const Body &b, int segments)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    int Radius = 15;
-    for (int w = 0; w < Radius * 2; w++)
+    SDL_Color col{0, 255, 0, 255};
+
+    std::vector<SDL_Vertex> vertices;
+    std::vector<int> indices;
+
+    float radius = Metrics::MetersToPixels(0.1f);
+
+    // Calculate vertices for the circle
+    for (int i = 0; i < segments; ++i)
     {
-        for (int h = 0; h < Radius * 2; h++)
-        {
-            float dx = Radius - w; // Horizontal offset
-            float dy = Radius - h; // Vertical offset
-            if ((dx * dx + dy * dy) <= (Radius * Radius))
-            {
-                SDL_RenderDrawPoint(renderer, c.Position.X + dx, c.Position.Y + dy);
-            }
-        }
+        Radian angle = Radian(2 * MathUtility::Pi * i / segments);
+        float x = b.Position.X + radius * MathUtility::Cos(angle);
+        float y = b.Position.Y + radius * MathUtility::Sin(angle);
+        vertices.push_back({{x, y}, col, {1.0f, 1.0f}});
     }
+
+    // Calculate indices to create triangles for filling the circle
+    for (int i = 0; i < segments - 1; ++i)
+    {
+        indices.push_back(0); // Center point
+        indices.push_back(i);
+        indices.push_back(i + 1);
+    }
+    indices.push_back(0); // Center point
+    indices.push_back(segments - 1);
+    indices.push_back(0);  // Connect the last vertex to the center
+
+    SDL_RenderGeometry(renderer, nullptr, vertices.data(), vertices.size(), indices.data(), indices.size());
 }
 
 void SDLApp::DrawAllBodies()
@@ -116,6 +121,6 @@ void SDLApp::DrawAllBodies()
         return;
     for (Body &body: GameWorld.Bodies)
     {
-        DrawCircle(body);
+        DrawCircle(body, 20);
     }
 }

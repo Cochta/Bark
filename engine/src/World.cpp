@@ -3,29 +3,25 @@
 //
 #include "World.h"
 
-void World::AddBody(const Body &body)
+void World::AddBody(const Body &body) noexcept
 {
     Bodies.push_back(body);
 }
 
-void World::Init()
+void World::Init() noexcept
 {
-    WorldTimer.Init();
+    Timer.Init();
 }
 
-void World::UnInit()
+void World::Update() noexcept
 {
-
-}
-
-void World::Update()
-{
-
-    //TODO: simulate that WorldCenter is a sun and the bodies rotate around using physics
-    
-    WorldTimer.Tick();
+    Timer.Tick();
     for (auto &body: Bodies)
     {
-        body.Update(WorldTimer.DeltaTime);
+        auto acceleration = body.Force / body.Mass;
+        body.Velocity += acceleration * Timer.DeltaTime;
+        body.Position += body.Velocity * Timer.DeltaTime;
+
+        body.Force = Vec2F::Zero();
     }
 }

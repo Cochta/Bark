@@ -19,7 +19,7 @@ struct SharedPtrTestFixture : public ::testing::Test {
     }
 };
 
-TEST_F(SharedPtrTestFixture, ConstructionAndUseCount) {
+TEST_F(SharedPtrTestFixture, ConstructionWithUseCount) {
     EXPECT_EQ(p1.UsedCount(), 3);
     EXPECT_EQ(p2.UsedCount(), 3);
     EXPECT_EQ(p3.UsedCount(), 3);
@@ -29,7 +29,7 @@ TEST_F(SharedPtrTestFixture, ConstructionAndUseCount) {
     EXPECT_EQ(*p3.Get(), 42);
 }
 
-TEST_F(SharedPtrTestFixture, AssignmentAndUseCount) {
+TEST_F(SharedPtrTestFixture, AssignmentWithUseCount) {
     SharedPtr<int> p4 = p1;
     EXPECT_EQ(p1.UsedCount(), 4);
     EXPECT_EQ(p2.UsedCount(), 4);
@@ -54,6 +54,6 @@ TEST_F(SharedPtrTestFixture, AssignmentAndUseCount) {
     EXPECT_EQ(*p4.Get(), 99);
 }
 
-TEST_F(SharedPtrTestFixture, DestructorAndUseCount) {
+TEST_F(SharedPtrTestFixture, DestructorWithUseCount) {
 
 }
