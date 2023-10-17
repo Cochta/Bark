@@ -83,14 +83,10 @@ void SDLApp::Run()
     }
 }
 
-void SDLApp::DrawCircle(const Body &b, int segments)
+void SDLApp::DrawCircle(const Body &b, float radius, int segments, SDL_Color col)
 {
-    SDL_Color col{0, 255, 0, 255};
-
     std::vector<SDL_Vertex> vertices;
     std::vector<int> indices;
-
-    float radius = Metrics::MetersToPixels(0.1f);
 
     // Calculate vertices for the circle
     for (int i = 0; i < segments; ++i)
@@ -115,12 +111,4 @@ void SDLApp::DrawCircle(const Body &b, int segments)
     SDL_RenderGeometry(renderer, nullptr, vertices.data(), vertices.size(), indices.data(), indices.size());
 }
 
-void SDLApp::DrawAllBodies()
-{
-    if (GameWorld.Bodies.empty())
-        return;
-    for (Body &body: GameWorld.Bodies)
-    {
-        DrawCircle(body, 20);
-    }
-}
+

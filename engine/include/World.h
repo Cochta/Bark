@@ -10,19 +10,32 @@
 
 struct BodyRef
 {
-    size_t Index;
+    std::size_t Index;
+    std::size_t GenIndex;
+
+    constexpr bool operator==(const BodyRef& other) const
+    {
+        return (Index == other.Index) && (GenIndex == other.GenIndex);
+    }
 };
 
 class World
 {
+private:
+    std::vector<Body> _bodies;
 public:
-    std::vector<Body> Bodies;
-    std::vector<size_t> Indices;
+
+    std::vector<size_t> GenIndices;
     Timer Timer;
+
+    World() noexcept = default;
 
     void Init() noexcept;
 
     void Update() noexcept;
 
-    void AddBody(const Body &body) noexcept;
+    [[nodiscard]] BodyRef CreateBody() noexcept;
+
+    [[nodiscard]] Body& GetBody(BodyRef bodyRef);
+
 };

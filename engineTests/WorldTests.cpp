@@ -13,9 +13,9 @@ protected:
         Body b2(Vec2F(0,-0),Vec2F(0,-0), 0);
         Body b3(Vec2F(234.457,-123.1254),Vec2F(12.45376,-40.1214), -1245);
         world.Init();
-        world.AddBody(b1);
-        world.AddBody(b2);
-        world.AddBody(b3);
+        world.CreateBody(b1);
+        world.CreateBody(b2);
+        world.CreateBody(b3);
     }
 };
 
@@ -36,10 +36,10 @@ TEST_F(WorldTest, UpdateTest) {
 
     }
 //
-//    for (int i = 0; i < world.Bodies.size(); ++i)
+//    for (int i = 0; i < world._bodies.size(); ++i)
 //    {
-//        Body body = world.Bodies[i];
-//        Body testBody = TestWorld.Bodies[i];
+//        Body body = world._bodies[i];
+//        Body testBody = TestWorld._bodies[i];
 //        ASSERT_EQ(body.Mass, testBody.Mass);
 //    }
 

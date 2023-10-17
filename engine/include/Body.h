@@ -10,13 +10,18 @@ class Body
 public:
     Vec2F Position = Vec2F::Zero();
     Vec2F Velocity = Vec2F::Zero();
-    float Mass = 1.f;
+    float Mass = -1.f; // Body is disable if mass is negative
 
     Vec2F Force = Vec2F::Zero(); // Total force acting on the body
 
-    explicit Body(Vec2F position, Vec2F velocity = Vec2F::Zero(), float mass = 1.f) noexcept
+    constexpr Body() noexcept = default;
+
+    constexpr explicit Body(Vec2F position, Vec2F velocity, float mass) noexcept
             : Position(position), Velocity(velocity), Mass(mass)
     {}
 
     void ApplyForce(const Vec2F &force) noexcept;
+
+    [[nodiscard]] constexpr bool IsEnabled() const noexcept
+    { return Mass >= 0; }
 };

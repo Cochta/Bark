@@ -18,7 +18,7 @@ class BodyConstructorParamFixture : public ::testing::TestWithParam<BodyConstruc
 INSTANTIATE_TEST_SUITE_P(BodyConstructorParams, BodyConstructorParamFixture, ::testing::Values(
         BodyConstructorParams{Vec2F(1, 2), Vec2F(3,4), 2.0f},
         BodyConstructorParams{Vec2F(3, 4), Vec2F(5,6), 1.5f},
-        BodyConstructorParams{Vec2F(0, 0), Vec2F(0,0), 1.0f},
+        BodyConstructorParams{Vec2F(0, 0), Vec2F(0,0), -1.0f},
         BodyConstructorParams{Vec2F(-1,-1),Vec2F(-1,-2), 0.5f},
         BodyConstructorParams{Vec2F(10,10),Vec2F(67,24), 3.0f}
 ));
@@ -40,5 +40,14 @@ TEST_P(BodyConstructorParamFixture, ApplyForce) {
     EXPECT_EQ(Body.Force, Vec2F::Zero());
     Body.ApplyForce(force);
     EXPECT_EQ(Body.Force, force);
-
+}
+TEST_P(BodyConstructorParamFixture, ApplyForce) {
+    const auto params = GetParam();
+    Body Body(params.position, params.velocity, params.mass);
+    if(Body.Mass >= 0){
+        EXPECT_TRUE(Body.IsEnabled());
+    }
+    else{
+    EXPECT_FALSE(Body.IsEnabled());
+    }
 }

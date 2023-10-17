@@ -29,7 +29,7 @@ public:
 
     void Run();
 
-    void DrawCircle(const Body &c, int segments);
+    void DrawCircle(const Body &c, float radius, int segments, SDL_Color col);
 
     void DrawAllBodies();
 
