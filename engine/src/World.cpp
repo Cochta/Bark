@@ -3,8 +3,7 @@
 //
 #include "World.h"
 
-void World::Init() noexcept
-{
+void World::Init() noexcept {
     int initSize = 100;
     Timer.Init();
 
@@ -12,11 +11,9 @@ void World::Init() noexcept
     GenIndices.resize(initSize, 0);
 }
 
-void World::Update() noexcept
-{
+void World::Update() noexcept {
     Timer.Tick();
-    for (auto &body: _bodies)
-    {
+    for (auto &body: _bodies) {
         if (!body.IsEnabled()) continue;
         auto acceleration = body.Force / body.Mass;
         body.Velocity += acceleration * Timer.DeltaTime;
@@ -26,21 +23,17 @@ void World::Update() noexcept
     }
 }
 
-[[nodiscard]] BodyRef World::CreateBody() noexcept
-{
-    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body)
-    {
+[[nodiscard]] BodyRef World::CreateBody() noexcept {
+    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body) {
         return !body.IsEnabled(); // Get first Disabled body
     });
 
-    if (it != _bodies.end())
-    {
+    if (it != _bodies.end()) {
         std::size_t index = std::distance(_bodies.begin(), it);
-
-        return BodyRef{index, GenIndices[index]};
+        auto bodyRef = BodyRef{index, GenIndices[index]};
+        GetBody(bodyRef).Mass = 1.f;
+        return bodyRef;
     }
-
-    // No disabled body mass found.
 
     std::size_t previousSize = _bodies.size();
 
@@ -50,14 +43,14 @@ void World::Update() noexcept
     std::fill(_bodies.begin() + previousSize, _bodies.end(), Body());
     std::fill(GenIndices.begin() + previousSize, GenIndices.end(), 0);
 
-    return { previousSize, GenIndices[previousSize] };
+    BodyRef bodyRef = {previousSize, GenIndices[previousSize]};
+    GetBody(bodyRef).Mass = 1.f;
+    return bodyRef;
 
 }
 
-[[nodiscard]] Body &World::GetBody(BodyRef bodyRef)
-{
-    if (GenIndices[bodyRef.Index] != bodyRef.GenIndex)
-    {
+[[nodiscard]] Body &World::GetBody(BodyRef bodyRef) {
+    if (GenIndices[bodyRef.Index] != bodyRef.GenIndex) {
         throw std::runtime_error("No body found !");
     }
 

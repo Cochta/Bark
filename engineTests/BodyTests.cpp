@@ -16,11 +16,11 @@ class BodyConstructorParamFixture : public ::testing::TestWithParam<BodyConstruc
 };
 
 INSTANTIATE_TEST_SUITE_P(BodyConstructorParams, BodyConstructorParamFixture, ::testing::Values(
-        BodyConstructorParams{Vec2F(1, 2), Vec2F(3,4), 2.0f},
-        BodyConstructorParams{Vec2F(3, 4), Vec2F(5,6), 1.5f},
-        BodyConstructorParams{Vec2F(0, 0), Vec2F(0,0), -1.0f},
-        BodyConstructorParams{Vec2F(-1,-1),Vec2F(-1,-2), 0.5f},
-        BodyConstructorParams{Vec2F(10,10),Vec2F(67,24), 3.0f}
+        BodyConstructorParams{Vec2F(1, 2), Vec2F(3, 4), 2.0f},
+        BodyConstructorParams{Vec2F(3, 4), Vec2F(5, 6), 1.5f},
+        BodyConstructorParams{Vec2F(0, 0), Vec2F(0, 0), -1.0f},
+        BodyConstructorParams{Vec2F(-1, -1), Vec2F(-1, -2), 0.5f},
+        BodyConstructorParams{Vec2F(10, 10), Vec2F(67, 24), 3.0f}
 ));
 
 TEST_P(BodyConstructorParamFixture, ConstructorInitialization) {
@@ -35,19 +35,19 @@ TEST_P(BodyConstructorParamFixture, ConstructorInitialization) {
 TEST_P(BodyConstructorParamFixture, ApplyForce) {
     const auto params = GetParam();
     Body Body(params.position, params.velocity, params.mass);
-    auto force = Vec2F(Random::Range(-100.f,100.f),Random::Range(-100.f,100.f));
+    auto force = Vec2F(Random::Range(-100.f, 100.f), Random::Range(-100.f, 100.f));
 
     EXPECT_EQ(Body.Force, Vec2F::Zero());
     Body.ApplyForce(force);
     EXPECT_EQ(Body.Force, force);
 }
-TEST_P(BodyConstructorParamFixture, ApplyForce) {
+
+TEST_P(BodyConstructorParamFixture, IsEnabled) {
     const auto params = GetParam();
     Body Body(params.position, params.velocity, params.mass);
-    if(Body.Mass >= 0){
+    if (Body.Mass >= 0) {
         EXPECT_TRUE(Body.IsEnabled());
-    }
-    else{
-    EXPECT_FALSE(Body.IsEnabled());
+    } else {
+        EXPECT_FALSE(Body.IsEnabled());
     }
 }

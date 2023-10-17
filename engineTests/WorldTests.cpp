@@ -7,40 +7,42 @@
 class WorldTest : public ::testing::Test {
 protected:
     World world;
+    std::vector<BodyRef> bodyRefs;
 
     void SetUp() override {
-        Body b1(Vec2F(200,-400),Vec2F(20,40), 1);
-        Body b2(Vec2F(0,-0),Vec2F(0,-0), 0);
-        Body b3(Vec2F(234.457,-123.1254),Vec2F(12.45376,-40.1214), -1245);
         world.Init();
-        world.CreateBody(b1);
-        world.CreateBody(b2);
-        world.CreateBody(b3);
     }
 };
 
 TEST_F(WorldTest, AddBodyTest) {
-
-    ASSERT_EQ(world.Bodies.size(), 3);
-
+    int baseSize = 100;
+    EXPECT_EQ(world.GenIndices.size(), baseSize);
+    for (int i = 0; i < 250; ++i) {
+        bodyRefs.push_back(world.CreateBody());
+    }
+    EXPECT_EQ(world.GenIndices.size(), baseSize * 2 * 2);
 }
 
 TEST_F(WorldTest, UpdateTest) {
-    int nbUpdates = 3;
-    //World TestWorld = world;
-    //TestWorld.Init();
+    // Create a body and set its initial state
+    BodyRef bodyRef = world.CreateBody();
+    Body &body = world.GetBody(bodyRef);
+    body.ApplyForce(Vec2F(150.0f, 150.0f)); // Set a force
+    body.Mass = 2.0f;
+    body.Velocity = Vec2F(0.0f, 0.0f);
+    body.Position = Vec2F(0.0f, 0.0f);
+
+    // Store the initial state for comparison
+    Vec2F initialPosition = body.Position;
+    Vec2F initialVelocity = body.Velocity;
+    Vec2F initialForce = body.Force;
+
+    // Update the world
     world.Update();
 
-    for (int i = 0; i < nbUpdates; ++i)
-    {
-
-    }
-//
-//    for (int i = 0; i < world._bodies.size(); ++i)
-//    {
-//        Body body = world._bodies[i];
-//        Body testBody = TestWorld._bodies[i];
-//        ASSERT_EQ(body.Mass, testBody.Mass);
-//    }
-
+    // Check if the position and velocity have been updated as expected
+    EXPECT_EQ(body.Velocity, initialVelocity + (initialForce / body.Mass) * world.Timer.DeltaTime);
+    EXPECT_FLOAT_EQ(body.Position.X, Vec2F(initialPosition + (initialVelocity + ((initialForce / body.Mass) * world.Timer.DeltaTime) * world.Timer.DeltaTime)).X);
+    EXPECT_FLOAT_EQ(body.Position.Y, Vec2F(initialPosition + (initialVelocity + ((initialForce / body.Mass) * world.Timer.DeltaTime) * world.Timer.DeltaTime)).Y);
+    EXPECT_EQ(body.Force, Vec2F::Zero());
 }
