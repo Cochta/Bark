@@ -3,15 +3,18 @@
 //
 #include "World.h"
 
-void World::SetUp() noexcept {
+void World::SetUp() noexcept
+{
     int initSize = 100;
 
     _bodies.resize(initSize, Body());
     GenIndices.resize(initSize, 0);
 }
 
-void World::Update(float deltaTime) noexcept {
-    for (auto &body: _bodies) {
+void World::Update(float deltaTime) noexcept
+{
+    for (auto &body: _bodies)
+    {
         if (!body.IsEnabled()) continue;
         auto acceleration = body.GetForce() / body.Mass;
         body.Velocity += acceleration * deltaTime;
@@ -21,12 +24,15 @@ void World::Update(float deltaTime) noexcept {
     }
 }
 
-[[nodiscard]] BodyRef World::CreateBody() noexcept {
-    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body) {
+[[nodiscard]] BodyRef World::CreateBody() noexcept
+{
+    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body)
+    {
         return !body.IsEnabled(); // Get first Disabled body
     });
 
-    if (it != _bodies.end()) {
+    if (it != _bodies.end())
+    {
         std::size_t index = std::distance(_bodies.begin(), it);
         auto bodyRef = BodyRef{index, GenIndices[index]};
         GetBody(bodyRef).Enable();
@@ -44,16 +50,20 @@ void World::Update(float deltaTime) noexcept {
 
 }
 
-void World::DestroyBody(BodyRef bodyRef)  {
-    if (GenIndices[bodyRef.Index] != bodyRef.GenIndex) {
+void World::DestroyBody(BodyRef bodyRef)
+{
+    if (GenIndices[bodyRef.Index] != bodyRef.GenIndex)
+    {
         throw std::runtime_error("No body found !");
     }
 
     _bodies[bodyRef.Index].Disable();
 }
 
-[[nodiscard]] Body &World::GetBody(BodyRef bodyRef) {
-    if (GenIndices[bodyRef.Index] != bodyRef.GenIndex) {
+[[nodiscard]] Body &World::GetBody(BodyRef bodyRef)
+{
+    if (GenIndices[bodyRef.Index] != bodyRef.GenIndex)
+    {
         throw std::runtime_error("No body found !");
     }
 

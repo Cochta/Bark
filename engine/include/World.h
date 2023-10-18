@@ -8,16 +8,19 @@
 #include <vector>
 
 // todo: add brief to all engine classes, funcs, attribute
-struct BodyRef {
+struct BodyRef
+{
     std::size_t Index;
     std::size_t GenIndex;
 
-    constexpr bool operator==(const BodyRef &other) const {
+    constexpr bool operator==(const BodyRef &other) const
+    {
         return (Index == other.Index) && (GenIndex == other.GenIndex);
     }
 };
 
-class World {
+class World
+{
 private:
     std::vector<Body> _bodies;
 

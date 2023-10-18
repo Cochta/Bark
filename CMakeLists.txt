@@ -14,8 +14,7 @@ set_target_properties(Common PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Common PUBLIC common/include/)
 
 # Common tests
-SET(COMMON_TEST_DIR ${CMAKE_SOURCE_DIR}/common/tests)
-file(GLOB COMMON_TEST_FILES ${COMMON_TEST_DIR}/*.cpp )
+file(GLOB COMMON_TEST_FILES common/tests/*.cpp )
 
 foreach(test_file ${COMMON_TEST_FILES} )
     get_filename_component(test_name ${test_file} NAME_WE)
@@ -36,15 +35,15 @@ set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Engine PUBLIC engine/include/)
 target_include_directories(Engine PUBLIC libs/Math/include/)
 
-# Physics tests
-SET(ENGINE_TEST_DIR ${CMAKE_SOURCE_DIR}/engine/tests)
-file(GLOB ENGINE_TEST_FILES ${ENGINE_TEST_DIR}/*.cpp )
+# Engine tests
+
+file(GLOB ENGINE_TEST_FILES engine/tests/*.cpp )
 
 foreach(test_file ${ENGINE_TEST_FILES} )
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file})
 
-    target_link_libraries(${test_name} PUBLIC EngineLib)
+    target_link_libraries(${test_name} PUBLIC Engine)
     target_link_libraries(${test_name} PRIVATE GTest::gtest GTest::gtest_main)
 
     IF(MSVC)

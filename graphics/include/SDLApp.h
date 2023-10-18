@@ -5,8 +5,6 @@
 
 #include <SDL2/SDL.h>
 
-#include <vector>
-#include "Vec2.h"
 #include "Sample.h"
 #include "UniquePtr.h"
 
