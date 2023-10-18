@@ -5,5 +5,5 @@
 
 void Body::ApplyForce(const Vec2F &force) noexcept
 {
-    Force += force;
+    _force += force;
 }

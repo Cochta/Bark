@@ -7,20 +7,23 @@
 template<typename T>
 class SharedPtr
 {
+private:
+    T *_ptr;
+    std::size_t *_ref_count;
 public:
-    [[nodiscard]] constexpr SharedPtr() noexcept: ptr(nullptr), ref_count(nullptr)
+    [[nodiscard]] constexpr SharedPtr() noexcept: _ptr(nullptr), _ref_count(nullptr)
     {}
 
-    [[nodiscard]] constexpr explicit SharedPtr(T *ptr) noexcept: ptr(ptr)
+    [[nodiscard]] constexpr explicit SharedPtr(T *ptr) noexcept: _ptr(ptr)
     {
-        ref_count = new size_t(1);
+        _ref_count = new std::size_t(1);
     }
 
-    [[nodiscard]] SharedPtr(const SharedPtr &other) noexcept: ptr(other.ptr), ref_count(other.ref_count)
+    [[nodiscard]] SharedPtr(const SharedPtr &other) noexcept: _ptr(other._ptr), _ref_count(other._ref_count)
     {
-        if (ref_count)
+        if (_ref_count)
         {
-            (*ref_count)++;
+            (*_ref_count)++;
         }
     }
 
@@ -28,18 +31,18 @@ public:
     {
         if (this != &other)
         {
-            if (ref_count && --(*ref_count) == 0)
+            if (_ref_count && --(*_ref_count) == 0)
             {
-                delete ptr;
-                delete ref_count;
+                delete _ptr;
+                delete _ref_count;
             }
 
-            ptr = other.ptr;
-            ref_count = other.ref_count;
+            _ptr = other._ptr;
+            _ref_count = other._ref_count;
 
-            if (ref_count)
+            if (_ref_count)
             {
-                (*ref_count)++;
+                (*_ref_count)++;
             }
         }
 
@@ -48,28 +51,24 @@ public:
 
     ~SharedPtr() noexcept
     {
-        if (ref_count && --(*ref_count) == 0)
+        if (_ref_count && --(*_ref_count) == 0)
         {
-            delete ptr;
-            delete ref_count;
+            delete _ptr;
+            delete _ref_count;
         }
     }
 
     [[nodiscard]] constexpr T *Get() const noexcept
     {
-        return ptr;
+        return _ptr;
     }
 
-    [[nodiscard]] constexpr size_t UsedCount() const noexcept
+    [[nodiscard]] constexpr std::size_t UseCount() const noexcept
     {
-        if (ref_count)
+        if (_ref_count)
         {
-            return *ref_count;
+            return *_ref_count;
         }
         return 0;
     }
-
-private:
-    T *ptr;
-    size_t *ref_count;
 };

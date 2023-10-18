@@ -3,7 +3,7 @@
 //
 #include "Timer.h"
 
-void Timer::Init() noexcept
+void Timer::SetUp() noexcept
 {
     _startTime = std::chrono::high_resolution_clock::now();
 }

@@ -3,23 +3,21 @@
 //
 #include "World.h"
 
-void World::Init() noexcept {
+void World::SetUp() noexcept {
     int initSize = 100;
-    Timer.Init();
 
     _bodies.resize(initSize, Body());
     GenIndices.resize(initSize, 0);
 }
 
-void World::Update() noexcept {
-    Timer.Tick();
+void World::Update(float deltaTime) noexcept {
     for (auto &body: _bodies) {
         if (!body.IsEnabled()) continue;
-        auto acceleration = body.Force / body.Mass;
-        body.Velocity += acceleration * Timer.DeltaTime;
-        body.Position += body.Velocity * Timer.DeltaTime;
+        auto acceleration = body.GetForce() / body.Mass;
+        body.Velocity += acceleration * deltaTime;
+        body.Position += body.Velocity * deltaTime;
 
-        body.Force = Vec2F::Zero();
+        body.ResetForce();
     }
 }
 
@@ -31,22 +29,27 @@ void World::Update() noexcept {
     if (it != _bodies.end()) {
         std::size_t index = std::distance(_bodies.begin(), it);
         auto bodyRef = BodyRef{index, GenIndices[index]};
-        GetBody(bodyRef).Mass = 1.f;
+        GetBody(bodyRef).Enable();
         return bodyRef;
     }
 
     std::size_t previousSize = _bodies.size();
 
-    _bodies.resize(previousSize * 2);
-    GenIndices.resize(previousSize * 2);
-
-    std::fill(_bodies.begin() + previousSize, _bodies.end(), Body());
-    std::fill(GenIndices.begin() + previousSize, GenIndices.end(), 0);
+    _bodies.resize(previousSize * 2, Body());
+    GenIndices.resize(previousSize * 2, 0);
 
     BodyRef bodyRef = {previousSize, GenIndices[previousSize]};
-    GetBody(bodyRef).Mass = 1.f;
+    GetBody(bodyRef).Enable();
     return bodyRef;
 
+}
+
+void World::DestroyBody(BodyRef bodyRef)  {
+    if (GenIndices[bodyRef.Index] != bodyRef.GenIndex) {
+        throw std::runtime_error("No body found !");
+    }
+
+    _bodies[bodyRef.Index].Disable();
 }
 
 [[nodiscard]] Body &World::GetBody(BodyRef bodyRef) {
@@ -56,3 +59,4 @@ void World::Update() noexcept {
 
     return _bodies[bodyRef.Index];
 }
+

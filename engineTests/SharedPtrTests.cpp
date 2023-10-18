@@ -20,9 +20,9 @@ struct SharedPtrTestFixture : public ::testing::Test {
 };
 
 TEST_F(SharedPtrTestFixture, ConstructionWithUseCount) {
-    EXPECT_EQ(p1.UsedCount(), 3);
-    EXPECT_EQ(p2.UsedCount(), 3);
-    EXPECT_EQ(p3.UsedCount(), 3);
+    EXPECT_EQ(p1.UseCount(), 3);
+    EXPECT_EQ(p2.UseCount(), 3);
+    EXPECT_EQ(p3.UseCount(), 3);
 
     EXPECT_EQ(*p1.Get(), 42);
     EXPECT_EQ(*p2.Get(), 42);
@@ -31,22 +31,22 @@ TEST_F(SharedPtrTestFixture, ConstructionWithUseCount) {
 
 TEST_F(SharedPtrTestFixture, AssignmentWithUseCount) {
     SharedPtr<int> p4 = p1;
-    EXPECT_EQ(p1.UsedCount(), 4);
-    EXPECT_EQ(p2.UsedCount(), 4);
-    EXPECT_EQ(p3.UsedCount(), 4);
-    EXPECT_EQ(p4.UsedCount(), 4);
+    EXPECT_EQ(p1.UseCount(), 4);
+    EXPECT_EQ(p2.UseCount(), 4);
+    EXPECT_EQ(p3.UseCount(), 4);
+    EXPECT_EQ(p4.UseCount(), 4);
 
     p4 = p2;
-    EXPECT_EQ(p1.UsedCount(), 4);
-    EXPECT_EQ(p2.UsedCount(), 4);
-    EXPECT_EQ(p3.UsedCount(), 4);
-    EXPECT_EQ(p4.UsedCount(), 4);
+    EXPECT_EQ(p1.UseCount(), 4);
+    EXPECT_EQ(p2.UseCount(), 4);
+    EXPECT_EQ(p3.UseCount(), 4);
+    EXPECT_EQ(p4.UseCount(), 4);
 
     p4 = SharedPtr<int>(new int(99));
-    EXPECT_EQ(p1.UsedCount(), 3);
-    EXPECT_EQ(p2.UsedCount(), 3);
-    EXPECT_EQ(p3.UsedCount(), 3);
-    EXPECT_EQ(p4.UsedCount(), 1);
+    EXPECT_EQ(p1.UseCount(), 3);
+    EXPECT_EQ(p2.UseCount(), 3);
+    EXPECT_EQ(p3.UseCount(), 3);
+    EXPECT_EQ(p4.UseCount(), 1);
 
     EXPECT_EQ(*p1.Get(), 42);
     EXPECT_EQ(*p2.Get(), 42);

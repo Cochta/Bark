@@ -6,14 +6,14 @@
 
 #include <chrono>
 
-class Timer
+class Timer // todo: test timer
 {
 private:
-    std::chrono::time_point<std::chrono::steady_clock> _startTime;
+    std::chrono::time_point<std::chrono::high_resolution_clock> _startTime;
 
 public:
     float DeltaTime{0.f};
 
-    void Init() noexcept;
+    void SetUp() noexcept;
     void Tick() noexcept;
 };

@@ -4,38 +4,35 @@
 #pragma once
 
 #include "Body.h"
-#include "Timer.h"
 
 #include <vector>
 
-struct BodyRef
-{
+// todo: add brief to all engine classes, funcs, attribute
+struct BodyRef {
     std::size_t Index;
     std::size_t GenIndex;
 
-    constexpr bool operator==(const BodyRef& other) const
-    {
+    constexpr bool operator==(const BodyRef &other) const {
         return (Index == other.Index) && (GenIndex == other.GenIndex);
     }
 };
 
-class World
-{
+class World {
 private:
     std::vector<Body> _bodies;
-public:
 
+public:
     std::vector<size_t> GenIndices;
-    Timer Timer;
 
     World() noexcept = default;
 
-    void Init() noexcept;
+    void SetUp() noexcept;
 
-    void Update() noexcept;
+    void Update(float deltaTime) noexcept;
 
     [[nodiscard]] BodyRef CreateBody() noexcept;
 
-    [[nodiscard]] Body& GetBody(BodyRef bodyRef);
+    void DestroyBody(BodyRef bodyRef);
 
+    [[nodiscard]] Body &GetBody(BodyRef bodyRef);
 };

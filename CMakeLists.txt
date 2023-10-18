@@ -7,22 +7,28 @@ find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 
+# Common library
+#file(GLOB_RECURSE COMMON_FILES common/include/*.h common/src/*.cpp)
+#add_library(CommonLib ${COMMON_FILES})
+#set_target_properties(CommonLib PROPERTIES LINKER_LANGUAGE CXX)
+#target_include_directories(CommonLib PUBLIC common/include/)
+
 file(GLOB_RECURSE Engine_Files engine/include/*.h engine/src/*.cpp)
 add_library(Engine ${Engine_Files})
 set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Engine PUBLIC engine/include/)
-target_include_directories(Engine PUBLIC engine/libs/Math/include/)
+target_include_directories(Engine PUBLIC libs/Math/include/)
 
-file(GLOB_RECURSE Common_Files Graphics/include/*.h Graphics/src/*.cpp)
-add_library(Common ${Common_Files})
-set_target_properties(Common PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Engine PUBLIC Graphics/include/)
-target_link_libraries(Common PUBLIC Engine)
+file(GLOB_RECURSE Common_Files graphics/include/*.h graphics/src/*.cpp)
+add_library(graphics ${Common_Files})
+set_target_properties(graphics PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(Engine PUBLIC graphics/include/)
+target_link_libraries(graphics PUBLIC Engine)
 target_link_libraries(Engine PUBLIC fmt::fmt $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 
 add_executable(Main Main.cpp)
-target_link_libraries(Main Common)
+target_link_libraries(Main graphics)
 
 # Tests
 SET(TEST_DIR ${CMAKE_SOURCE_DIR}/engineTests)
@@ -44,4 +50,3 @@ foreach(test_file ${TEST_FILES} )
 
     set_target_properties (${test_name} PROPERTIES FOLDER Courses)
 endforeach()
-
