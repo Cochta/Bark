@@ -5,7 +5,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "Sample.h"
+#include "../../samples/Sample.h"
 #include "UniquePtr.h"
 
 

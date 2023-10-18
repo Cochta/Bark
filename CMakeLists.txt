@@ -7,7 +7,7 @@ find_package(GTest CONFIG REQUIRED)
 
 find_package(SDL2 CONFIG REQUIRED)
 
- #Common library
+# Common library
 file(GLOB_RECURSE COMMON_FILES common/include/*.h common/src/*.cpp)
 add_library(Common ${COMMON_FILES})
 set_target_properties(Common PROPERTIES LINKER_LANGUAGE CXX)
@@ -15,7 +15,6 @@ target_include_directories(Common PUBLIC common/include/)
 
 # Common tests
 file(GLOB COMMON_TEST_FILES common/tests/*.cpp )
-
 foreach(test_file ${COMMON_TEST_FILES} )
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file})
@@ -29,6 +28,7 @@ foreach(test_file ${COMMON_TEST_FILES} )
     ENDIF()
 endforeach()
 
+# Engine library
 file(GLOB_RECURSE ENGINE_FILES engine/include/*.h engine/src/*.cpp)
 add_library(Engine ${ENGINE_FILES})
 set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
@@ -36,9 +36,7 @@ target_include_directories(Engine PUBLIC engine/include/)
 target_include_directories(Engine PUBLIC libs/Math/include/)
 
 # Engine tests
-
 file(GLOB ENGINE_TEST_FILES engine/tests/*.cpp )
-
 foreach(test_file ${ENGINE_TEST_FILES} )
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file})
@@ -53,12 +51,24 @@ foreach(test_file ${ENGINE_TEST_FILES} )
     ENDIF()
 endforeach()
 
+# Sample library
+file(GLOB_RECURSE SAMPLE_FILES samples/*.h)
+add_library(Samples ${SAMPLE_FILES})
+set_target_properties(Samples PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(Samples PUBLIC samples/)
+target_include_directories(Samples PUBLIC engine/include/)
+target_include_directories(Samples PUBLIC libs/Math/include/)
+target_include_directories(Samples PUBLIC common/include/)
+
+# Graphics library
 file(GLOB_RECURSE GRAPHICS_FILES graphics/src/*.cpp graphics/include/*.h)
 add_library(Graphics ${GRAPHICS_FILES})
+set_target_properties(Graphics PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Graphics PUBLIC graphics/include/)
 target_include_directories(Graphics PUBLIC engine/include/)
 target_include_directories(Graphics PUBLIC libs/Math/include/)
 target_include_directories(Graphics PUBLIC common/include/)
+target_include_directories(Graphics PUBLIC samples/)
 target_link_libraries(Graphics PUBLIC Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 

@@ -8,13 +8,17 @@
 
 #include "Timer.h"
 
-enum class BodyType {
+enum class BodyType
+{
     Sun = 0,
     Planet = 1
 };
-struct Color {
+
+struct Color
+{
     int r = 255, g = 255, b = 255, a = 255;
 };
+
 struct BodyData // for sdl to draw
 {
     BodyType Type = BodyType::Planet;
@@ -23,7 +27,8 @@ struct BodyData // for sdl to draw
 
 };
 
-class Sample {
+class Sample
+{
 public:
     World World;
     Timer Timer;
@@ -31,14 +36,15 @@ public:
     std::vector<BodyRef> BodyRefs;
     std::vector<BodyData> AllBodyData;
 
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         World.SetUp();
         Timer.SetUp();
     };
 
-    virtual void Update() {
+    virtual void Update()
+    {
         Timer.Tick();
         World.Update(Timer.DeltaTime);
     };
-
 };

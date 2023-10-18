@@ -3,7 +3,7 @@
 //
 #include "SDLApp.h"
 
-#include "StarSystem.h"
+#include "../../samples/StarSystem.h"
 
 void SDLApp::SetUp() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
