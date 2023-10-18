@@ -99,7 +99,7 @@ void SDLApp::DrawAllBodies() {
         if (body.IsEnabled()) {
             BodyData bd = samples[0]->AllBodyData[bodyRef.Index];
 
-            DrawCircle(body, bd.Radius, 30, {
+            DrawCircle(body, bd.Radius, 50, {
                     static_cast<Uint8>(bd.Color.r),
                     static_cast<Uint8>(bd.Color.g),
                     static_cast<Uint8>(bd.Color.b),

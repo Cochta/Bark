@@ -1,4 +1,8 @@
+
+#include "Metrics.h"
 #include "SDLApp.h"
+#include "Vec2.h"
+
 
 constexpr int width = Metrics::MetersToPixels(8), height = Metrics::MetersToPixels(6);
 
