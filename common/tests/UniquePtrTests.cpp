@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/UniquePtr.h"
+#include "UniquePtr.h"
 
 // Define a test fixture for UniquePtr
 class UniquePtrTest : public ::testing::Test

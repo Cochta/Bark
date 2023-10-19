@@ -69,32 +69,32 @@ void SDLApp::Run() {
 
 void SDLApp::DrawCircle(const Body &b, float radius, int segments, SDL_Color col) {
 
-    auto offset = vertices.size();
+    auto offset = _vertices.size();
 
     // Calculate vertices for the circle
     for (int i = 0; i < segments; ++i) {
         auto angle = Radian(2.f * MathUtility::Pi * static_cast<float>(i) / static_cast<float>(segments));
         float x = b.Position.X + radius * MathUtility::Cos(angle);
         float y = b.Position.Y + radius * MathUtility::Sin(angle);
-        vertices.push_back({{x, y}, col, {1.0f, 1.0f}});
+        _vertices.push_back({{x, y}, col, {1.0f, 1.0f}});
     }
 
     // Calculate indices to create triangles for filling the circle
     for (int i = 0; i < segments - 1; ++i) {
-        indices.push_back(offset); // Center point
-        indices.push_back(offset + i);
-        indices.push_back(offset + i + 1);
+        _indices.push_back(offset); // Center point
+        _indices.push_back(offset + i);
+        _indices.push_back(offset + i + 1);
     }
-    indices.push_back(offset); // Center point
-    indices.push_back(offset+segments - 1);
-    indices.push_back(offset);  // Connect the last vertex to the center
+    _indices.push_back(offset); // Center point
+    _indices.push_back(offset + segments - 1);
+    _indices.push_back(offset);  // Connect the last vertex to the center
 
 
 }
 
 void SDLApp::DrawAllBodies() {
-    vertices.clear();
-    indices.clear();
+    _vertices.clear();
+    _indices.clear();
     for (auto &bodyRef: samples[0]->BodyRefs) {
         auto &body = samples[0]->World.GetBody(bodyRef);
         if (body.IsEnabled()) {
@@ -107,5 +107,5 @@ void SDLApp::DrawAllBodies() {
                     static_cast<Uint8>(bd.Color.a)});
         }
     }
-    SDL_RenderGeometry(_renderer, nullptr, vertices.data(), vertices.size(), indices.data(), indices.size());
+    SDL_RenderGeometry(_renderer, nullptr, _vertices.data(), _vertices.size(), _indices.data(), _indices.size());
 }

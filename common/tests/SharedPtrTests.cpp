@@ -1,8 +1,6 @@
-//
-// Created by Coch on 14.10.2023.
-//
+#include "SharedPtr.h"
+
 #include <gtest/gtest.h>
-#include "../include/SharedPtr.h"
 
 struct SharedPtrTestFixture : public ::testing::Test {
     SharedPtr<int> p1;
