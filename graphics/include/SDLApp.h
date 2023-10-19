@@ -13,6 +13,8 @@ class SDLApp {
 private:
     SDL_Window *_window{};
     SDL_Renderer *_renderer{};
+    std::vector<SDL_Vertex> vertices;
+    std::vector<int> indices;
 
 public:
     std::string_view Title;

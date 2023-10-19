@@ -11,7 +11,7 @@ class StarSystem : public Sample
 public:
 
     static constexpr float G = 6.67f;
-    static constexpr std::size_t planetNbr = 10000;
+    static constexpr std::size_t planetNbr = 50000;
 
     void SetUp() override
     {
@@ -54,7 +54,7 @@ public:
         }
     }
 
-    void CalculateGravitationalForce(const Body &sun, Body &body)
+    static void CalculateGravitationalForce(const Body &sun, Body &body)
     {
         auto m1m2 = sun.Mass * body.Mass;
         auto r = (sun.Position - body.Position).Length();

@@ -23,7 +23,7 @@ struct BodyData // for sdl to draw
 {
     BodyType Type = BodyType::Planet;
     float Radius = 0; //if radius is 0 then the object is not a circle
-    Color Color = {255, 255, 255, 255};
+    Color Color = {0, 255, 0, 255};
 
 };
 
