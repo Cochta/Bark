@@ -4,6 +4,7 @@
 #include "SDLApp.h"
 
 #include "StarSystem.h"
+#include "TriggerSample.h"
 
 void SDLApp::SetUp() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -27,6 +28,7 @@ void SDLApp::SetUp() {
         return;
     }
 
+    samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
     samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
     samples[0]->SetUp();
 }
@@ -71,15 +73,15 @@ void SDLApp::DrawCircle(const Body &b, float radius, int segments, SDL_Color col
 
     auto offset = _vertices.size();
 
-    // Calculate vertices for the circle
+    // Calculate vertices for the Circle
     for (int i = 0; i < segments; ++i) {
-        auto angle = Radian(2.f * MathUtility::Pi * static_cast<float>(i) / static_cast<float>(segments));
-        float x = b.Position.X + radius * MathUtility::Cos(angle);
-        float y = b.Position.Y + radius * MathUtility::Sin(angle);
+        auto angle = Math::Radian(2.f * Math::Pi * static_cast<float>(i) / static_cast<float>(segments));
+        float x = b.Position.X + radius * Math::Cos(angle);
+        float y = b.Position.Y + radius * Math::Sin(angle);
         _vertices.push_back({{x, y}, col, {1.0f, 1.0f}});
     }
 
-    // Calculate indices to create triangles for filling the circle
+    // Calculate indices to create triangles for filling the Circle
     for (int i = 0; i < segments - 1; ++i) {
         _indices.push_back(offset); // Center point
         _indices.push_back(offset + i);

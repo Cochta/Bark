@@ -35,6 +35,7 @@ add_library(Engine ${ENGINE_FILES})
 set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Engine PUBLIC engine/include/)
 target_include_directories(Engine PUBLIC libs/Math/include/)
+target_include_directories(Engine PUBLIC common/include/)
 
 # Engine tests
 file(GLOB ENGINE_TEST_FILES engine/tests/*.cpp )

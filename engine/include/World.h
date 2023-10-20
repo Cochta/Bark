@@ -1,26 +1,9 @@
 #pragma once
 
 #include "Body.h"
-
+#include "Collider.h"
 #include <vector>
-
-/**
- * @brief Represents a reference to a body in the world.
- * @note It consists of an index and a generation index.
- */
-struct BodyRef {
-    std::size_t Index;
-    std::size_t GenIndex;
-
-    /**
-     * @brief Check if two BodyRef instances are equal.
-     * @param other The BodyRef to compare with.
-     * @return true if the BodyRefs are equal, false otherwise.
-     */
-    constexpr bool operator==(const BodyRef &other) const {
-        return (Index == other.Index) && (GenIndex == other.GenIndex);
-    }
-};
+#include <unordered_set>
 
 /**
  * @brief Represents the physics world containing bodies and interactions.
@@ -29,9 +12,15 @@ struct BodyRef {
 class World {
 private:
     std::vector<Body> _bodies;
+    std::vector<Collider> _colliders;
+
+    int _colliderIdCount = 0;
+
+    //std::unordered_set<ColliderPair> _colPairs;
 
 public:
-    std::vector<size_t> GenIndices;
+    std::vector<size_t> BodyGenIndices;
+    std::vector<size_t> ColliderGenIndices;
 
     /**
      * @brief Default constructor for the World class.
@@ -67,4 +56,12 @@ public:
      * @return A reference to the specified body.
      */
     [[nodiscard]] Body &GetBody(BodyRef bodyRef);
+
+    [[nodiscard]] ColliderRef CreateCollider(BodyRef bodyRef) noexcept;
+
+    [[nodiscard]] Collider &GetCollider(ColliderRef colRef);
+
+    void DestroyCollider(ColliderRef colRef);
+    static bool Overlap(Collider& colA, Collider& colB);
+
 };

@@ -10,7 +10,7 @@ class StarSystem : public Sample {
 public:
 
     static constexpr float G = 6.67f;
-    static constexpr std::size_t planetNbr = 100;
+    static constexpr std::size_t planetNbr = 1000;
 
     void SetUp() override {
         Sample::SetUp();
@@ -31,23 +31,23 @@ public:
             // Engine
             auto bodyRef = World.CreateBody();
             auto &body = World.GetBody(bodyRef);
-            body.Position = {Random::Range(100.f, Metrics::Width - 100.f),
-                             Random::Range(100.f, Metrics::Height - 100.f)};
+            body.Position = {Math::Random::Range(100.f, Metrics::Width - 100.f),
+                             Math::Random::Range(100.f, Metrics::Height - 100.f)};
             auto r = copiedSun.Position - body.Position;
             auto v = sqrt(G * (copiedSun.Mass / r.Length()));
-            body.Velocity = i % 2 ? Vec2F(-r.Y, r.X).Normalized() * v : -Vec2F(-r.Y, r.X).Normalized() * v;
+            body.Velocity = Math::Vec2F(-r.Y, r.X).Normalized()* v;
             body.Mass = 10.f;
 
             // Graphics
             BodyRefs.push_back(bodyRef);
             BodyData pbd{BodyType::Planet,
-                         Random::Range(
+                         Math::Random::Range(
                                  Metrics::MetersToPixels(0.05f),
                                  Metrics::MetersToPixels(0.15f)),
                          {
-                                 Random::Range(0, 255),
-                                 Random::Range(0, 255),
-                                 Random::Range(0, 255),
+                                 Math::Random::Range(0, 255),
+                                 Math::Random::Range(0, 255),
+                                 Math::Random::Range(0, 255),
                                  255}};
             AllBodyData.push_back(pbd);
         }
@@ -59,8 +59,8 @@ public:
         auto r2 = r * r;
         auto F = G * (m1m2 / r2);
 
-        Vec2F forceDirection = (sun.Position - body.Position).Normalized();
-        Vec2F force = forceDirection * F;
+        Math::Vec2F forceDirection = (sun.Position - body.Position).Normalized();
+        Math::Vec2F force = forceDirection * F;
         body.ApplyForce(force);
     }
 

@@ -2,7 +2,7 @@
 
 /**
 * @headerfile Random number generator functions and classes
-* @author Alexis Haldy
+* @author Alexis
 */
 
 #include <random>
@@ -10,7 +10,7 @@
 /**
  * @brief A namespace for random number generator functions and classes
  */
-namespace Random
+namespace Math::Random
 {
     template <class T>
     [[nodiscard]] T Range(T min, T max) noexcept

@@ -11,7 +11,7 @@
 enum class BodyType
 {
     Sun = 0,
-    Planet = 1
+    Planet = 1,
 };
 
 struct Color
@@ -22,7 +22,7 @@ struct Color
 struct BodyData // for sdl to draw
 {
     BodyType Type = BodyType::Planet;
-    float Radius = 0; //if radius is 0 then the object is not a circle
+    float Radius = 0; //if radius is 0 then the object is not a Circle
     Color Color = {0, 255, 0, 255};
 
 };
@@ -38,8 +38,9 @@ public:
 
     virtual void SetUp()
     {
-        World.SetUp();
         Timer.SetUp();
+        World.SetUp();
+
     };
 
     virtual void Update()

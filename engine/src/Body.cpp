@@ -3,7 +3,7 @@
 //
 #include "Body.h"
 
-void Body::ApplyForce(const Vec2F &force) noexcept
+void Body::ApplyForce(const Math::Vec2F &force) noexcept
 {
     _force += force;
 }

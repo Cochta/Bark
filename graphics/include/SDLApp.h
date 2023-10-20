@@ -5,7 +5,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "../../samples/Sample.h"
+#include "Sample.h"
 #include "UniquePtr.h"
 
 
@@ -20,7 +20,7 @@ private:
 public:
     std::string_view Title;
     int Width, Height;
-    Vec2I MousePos;
+    Math::Vec2I MousePos;
 
     std::vector<UniquePtr<Sample>> samples;
 
