@@ -24,7 +24,8 @@ class TriggerSample : public Sample
             auto bodyRef1 = World.CreateBody();
             BodyRefs.push_back(bodyRef1);
             auto &body1 = World.GetBody(bodyRef1);
-            body1.Velocity = {Math::Random::Range(-1.f, 1.f) * SPEED, Math::Random::Range(-1.f, 1.f) * SPEED};
+            Math::Vec2F v = {Math::Random::Range(-1.f, 1.f), Math::Random::Range(-1.f, 1.f)};
+            body1.Velocity = v.Normalized() * SPEED;
             body1.Position = {Math::Random::Range(100.f, Metrics::Width - 100.f),
                               Math::Random::Range(100.f, Metrics::Height - 100.f)};
 
