@@ -12,6 +12,17 @@ void World::SetUp() noexcept
     _colliders.resize(initSize, Collider());
     ColliderGenIndices.resize(initSize, 0);
 }
+void World::TearDown() noexcept
+{
+    _bodies.clear();
+    BodyGenIndices.clear();
+    _colliders.clear();
+    ColliderGenIndices.clear();
+
+    _colliderIdCount = 0;
+
+    _colPairs.clear();
+}
 
 void World::Update(float deltaTime) noexcept
 {

@@ -58,4 +58,11 @@ class TriggerSample : public Sample
         }
         Sample::Update();
     }
+
+    void TearDown() override
+    {
+        ColRefs.clear();
+        Sample::TearDown();
+
+    }
 };

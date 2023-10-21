@@ -18,6 +18,8 @@ private:
     std::vector<SDL_Vertex> _vertices;
     std::vector<int> _indices;
 
+    std::size_t _sampleIdx = 0;
+
 public:
     std::string_view Title;
     int Width, Height;

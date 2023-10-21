@@ -32,6 +32,8 @@ public:
      */
     void SetUp() noexcept;
 
+    void TearDown() noexcept;
+
     /**
      * @brief Update the simulation state of the world over a time step.
      * @param deltaTime The time step for the simulation.

@@ -40,4 +40,10 @@ public:
         Timer.Tick();
         World.Update(Timer.DeltaTime);
     };
+    virtual void TearDown()
+    {
+        BodyRefs.clear();
+        AllBodyData.clear();
+        World.TearDown();
+    };
 };

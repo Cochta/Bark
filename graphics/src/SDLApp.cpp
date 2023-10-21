@@ -33,11 +33,11 @@ void SDLApp::SetUp()
         return;
     }
 
-    //samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
-    //samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
+    samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
+    samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
     samples.push_back(UniquePtr<Forms>(new Forms()));
 
-    samples[0]->SetUp();
+    samples[_sampleIdx]->SetUp();
 }
 
 void SDLApp::TearDown() const noexcept
@@ -62,9 +62,30 @@ void SDLApp::Run() noexcept
     {
         while (SDL_PollEvent(&e))
         {
-            if (e.type == SDL_QUIT)
+            switch (e.type)
             {
-                quit = true;
+                case SDL_QUIT:
+                    quit = true;
+                    break;
+                case SDL_KEYUP:
+                    samples[_sampleIdx]->TearDown();
+                    switch (e.key.keysym.sym)
+                    {
+                        case SDLK_LEFT:
+                            if (_sampleIdx <= 0)
+                                _sampleIdx = samples.size() -1;
+                            else
+                                _sampleIdx--;
+                            break;
+                        case SDLK_RIGHT:
+                            if (_sampleIdx >= samples.size() -1)
+                                _sampleIdx = 0;
+                            else
+                                _sampleIdx++;
+                            break;
+                    }
+                            samples[_sampleIdx]->SetUp();
+                    break;
             }
         }
         SDL_GetMouseState(&MousePos.X, &MousePos.Y);
@@ -74,7 +95,7 @@ void SDLApp::Run() noexcept
         SDL_RenderClear(_renderer);
 
 
-        samples[0]->Update(); // the function pointer for the Sample Update
+        samples[_sampleIdx]->Update(); // the function pointer for the Sample Update
 
         DrawAllBodiesData();
 
@@ -153,16 +174,16 @@ void SDLApp::DrawAllBodiesData()
 {
     _vertices.clear();
     _indices.clear();
-    for (auto &bodyRef: samples[0]->BodyRefs)
+    for (auto &bodyRef: samples[_sampleIdx]->BodyRefs)
     {
-        auto &body = samples[0]->World.GetBody(bodyRef);
+        auto &body = samples[_sampleIdx]->World.GetBody(bodyRef);
         if (body.IsEnabled())
         {
-            BodyData bd = samples[0]->AllBodyData[bodyRef.Index];
+            BodyData bd = samples[_sampleIdx]->AllBodyData[bodyRef.Index];
             switch (bd.Shape.Type)
             {
                 case Math::ShapeType::Circle:
-                    DrawCircle(body.Position, bd.Shape.Circle->Radius(), 15, {
+                    DrawCircle(body.Position, bd.Shape.Circle->Radius(), 30, {
                             static_cast<Uint8>(bd.Color.r),
                             static_cast<Uint8>(bd.Color.g),
                             static_cast<Uint8>(bd.Color.b),
