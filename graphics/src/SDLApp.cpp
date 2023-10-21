@@ -33,9 +33,10 @@ void SDLApp::SetUp()
         return;
     }
 
+    samples.push_back(UniquePtr<Forms>(new Forms()));
     samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
     samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
-    samples.push_back(UniquePtr<Forms>(new Forms()));
+
 
     samples[_sampleIdx]->SetUp();
 }
@@ -94,7 +95,7 @@ void SDLApp::Run() noexcept
         SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         SDL_RenderClear(_renderer);
 
-
+        samples[_sampleIdx]->GetMousePos(static_cast<Math::Vec2F>(MousePos));
         samples[_sampleIdx]->Update(); // the function pointer for the Sample Update
 
         DrawAllBodiesData();

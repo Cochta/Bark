@@ -13,7 +13,7 @@ class TriggerSample : public Sample
     static constexpr std::size_t CIRCLE_NBR = 103;
     static constexpr float SPEED = 50;
 
-    std::vector<ColliderRef> ColRefs;
+
 
     void SetUp() override
     {
@@ -62,7 +62,7 @@ class TriggerSample : public Sample
 
     void TearDown() override
     {
-        ColRefs.clear();
+
         Sample::TearDown();
 
     }

@@ -39,16 +39,21 @@ void World::Update(float deltaTime) noexcept
     for (auto &col1: _colliders)
     {
         if (!col1.IsAttached) continue;
-
-        col1.ColShape->Circle->SetCenter(GetBody(col1.BodyRef).Position);
+        switch (col1.ColShape->Type)
+        {
+            case Math::ShapeType::Circle:
+                col1.ColShape->Circle->SetCenter(GetBody(col1.BodyRef).Position);
+                break;
+        }
+        //col1.ColShape->Polygon->SetVertices(col1.BodyRef)
 
         if (!col1.IsSensor) continue;
 
         for (auto &col2: _colliders)
         {
+            if (col1.BodyRef == col2.BodyRef) continue;
             if (!col2.IsAttached) continue;
             if (!col1.IsSensor) continue;
-            if (col1.BodyRef == col2.BodyRef) continue;
 
             if (_colPairs.find({col1, col2}) != _colPairs.end())
             {

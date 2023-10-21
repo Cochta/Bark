@@ -39,7 +39,7 @@ TEST_F(WorldTest, UpdateTest) {
 
     world.Update();
 
-    auto acceleration = (initialForce / body.Mass) * world.Timer.DeltaTime;
+    auto acceleration = (initialForce / body.Mass) * world._timer.DeltaTime;
     EXPECT_EQ(body.Velocity, initialVelocity + acceleration);
     EXPECT_FLOAT_EQ(body.Position.X, Vec2F(initialPosition + (initialVelocity + acceleration * world.Timer.DeltaTime)).X);
     EXPECT_FLOAT_EQ(body.Position.Y, Vec2F(initialPosition + (initialVelocity + acceleration * world.Timer.DeltaTime)).Y);

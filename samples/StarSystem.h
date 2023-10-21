@@ -8,7 +8,7 @@ class StarSystem : public Sample
 public:
 
     static constexpr float G = 6.67f;
-    static constexpr std::size_t PLANET_NBR = 1000;
+    static constexpr std::size_t PLANET_NBR = 100;
     BodyRef SUN_REF;
 
     void SetUp() override

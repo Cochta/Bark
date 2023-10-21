@@ -21,29 +21,49 @@ struct BodyData // for sdl to draw
 
 class Sample
 {
+protected:
+
+    Timer _timer;
+
+    Math::Vec2F _mousePos;
+
 public:
     World World;
-    Timer Timer;
 
     std::vector<BodyRef> BodyRefs;
+    std::vector<ColliderRef> ColRefs;
     std::vector<BodyData> AllBodyData;
+
 
     virtual void SetUp()
     {
-        Timer.SetUp();
+        _timer.SetUp();
         World.SetUp();
-
     };
 
     virtual void Update()
     {
-        Timer.Tick();
-        World.Update(Timer.DeltaTime);
+        _timer.Tick();
+        World.Update(_timer.DeltaTime);
     };
+
     virtual void TearDown()
     {
         BodyRefs.clear();
         AllBodyData.clear();
+        ColRefs.clear();
         World.TearDown();
+
     };
+
+    virtual void PerformAction() // todo
+    {
+
+    }
+
+    virtual void GetMousePos(Math::Vec2F mousePos) // todo
+    {
+        _mousePos = mousePos;
+    }
+
 };
