@@ -40,36 +40,41 @@ public:
         _triggerNbr++;
     }
 
+    void OnTriggerExit() noexcept
+    {
+        _triggerNbr--;
+    }
+
     std::size_t operator()(const Collider &collider) const
     {
-        // Implement a custom hash function for Collider here.
-        // You can combine the hash values of its members.
-        // For example, if Collider has an int member called id:
         return std::hash<int>{}(collider.ID);
     }
 };
 
-//struct ColliderPair
-//{
-//    Collider ColA;
-//    Collider ColB;
-//
-//    bool operator==(const ColliderPair &other) const
-//    {
-//        return (ColA == other.ColA && ColB == other.ColB) || (ColA == other.ColB && ColB == other.ColA);
-//    }
-//};
-//
-//// Implement a hash function for ColliderPair
-//struct ColliderPairHash
-//{
-//    std::size_t operator()(const ColliderPair &pair) const
-//    {
-//        // You should combine the hash values of ColA and ColB.
-//        std::size_t hashA = std::hash<Collider>{}(pair.ColA);
-//        std::size_t hashB = std::hash<Collider>{}(pair.ColB);
-//
-//        // XOR the two hash values to combine them.
-//        return hashA ^ hashB;
-//    }
-//};
+struct ColliderPair
+{
+    Collider ColA;
+    Collider ColB;
+};
+
+struct ColliderPairHash
+{
+    std::size_t operator()(const ColliderPair &pair) const
+    {
+        std::size_t hashA = Collider{}(pair.ColA);
+
+        std::size_t hashB = Collider{}(pair.ColB);
+
+        //XOR SAMER
+        return hashA ^ hashB;
+    }
+};
+
+struct ColliderPairEqual
+{
+    bool operator()(const ColliderPair &a, const ColliderPair &b) const
+    {
+        // Implement your own equality comparison logic for ColliderPair
+        return ColliderPairHash{}(a) == ColliderPairHash{}(b);
+    }
+};

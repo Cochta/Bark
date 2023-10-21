@@ -23,26 +23,39 @@ void World::Update(float deltaTime) noexcept
         body.Position += body.Velocity * deltaTime;
 
         body.ResetForce();
+
     }
     for (auto &col1: _colliders)
     {
-        if (!col1.IsAttached)
-            continue;
+        if (!col1.IsAttached) continue;
 
         col1.ColShape->Circle->SetCenter(GetBody(col1.BodyRef).Position);
+
+        if (!col1.IsSensor) continue;
+
         for (auto &col2: _colliders)
         {
-            if (!col2.IsAttached)
+            if (!col2.IsAttached) continue;
+            if (!col1.IsSensor) continue;
+            if (col1.BodyRef == col2.BodyRef) continue;
+
+            if (_colPairs.find({col1, col2}) != _colPairs.end())
+            {
+                if (!Overlap(col1, col2))
+                {
+                    col1.OnTriggerExit();
+                    col2.OnTriggerExit();
+                    _colPairs.erase({col1, col2});
+                }
                 continue;
-            if (col1.BodyRef == col2.BodyRef)
-                continue;
+            }
 
             if (Overlap(col1, col2))
             {
                 col1.OnTriggerEnter();
                 col2.OnTriggerEnter();
+                _colPairs.insert({col1, col2});
             }
-
         }
     }
 }
@@ -94,7 +107,7 @@ void World::DestroyBody(BodyRef bodyRef)
 
 ColliderRef World::CreateCollider(BodyRef bodyRef) noexcept
 {
-    _colliderIdCount ++;
+    _colliderIdCount++;
     auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider &collider)
     {
         return !collider.IsAttached; // Get first Disabled collider
@@ -144,7 +157,7 @@ void World::DestroyCollider(ColliderRef colRef)
     _colliders[colRef.Index].IsAttached = false;
 }
 
-bool World::Overlap(Collider &colA, Collider &colB)
+bool World::Overlap(const Collider &colA, const Collider &colB) const
 {
     bool DoesOverlap = false;
     switch (colA.ColShape->Type)

@@ -5,16 +5,20 @@
 
 #include "StarSystem.h"
 #include "TriggerSample.h"
+#include "Forms.h"
 
-void SDLApp::SetUp() {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+void SDLApp::SetUp()
+{
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
         // Handle SDL initialization error
         SDL_Log("SDL_Init Error: %s", SDL_GetError());
         return;
     }
     SDLApp::_window = SDL_CreateWindow(Title.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height,
                                        SDL_WINDOW_SHOWN);
-    if (_window == nullptr) {
+    if (_window == nullptr)
+    {
         // Handle window creation error
         SDL_Log("SDL_CreateWindow Error: %s", SDL_GetError());
         return;
@@ -22,34 +26,44 @@ void SDLApp::SetUp() {
 
 
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (_renderer == nullptr) {
+    if (_renderer == nullptr)
+    {
         // Handle renderer creation error
         SDL_Log("SDL_CreateRenderer Error: %s", SDL_GetError());
         return;
     }
 
-    samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
-    samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
+    //samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
+    //samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
+    samples.push_back(UniquePtr<Forms>(new Forms()));
+
     samples[0]->SetUp();
 }
 
-void SDLApp::TearDown() const {
-    if (_renderer != nullptr) {
+void SDLApp::TearDown() const noexcept
+{
+    if (_renderer != nullptr)
+    {
         SDL_DestroyRenderer(_renderer);
     }
-    if (_window != nullptr) {
+    if (_window != nullptr)
+    {
         SDL_DestroyWindow(_window);
     }
     SDL_Quit();
 }
 
-void SDLApp::Run() {
+void SDLApp::Run() noexcept
+{
     bool quit = false;
     SDL_Event e;
 
-    while (!quit) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
+    while (!quit)
+    {
+        while (SDL_PollEvent(&e))
+        {
+            if (e.type == SDL_QUIT)
+            {
                 quit = true;
             }
         }
@@ -62,27 +76,29 @@ void SDLApp::Run() {
 
         samples[0]->Update(); // the function pointer for the Sample Update
 
-        DrawAllBodies();
+        DrawAllBodiesData();
 
         // Present the renderer
         SDL_RenderPresent(_renderer);
     }
 }
 
-void SDLApp::DrawCircle(const Body &b, float radius, int segments, SDL_Color col) {
-
+void SDLApp::DrawCircle(const Math::Vec2F center, const float radius, const int segments, const SDL_Color &col) noexcept
+{
     auto offset = _vertices.size();
 
     // Calculate vertices for the Circle
-    for (int i = 0; i < segments; ++i) {
+    for (int i = 0; i < segments; ++i)
+    {
         auto angle = Math::Radian(2.f * Math::Pi * static_cast<float>(i) / static_cast<float>(segments));
-        float x = b.Position.X + radius * Math::Cos(angle);
-        float y = b.Position.Y + radius * Math::Sin(angle);
+        float x = center.X + radius * Math::Cos(angle);
+        float y = center.Y + radius * Math::Sin(angle);
         _vertices.push_back({{x, y}, col, {1.0f, 1.0f}});
     }
 
     // Calculate indices to create triangles for filling the Circle
-    for (int i = 0; i < segments - 1; ++i) {
+    for (int i = 0; i < segments - 1; ++i)
+    {
         _indices.push_back(offset); // Center point
         _indices.push_back(offset + i);
         _indices.push_back(offset + i + 1);
@@ -90,23 +106,83 @@ void SDLApp::DrawCircle(const Body &b, float radius, int segments, SDL_Color col
     _indices.push_back(offset); // Center point
     _indices.push_back(offset + segments - 1);
     _indices.push_back(offset);  // Connect the last vertex to the center
-
-
 }
 
-void SDLApp::DrawAllBodies() {
+void SDLApp::DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBound, const SDL_Color &col) noexcept
+{
+    auto offset = _vertices.size();
+
+    _vertices.push_back({{minBound.X, minBound.Y}, col, {1.0f, 1.0f}});
+    _vertices.push_back({{maxBound.X, minBound.Y}, col, {1.0f, 1.0f}});
+    _vertices.push_back({{minBound.X, maxBound.Y}, col, {1.0f, 1.0f}});
+    _vertices.push_back({{maxBound.X, maxBound.Y}, col, {1.0f, 1.0f}});
+
+    _indices.push_back(offset);                 // Top left vertex
+    _indices.push_back(offset + 1);             // Top right vertex
+    _indices.push_back(offset + 2);             // Bottom left vertex
+    _indices.push_back(offset + 2);             // Bottom left vertex
+    _indices.push_back(offset + 1);             // Top right vertex
+    _indices.push_back(offset + 3);             // Bottom right vertex
+}
+
+void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col)
+{
+    if (vertices.size() < 3) return; // todo exeption
+
+    auto offset = _vertices.size();
+
+    for (const Math::Vec2F &v: vertices)
+    {
+        _vertices.push_back({{v.X, v.Y}, col, {1.0f, 1.0f}});
+    }
+
+    for (int i = 1; i < vertices.size() - 1; ++i)
+    {
+        _indices.push_back(offset);
+        _indices.push_back(offset + i);
+        _indices.push_back(offset + i + 1);
+    }
+
+    // Connect the last vertex to the first vertex to close the polygon.
+    _indices.push_back(offset);
+    _indices.push_back(offset + vertices.size() - 1);
+    _indices.push_back(offset + 1);
+}
+
+void SDLApp::DrawAllBodiesData()
+{
     _vertices.clear();
     _indices.clear();
-    for (auto &bodyRef: samples[0]->BodyRefs) {
+    for (auto &bodyRef: samples[0]->BodyRefs)
+    {
         auto &body = samples[0]->World.GetBody(bodyRef);
-        if (body.IsEnabled()) {
+        if (body.IsEnabled())
+        {
             BodyData bd = samples[0]->AllBodyData[bodyRef.Index];
-
-            DrawCircle(body, bd.Radius, 15, {
-                    static_cast<Uint8>(bd.Color.r),
-                    static_cast<Uint8>(bd.Color.g),
-                    static_cast<Uint8>(bd.Color.b),
-                    static_cast<Uint8>(bd.Color.a)});
+            switch (bd.Shape.Type)
+            {
+                case Math::ShapeType::Circle:
+                    DrawCircle(body.Position, bd.Shape.Circle->Radius(), 15, {
+                            static_cast<Uint8>(bd.Color.r),
+                            static_cast<Uint8>(bd.Color.g),
+                            static_cast<Uint8>(bd.Color.b),
+                            static_cast<Uint8>(bd.Color.a)});
+                    break;
+                case Math::ShapeType::Rectangle:
+                    DrawRectangle(bd.Shape.Rectangle->MinBound(), bd.Shape.Rectangle->MaxBound(), {
+                            static_cast<Uint8>(bd.Color.r),
+                            static_cast<Uint8>(bd.Color.g),
+                            static_cast<Uint8>(bd.Color.b),
+                            static_cast<Uint8>(bd.Color.a)});
+                    break;
+                case Math::ShapeType::Polygon:
+                    DrawPolygon(bd.Shape.Polygon->Vertices(), {
+                            static_cast<Uint8>(bd.Color.r),
+                            static_cast<Uint8>(bd.Color.g),
+                            static_cast<Uint8>(bd.Color.b),
+                            static_cast<Uint8>(bd.Color.a)});
+                    break;
+            }
         }
     }
     SDL_RenderGeometry(_renderer, nullptr, _vertices.data(), _vertices.size(), _indices.data(), _indices.size());

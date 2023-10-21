@@ -16,7 +16,7 @@ private:
 
     int _colliderIdCount = 0;
 
-    //std::unordered_set<ColliderPair> _colPairs;
+    std::unordered_set<ColliderPair, ColliderPairHash, ColliderPairEqual> _colPairs;
 
 public:
     std::vector<size_t> BodyGenIndices;
@@ -62,6 +62,7 @@ public:
     [[nodiscard]] Collider &GetCollider(ColliderRef colRef);
 
     void DestroyCollider(ColliderRef colRef);
-    static bool Overlap(Collider& colA, Collider& colB);
+
+    bool Overlap(const Collider& colA, const Collider& colB) const;
 
 };

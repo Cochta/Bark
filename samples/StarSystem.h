@@ -1,18 +1,18 @@
-//
-// Created by const on 18/10/2023.
-//
 #pragma once
 
 #include "Sample.h"
 #include "Random.h"
 
-class StarSystem : public Sample {
+class StarSystem : public Sample
+{
 public:
 
     static constexpr float G = 6.67f;
-    static constexpr std::size_t planetNbr = 1000;
+    static constexpr std::size_t PLANET_NBR = 30000;
+    BodyRef SUN_REF;
 
-    void SetUp() override {
+    void SetUp() override
+    {
         Sample::SetUp();
         auto sunRef = World.CreateBody();
         auto &sun = World.GetBody(sunRef);
@@ -20,14 +20,17 @@ public:
         sun.Mass = 1000000;
 
         BodyRefs.push_back(sunRef);
-        BodyData sbd{BodyType::Sun,
-                     Metrics::MetersToPixels(0.03),
-                     {255, 255, 0, 255}};
+        SUN_REF = sunRef;
+        BodyData sbd;
+        sbd.Shape.Type = Math::ShapeType::Circle;
+        sbd.Shape.Circle = new Math::Circle(sun.Position, Metrics::MetersToPixels(0.03));
+        sbd.Color = {255, 255, 0, 255};
         AllBodyData.push_back(sbd);
 
         const auto copiedSun = sun;
 
-        for (std::size_t i = 0; i < planetNbr; ++i) {
+        for (std::size_t i = 0; i < PLANET_NBR; ++i)
+        {
             // Engine
             auto bodyRef = World.CreateBody();
             auto &body = World.GetBody(bodyRef);
@@ -35,25 +38,31 @@ public:
                              Math::Random::Range(100.f, Metrics::Height - 100.f)};
             auto r = copiedSun.Position - body.Position;
             auto v = sqrt(G * (copiedSun.Mass / r.Length()));
-            body.Velocity = Math::Vec2F(-r.Y, r.X).Normalized()* v;
+            body.Velocity = Math::Vec2F(-r.Y, r.X).Normalized() * v;
             body.Mass = 10.f;
 
             // Graphics
             BodyRefs.push_back(bodyRef);
-            BodyData pbd{BodyType::Planet,
-                         Math::Random::Range(
-                                 Metrics::MetersToPixels(0.05f),
-                                 Metrics::MetersToPixels(0.15f)),
-                         {
-                                 Math::Random::Range(0, 255),
-                                 Math::Random::Range(0, 255),
-                                 Math::Random::Range(0, 255),
-                                 255}};
+            BodyData pbd;
+            pbd.Shape.Type = Math::ShapeType::Circle;
+            pbd.Shape.Circle = new Math::Circle(body.Position,
+                                                Math::Random::Range(
+                                                        Metrics::MetersToPixels(0.05f),
+                                                        Metrics::MetersToPixels(0.15f)));
+            pbd.Color = {
+                    Math::Random::Range(0, 255),
+                    Math::Random::Range(0, 255),
+                    Math::Random::Range(0, 255),
+                    255};
+
             AllBodyData.push_back(pbd);
         }
     }
 
-    static void CalculateGravitationalForce(const Body &sun, Body &body) {
+    static
+
+    void CalculateGravitationalForce(const Body &sun, Body &body)
+    {
         auto m1m2 = sun.Mass * body.Mass;
         auto r = (sun.Position - body.Position).Length();
         auto r2 = r * r;
@@ -64,27 +73,20 @@ public:
         body.ApplyForce(force);
     }
 
-    BodyRef FindSunRef() {
-        auto itSun = std::find_if(AllBodyData.begin(), AllBodyData.end(),
-                                  [](const BodyData &bd) { return bd.Type == BodyType::Sun; });
+    void Update()
 
-        auto idx = std::distance(AllBodyData.begin(), itSun);
-        return BodyRefs[idx];
-    }
+    override
+    {
+        auto &sun = World.GetBody(SUN_REF);
 
-    void Update() override {
-        auto sunRef = FindSunRef();
-
-        auto &sun = World.GetBody(sunRef);
-
-        for (auto &bodyRef: BodyRefs) {
-            if (bodyRef == sunRef) {
-                continue; // Skip the Sun
-            }
+        for (auto &bodyRef: BodyRefs)
+        {
+            if (bodyRef == SUN_REF) continue; // Skip the Sun
 
             auto &body = World.GetBody(bodyRef);
             CalculateGravitationalForce(sun, body);
         }
+
         Sample::Update();
     }
 };

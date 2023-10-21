@@ -9,7 +9,8 @@
 #include "UniquePtr.h"
 
 
-class SDLApp {
+class SDLApp
+{
 private:
     SDL_Window *_window{};
     SDL_Renderer *_renderer{};
@@ -24,7 +25,8 @@ public:
 
     std::vector<UniquePtr<Sample>> samples;
 
-    SDLApp(std::string_view title, int width, int height) : _window(nullptr), _renderer(nullptr) {
+    SDLApp(std::string_view title, int width, int height) : _window(nullptr), _renderer(nullptr)
+    {
         Width = width;
         Height = height;
         Title = title;
@@ -32,13 +34,15 @@ public:
 
     void SetUp();
 
-    void TearDown() const;
+    void TearDown() const noexcept;
 
-    void Run();
+    void Run() noexcept;
 
-    void DrawCircle(const Body &c, float radius, int segments, SDL_Color col);
+    void DrawCircle(const Math::Vec2F center, const float radius, const int segments, const SDL_Color &col) noexcept;
 
-    void DrawAllBodies();
+    void DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBound, const SDL_Color &col) noexcept;
 
+    void DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col);
 
+    void DrawAllBodiesData();
 };
