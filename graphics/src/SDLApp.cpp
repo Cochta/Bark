@@ -33,9 +33,10 @@ void SDLApp::SetUp()
         return;
     }
 
-    samples.push_back(UniquePtr<Forms>(new Forms()));
+
     samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
     samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
+    samples.push_back(UniquePtr<Forms>(new Forms()));
 
 
     samples[_sampleIdx]->SetUp();
@@ -74,18 +75,18 @@ void SDLApp::Run() noexcept
                     {
                         case SDLK_LEFT:
                             if (_sampleIdx <= 0)
-                                _sampleIdx = samples.size() -1;
+                                _sampleIdx = samples.size() - 1;
                             else
                                 _sampleIdx--;
                             break;
                         case SDLK_RIGHT:
-                            if (_sampleIdx >= samples.size() -1)
+                            if (_sampleIdx >= samples.size() - 1)
                                 _sampleIdx = 0;
                             else
                                 _sampleIdx++;
                             break;
                     }
-                            samples[_sampleIdx]->SetUp();
+                    samples[_sampleIdx]->SetUp();
                     break;
             }
         }
@@ -184,18 +185,19 @@ void SDLApp::DrawAllBodiesData()
             switch (bd.Shape.Type)
             {
                 case Math::ShapeType::Circle:
-                    DrawCircle(body.Position, bd.Shape.Circle->Radius(), 30, {
+                    DrawCircle(bd.Shape.Circle->Center() + body.Position, bd.Shape.Circle->Radius(), 30, {
                             static_cast<Uint8>(bd.Color.r),
                             static_cast<Uint8>(bd.Color.g),
                             static_cast<Uint8>(bd.Color.b),
                             static_cast<Uint8>(bd.Color.a)});
                     break;
                 case Math::ShapeType::Rectangle:
-                    DrawRectangle(bd.Shape.Rectangle->MinBound(), bd.Shape.Rectangle->MaxBound(), {
-                            static_cast<Uint8>(bd.Color.r),
-                            static_cast<Uint8>(bd.Color.g),
-                            static_cast<Uint8>(bd.Color.b),
-                            static_cast<Uint8>(bd.Color.a)});
+                    DrawRectangle(bd.Shape.Rectangle->MinBound() + body.Position,
+                                  bd.Shape.Rectangle->MaxBound() + body.Position, {
+                                          static_cast<Uint8>(bd.Color.r),
+                                          static_cast<Uint8>(bd.Color.g),
+                                          static_cast<Uint8>(bd.Color.b),
+                                          static_cast<Uint8>(bd.Color.a)});
                     break;
                 case Math::ShapeType::Polygon:
                     DrawPolygon(bd.Shape.Polygon->Vertices(), {

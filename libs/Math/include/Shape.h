@@ -10,7 +10,7 @@ namespace Math
         Circle, Rectangle, Polygon
     };
 
-    template <typename T>
+    template<typename T>
     class Circle
     {
     public:
@@ -19,18 +19,25 @@ namespace Math
          * @param center _center of the Circle, also the position of the Circle
          * @param radius _radius of the Circle, if negative, it will be converted to its positive value
          */
-        constexpr Circle(Vec2<T> center, T radius) noexcept : _center(center), _radius(Math::Abs(radius)) {}
+        constexpr Circle(Vec2<T> center, T radius) noexcept: _center(center), _radius(Math::Abs(radius))
+        {}
 
     private:
         Vec2<T> _center = Vec2<T>::Zero();
         T _radius = 0;
 
     public:
-        [[nodiscard]] constexpr Vec2<T> Center() const noexcept { return _center; }
-        [[nodiscard]] constexpr T Radius() const noexcept { return _radius; }
+        [[nodiscard]] constexpr Vec2<T> Center() const noexcept
+        { return _center; }
 
-        void SetCenter(Vec2<T> center) noexcept { _center = center; }
-        void SetRadius(T radius) noexcept { _radius = Math::Abs(radius); }
+        [[nodiscard]] constexpr T Radius() const noexcept
+        { return _radius; }
+
+        void SetCenter(Vec2<T> center) noexcept
+        { _center = center; }
+
+        void SetRadius(T radius) noexcept
+        { _radius = Math::Abs(radius); }
 
         /**
          * @brief Check if the Circle contains a point
@@ -46,7 +53,7 @@ namespace Math
     using CircleF = Circle<float>;
     using CircleI = Circle<int>;
 
-    template <typename T>
+    template<typename T>
     class Rectangle
     {
     public:
@@ -55,18 +62,25 @@ namespace Math
          * @param position the position of the Rectangle
          * @param size the size of the Rectangle
          */
-        constexpr Rectangle(Vec2<T> minBound, Vec2<T> maxBound) noexcept : _minBound(minBound), _maxBound(maxBound) {}
+        constexpr Rectangle(Vec2<T> minBound, Vec2<T> maxBound) noexcept: _minBound(minBound), _maxBound(maxBound)
+        {}
 
     private:
         Vec2<T> _minBound = Vec2<T>::Zero();
         Vec2<T> _maxBound = Vec2<T>::Zero();
 
     public:
-        [[nodiscard]] constexpr Vec2<T> MinBound() const noexcept { return _minBound; }
-        [[nodiscard]] constexpr Vec2<T> MaxBound() const noexcept { return _maxBound; }
+        [[nodiscard]] constexpr Vec2<T> MinBound() const noexcept
+        { return _minBound; }
 
-        void SetMinBound(Vec2<T> minBound) noexcept { _minBound = minBound; }
-        void SetMaxBound(Vec2<T> maxBound) noexcept { _maxBound = maxBound; }
+        [[nodiscard]] constexpr Vec2<T> MaxBound() const noexcept
+        { return _maxBound; }
+
+        void SetMinBound(Vec2<T> minBound) noexcept
+        { _minBound = minBound; }
+
+        void SetMaxBound(Vec2<T> maxBound) noexcept
+        { _maxBound = maxBound; }
 
         /**
          * @brief Check if the Rectangle contains a point
@@ -95,7 +109,7 @@ namespace Math
     using RectangleF = Rectangle<float>;
     using RectangleI = Rectangle<int>;
 
-    template <typename T>
+    template<typename T>
     class Polygon
     {
     public:
@@ -103,22 +117,27 @@ namespace Math
          * @brief Construct a new Polygon object
          * @param vertices the vertices of the Polygon
          */
-        constexpr Polygon(std::vector<Vec2<T>> vertices) noexcept : _vertices(vertices) {}
+        constexpr Polygon(std::vector<Vec2<T>> vertices) noexcept: _vertices(vertices)
+        {}
 
     private:
         std::vector<Vec2<T>> _vertices;
 
     public:
-        [[nodiscard]] constexpr std::vector<Vec2<T>> Vertices() const noexcept { return _vertices; }
-        [[nodiscard]] constexpr int VerticesCount() const noexcept { return _vertices.size(); }
+        [[nodiscard]] constexpr std::vector<Vec2<T>> Vertices() const noexcept
+        { return _vertices; }
 
-        void SetVertices(std::vector<Vec2<T>> vertices) noexcept { _vertices = vertices; }
+        [[nodiscard]] constexpr int VerticesCount() const noexcept
+        { return _vertices.size(); }
+
+        void SetVertices(std::vector<Vec2<T>> vertices) noexcept
+        { _vertices = vertices; }
 
         [[nodiscard]] constexpr Vec2<T> Center() const noexcept
         {
             Vec2<T> center = Vec2<T>::Zero();
 
-            for (const auto& vertex : _vertices)
+            for (const auto &vertex: _vertices)
             {
                 center += vertex;
             }
@@ -131,7 +150,7 @@ namespace Math
             Vec2<T> minBound = Vec2<T>::Zero();
             Vec2<T> maxBound = Vec2<T>::Zero();
 
-            for (const auto& vertex : _vertices)
+            for (const auto &vertex: _vertices)
             {
                 minBound.X = Math::Min(minBound.X, vertex.X);
                 minBound.Y = Math::Min(minBound.Y, vertex.Y);
@@ -161,13 +180,17 @@ namespace Math
     template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Rectangle<T> rectangle1, const Rectangle<T> rectangle2) noexcept
     {
-        if (rectangle1.MaxBound().X < rectangle2.MinBound().X || rectangle1.MinBound().X > rectangle2.MaxBound().X) return false;
-        if (rectangle1.MaxBound().Y < rectangle2.MinBound().Y || rectangle1.MinBound().Y > rectangle2.MaxBound().Y) return false;
+        if (rectangle1.MaxBound().X < rectangle2.MinBound().X ||
+            rectangle1.MinBound().X > rectangle2.MaxBound().X)
+            return false;
+        if (rectangle1.MaxBound().Y < rectangle2.MinBound().Y ||
+            rectangle1.MinBound().Y > rectangle2.MaxBound().Y)
+            return false;
 
         return true;
     }
 
-    template <typename T>
+    template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Rectangle<T> rectangle, const Circle<T> circle) noexcept
     {
         const auto center = circle.Center();
@@ -193,13 +216,13 @@ namespace Math
 
         // Check circles at Rectangle corners
         const auto corners = {
-            minBound,
-            maxBound,
-            Vec2<T>(minBound.X, maxBound.Y),
-            Vec2<T>(maxBound.X, minBound.Y)
+                minBound,
+                maxBound,
+                Vec2<T>(minBound.X, maxBound.Y),
+                Vec2<T>(maxBound.X, minBound.Y)
         };
 
-        for (const auto& corner : corners)
+        for (const auto &corner: corners)
         {
             if (circle.Contains(corner)) return true;
         }
@@ -207,13 +230,13 @@ namespace Math
         return false;
     }
 
-    template <typename T>
+    template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Circle<T> circle, const Rectangle<T> rectangle) noexcept
     {
         return Intersect(rectangle, circle);
     }
 
-    template <typename T>
+    template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Polygon<T> polygon1, const Polygon<T> polygon2) noexcept
     {
         // Separate axis theorem
@@ -229,14 +252,14 @@ namespace Math
             Vec2<T> projection1 = Vec2<T>(startProjection1, startProjection1);
             Vec2<T> projection2 = Vec2<T>(startProjection2, startProjection2);
 
-            for (const auto& vertex : polygon1.Vertices())
+            for (const auto &vertex: polygon1.Vertices())
             {
                 const auto projection = vertex.Dot(normal);
 
                 projection1 = Vec2<T>(Math::Min(projection1.X, projection), Math::Max(projection1.Y, projection));
             }
 
-            for (const auto& vertex : polygon2.Vertices())
+            for (const auto &vertex: polygon2.Vertices())
             {
                 const auto projection = vertex.Dot(normal);
 
@@ -258,14 +281,14 @@ namespace Math
             Vec2<T> projection1 = Vec2<T>(startProjection1, startProjection1);
             Vec2<T> projection2 = Vec2<T>(startProjection2, startProjection2);
 
-            for (const auto& vertex : polygon1.Vertices())
+            for (const auto &vertex: polygon1.Vertices())
             {
                 const auto projection = vertex.Dot(normal);
 
                 projection1 = Vec2<T>(Math::Min(projection1.X, projection), Math::Max(projection1.Y, projection));
             }
 
-            for (const auto& vertex : polygon2.Vertices())
+            for (const auto &vertex: polygon2.Vertices())
             {
                 const auto projection = vertex.Dot(normal);
 
@@ -278,7 +301,7 @@ namespace Math
         return true;
     }
 
-    template <typename T>
+    template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Polygon<T> polygon, const Circle<T> circle) noexcept
     {
         const auto center = circle.Center();
@@ -296,7 +319,7 @@ namespace Math
             Vec2<T> projection1 = Vec2<T>(startProjection1, startProjection1);
             Vec2<T> projection2 = Vec2<T>(startProjection2, startProjection2);
 
-            for (const auto& vertex : polygon.Vertices())
+            for (const auto &vertex: polygon.Vertices())
             {
                 const auto projection = vertex.Dot(normal);
 
@@ -311,7 +334,7 @@ namespace Math
         }
 
         // Check if any of the vertices of the Polygon is inside the Circle
-        for (const auto& vertex : polygon.Vertices())
+        for (const auto &vertex: polygon.Vertices())
         {
             if (circle.Contains(vertex)) return true;
         }
@@ -334,26 +357,26 @@ namespace Math
         return false;
     }
 
-    template <typename T>
+    template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Circle<T> circle, const Polygon<T> polygon) noexcept
     {
         return Intersect(polygon, circle);
     }
 
-    template <typename T>
+    template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Polygon<T> polygon, const Rectangle<T> rectangle) noexcept
     {
         Polygon<T> rectToPolygon = Polygon<T>({
-            rectangle.MinBound(),
-            Vec2<T>(rectangle.MinBound().X, rectangle.MaxBound().Y),
-            rectangle.MaxBound(),
-            Vec2<T>(rectangle.MaxBound().X, rectangle.MinBound().Y)
-        });
+                                                      rectangle.MinBound(),
+                                                      Vec2<T>(rectangle.MinBound().X, rectangle.MaxBound().Y),
+                                                      rectangle.MaxBound(),
+                                                      Vec2<T>(rectangle.MaxBound().X, rectangle.MinBound().Y)
+                                              });
 
         return Intersect(polygon, rectToPolygon);
     }
 
-    template <typename T>
+    template<typename T>
     [[nodiscard]] constexpr bool Intersect(const Rectangle<T> rectangle, const Polygon<T> polygon) noexcept
     {
         return Intersect(polygon, rectangle);

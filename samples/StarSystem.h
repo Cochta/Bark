@@ -8,7 +8,7 @@ class StarSystem : public Sample
 public:
 
     static constexpr float G = 6.67f;
-    static constexpr std::size_t PLANET_NBR = 100;
+    static constexpr std::size_t PLANET_NBR = 1000;
     BodyRef SUN_REF;
 
     void SetUp() override
@@ -23,7 +23,7 @@ public:
         SUN_REF = sunRef;
         BodyData sbd;
         sbd.Shape.Type = Math::ShapeType::Circle;
-        sbd.Shape.Circle = new Math::Circle(sun.Position, Metrics::MetersToPixels(0.03));
+        sbd.Shape.Circle = new Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
         sbd.Color = {255, 255, 0, 255};
         AllBodyData.push_back(sbd);
 
@@ -45,7 +45,7 @@ public:
             BodyRefs.push_back(bodyRef);
             BodyData pbd;
             pbd.Shape.Type = Math::ShapeType::Circle;
-            pbd.Shape.Circle = new Math::Circle(body.Position,
+            pbd.Shape.Circle = new Math::Circle(Math::Vec2F::Zero(),
                                                 Math::Random::Range(
                                                         Metrics::MetersToPixels(0.05f),
                                                         Metrics::MetersToPixels(0.15f)));
@@ -79,11 +79,11 @@ public:
     {
         auto &sun = World.GetBody(SUN_REF);
 
-        for (auto &bodyRef: BodyRefs)
+        for (auto BodyRef : BodyRefs)
         {
-            if (bodyRef == SUN_REF) continue; // Skip the Sun
+            if (BodyRef == SUN_REF) continue; // Skip the Sun
 
-            auto &body = World.GetBody(bodyRef);
+            auto &body = World.GetBody(BodyRef);
             CalculateGravitationalForce(sun, body);
         }
 

@@ -8,10 +8,12 @@ class Forms : public Sample
 public:
 
     BodyRef mouseBodyRef;
-    ColliderRef mouseColRef;
+    std::vector<Math::Vec2F> Vertices;
     void SetUp() override
     {
         Sample::SetUp();
+
+       World.SetContactListener(new TriggerListener);
 
         auto polRef = World.CreateBody();
         auto &pol = World.GetBody(polRef);
@@ -25,17 +27,7 @@ public:
         colPol.ColShape = new Shape();
         colPol.ColShape->Type = Math::ShapeType::Polygon;
 
-        std::vector<Math::Vec2F> Vertices{{Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                                                  Math::Random::Range(100.f, Metrics::Height - 100.f)},
-                                          {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                                                  Math::Random::Range(100.f, Metrics::Height - 100.f)},
-                                          {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                                                  Math::Random::Range(100.f, Metrics::Height - 100.f)},
-                                          {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                                                  Math::Random::Range(100.f, Metrics::Height - 100.f)},
-                                          {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                                                  Math::Random::Range(100.f, Metrics::Height - 100.f)},
-                                          {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
+         Vertices = {{Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
                                                   Math::Random::Range(100.f, Metrics::Height - 100.f)},
                                           {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
                                                   Math::Random::Range(100.f, Metrics::Height - 100.f)},
@@ -51,16 +43,16 @@ public:
 
         auto rectRef = World.CreateBody();
         auto &rect = World.GetBody(rectRef);
-        rect.Position = {static_cast<float>(Metrics::Width) / 2, static_cast<float>(Metrics::Height) / 2};
+        rect.Position = Math::Vec2F::Zero();
 
         BodyRefs.push_back(rectRef);
 
-        auto colRefRect = World.CreateCollider(rectRef);// marche pas ptn
+        auto colRefRect = World.CreateCollider(rectRef);
         ColRefs.push_back(colRefRect);
         auto &colRect = World.GetCollider(colRefRect);
         colRect.ColShape = new Shape();
         colRect.ColShape->Type = Math::ShapeType::Rectangle;
-        colRect.ColShape->Rectangle = new Math::Rectangle(Math::Vec2F(15.f, 100.f), Math::Vec2F(200.f, 500.f));
+        colRect.ColShape->Rectangle = new Math::Rectangle(Math::Vec2F::Zero(), Math::Vec2F(200.f, 500.f));
 
         BodyData rbd;
         rbd.Shape.Type = colRect.ColShape->Type;
@@ -71,12 +63,13 @@ public:
         mouseBodyRef = World.CreateBody();
         BodyRefs.push_back(mouseBodyRef);
         auto &body1 = World.GetBody(mouseBodyRef);
-        mouseColRef = World.CreateCollider(mouseBodyRef);
+        body1.Position = {200.f, 700.f};
+        auto mouseColRef = World.CreateCollider(mouseBodyRef);
         ColRefs.push_back(mouseColRef);
         auto &mouseCol = World.GetCollider(mouseColRef);
         mouseCol.ColShape = new Shape();
         mouseCol.ColShape->Type = Math::ShapeType::Circle;
-        mouseCol.ColShape->Circle = new Math::Circle(body1.Position, Metrics::MetersToPixels(0.3f));
+        mouseCol.ColShape->Circle = new Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f));
 
         BodyData bd;
         bd.Shape.Type = mouseCol.ColShape->Type;
@@ -86,6 +79,8 @@ public:
 
     void Update() override
     {
+        //Vertices[0] = _mousePos;
+        //World.GetCollider(ColRefs[0]).ColShape->Polygon->SetVertices(Vertices);
         World.GetBody(mouseBodyRef).Position = _mousePos;
         for (int i = 0; i < ColRefs.size(); ++i)
         {

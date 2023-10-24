@@ -1,10 +1,8 @@
-//
-// Created by Coch on 10.10.2023.
-//
 #include "gtest/gtest.h"
 #include "Body.h"
 #include "Random.h"
 
+using namespace Math;
 
 struct BodyConstructorParams {
     Vec2F position;

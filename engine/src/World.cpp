@@ -12,6 +12,7 @@ void World::SetUp() noexcept
     _colliders.resize(initSize, Collider());
     ColliderGenIndices.resize(initSize, 0);
 }
+
 void World::TearDown() noexcept
 {
     _bodies.clear();
@@ -39,13 +40,21 @@ void World::Update(float deltaTime) noexcept
     for (auto &col1: _colliders)
     {
         if (!col1.IsAttached) continue;
-        switch (col1.ColShape->Type)
-        {
-            case Math::ShapeType::Circle:
-                col1.ColShape->Circle->SetCenter(GetBody(col1.BodyRef).Position);
-                break;
-        }
-        //col1.ColShape->Polygon->SetVertices(col1.BodyRef)
+
+//        switch (col1.ColShape->Type)
+//        {
+//            case Math::ShapeType::Circle:
+//                //col1.ColShape->Circle->SetCenter(GetBody(col1.BodyRef).Position);
+//                break;
+//            case Math::ShapeType::Rectangle:
+//                //col1.ColShape->Rectangle->
+//                break;
+//            case Math::ShapeType::Polygon:
+//                //col1.ColShape->Polygon->
+//                break;
+//        }
+
+        if (_contactListener == nullptr) continue;
 
         if (!col1.IsSensor) continue;
 
@@ -59,8 +68,7 @@ void World::Update(float deltaTime) noexcept
             {
                 if (!Overlap(col1, col2))
                 {
-                    col1.OnTriggerExit();
-                    col2.OnTriggerExit();
+                    _contactListener->EndContact(col1, col2);
                     _colPairs.erase({col1, col2});
                 }
                 continue;
@@ -68,8 +76,7 @@ void World::Update(float deltaTime) noexcept
 
             if (Overlap(col1, col2))
             {
-                col1.OnTriggerEnter();
-                col2.OnTriggerEnter();
+                _contactListener->BeginContact(col1, col2);
                 _colPairs.insert({col1, col2});
             }
         }
@@ -173,53 +180,62 @@ void World::DestroyCollider(ColliderRef colRef)
     _colliders[colRef.Index].IsAttached = false;
 }
 
-bool World::Overlap(const Collider &colA, const Collider &colB) const
+[[nodiscard]] bool World::Overlap(const Collider &colA, const Collider &colB)
 {
-    bool DoesOverlap = false;
     switch (colA.ColShape->Type)
     {
         case Math::ShapeType::Circle:
+        {
+            Math::Circle circle(colA.ColShape->Circle->Center() + GetBody(colA.BodyRef).Position,
+                                colA.ColShape->Circle->Radius());
             switch (colB.ColShape->Type)
             {
                 case Math::ShapeType::Circle:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Circle, *colB.ColShape->Circle);
-                    break;
+                    return Math::Intersect(circle, {
+                            colB.ColShape->Circle->Center() + GetBody(colB.BodyRef).Position,
+                            colB.ColShape->Circle->Radius()});
                 case Math::ShapeType::Rectangle:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Circle, *colB.ColShape->Rectangle);
-                    break;
+                    return Math::Intersect(circle, {
+                            colB.ColShape->Rectangle->MinBound() + GetBody(colB.BodyRef).Position,
+                            colB.ColShape->Rectangle->MaxBound() + GetBody(colB.BodyRef).Position});
                 case Math::ShapeType::Polygon:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Circle, *colB.ColShape->Polygon);
-                    break;
+                    return Math::Intersect(circle, *colB.ColShape->Polygon);
             }
             break;
+        }
         case Math::ShapeType::Rectangle:
+        {
+            Math::RectangleF rect(colA.ColShape->Rectangle->MinBound() + GetBody(colA.BodyRef).Position,
+                                  colA.ColShape->Rectangle->MaxBound() + GetBody(colA.BodyRef).Position);
             switch (colB.ColShape->Type)
             {
                 case Math::ShapeType::Circle:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Rectangle, *colB.ColShape->Circle);
-                    break;
+                    return Math::Intersect(rect,
+                                           {GetBody(colB.BodyRef).Position + colB.ColShape->Circle->Center(),
+                                            colB.ColShape->Circle->Radius()});
                 case Math::ShapeType::Rectangle:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Rectangle, *colB.ColShape->Rectangle);
-                    break;
+                    return Math::Intersect(rect, {
+                            colB.ColShape->Rectangle->MinBound() + GetBody(colB.BodyRef).Position,
+                            colB.ColShape->Rectangle->MaxBound() + GetBody(colB.BodyRef).Position});
                 case Math::ShapeType::Polygon:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Rectangle, *colB.ColShape->Polygon);
-                    break;
+                    return Math::Intersect(rect, *colB.ColShape->Polygon);
             }
             break;
+        }
         case Math::ShapeType::Polygon:
             switch (colB.ColShape->Type)
             {
                 case Math::ShapeType::Circle:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Polygon, *colB.ColShape->Circle);
-                    break;
+                    return Math::Intersect(*colA.ColShape->Polygon,
+                                           {GetBody(colB.BodyRef).Position + colB.ColShape->Circle->Center(),
+                                            colB.ColShape->Circle->Radius()});
                 case Math::ShapeType::Rectangle:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Polygon, *colB.ColShape->Rectangle);
-                    break;
+                    return Math::Intersect(*colA.ColShape->Polygon, {
+                            colB.ColShape->Rectangle->MinBound() + GetBody(colB.BodyRef).Position,
+                            colB.ColShape->Rectangle->MaxBound() + GetBody(colB.BodyRef).Position});
                 case Math::ShapeType::Polygon:
-                    DoesOverlap = Math::Intersect(*colA.ColShape->Polygon, *colB.ColShape->Polygon);
-                    break;
+                    return Math::Intersect(*colA.ColShape->Polygon, *colB.ColShape->Polygon);
             }
             break;
     }
-    return DoesOverlap;
 }
