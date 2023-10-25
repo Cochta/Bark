@@ -3,128 +3,67 @@
 #include "Shape.h"
 #include "Refs.h"
 
+#include <variant>
+
 /**
  * @file Collider.h
  * @brief This file defines the `Shape`, `Collider`, `ColliderPair`, and `ContactListener` structures
  * and a `ColliderPairHash` class for managing physics-related data and collision events in a simulation.
  */
 
-/**
- * @struct Shape
- * @brief Represents the shape associated with a collider.
- */
-struct Shape
-{
-    Math::ShapeType Type; /**< The type of shape (Circle, Rectangle, or Polygon). */
-    union //todo: check std::variant
-    {
-        Math::CircleF *Circle; /**< Pointer to a Circle shape. */
-        Math::RectangleF *Rectangle; /**< Pointer to a Rectangle shape. */
-        Math::PolygonF *Polygon; /**< Pointer to a Polygon shape. */
-    };
-};
+
 
 /**
  * @class Collider
  * @brief Represents a collider in a physics simulation.
  */
-class Collider
-{
+class Collider {
 public:
-    Shape *ColShape = nullptr; /**< The shape associated with the collider. */
+    std::variant<Math::CircleF, Math::RectangleF, Math::PolygonF> Shape{
+            Math::CircleF(Math::Vec2F::Zero(), 1)}; /**< The shape associated with the collider. */
     //float bounciness = 1.f;
     //float friction = 1.f;
     bool IsSensor = true; /**< Flag indicating if the collider is a sensor (non-physical). */
     bool IsAttached = false; /**< Flag indicating if the collider is attached to a body. */
     BodyRef BodyRef; /**< Reference to the body associated with the collider. */
-    int ID; /**< Unique identifier for the collider. */
 
 private:
     //todo: if no body ref then collider is not attached
     std::size_t _triggerNbr = 0; /**< Counter for tracking the number of triggers.*/
 
-public:
-
-    /**
-     * @brief Checks if the collider is a trigger.
-     * @return `true` if the collider is a trigger, `false` otherwise.
-     */
-    [[nodiscard]] bool DoesTrigger() const noexcept
-    { return _triggerNbr > 0; }
-
-    /**
-     * @brief Called when a collision begins with the collider.
-     */
-    void OnTriggerEnter() noexcept
-    {
-        _triggerNbr++;
-    }
-
-    /**
-     * @brief Called when a collision ends with the collider.
-     */
-    void OnTriggerExit() noexcept
-    {
-        _triggerNbr--;
-    }
-
-    /**
-     * @brief Custom hash function for colliders.
-     * @param collider The collider to hash.
-     * @return The hash value of the collider's ID.
-     */
-    std::size_t operator()(const Collider &collider) const
-    {
-        return std::hash<int>{}(collider.ID);
-    }
 };
 
 /**
  * @struct ColliderPair
  * @brief Represents a pair of colliders involved in a collision.
  */
-struct ColliderPair
+struct ColliderRefPair // todo; colliderRef au lieu de collider
 {
-    Collider ColA; /**< The first collider in the pair. */
-    Collider ColB; /**< The second collider in the pair. */
+    ColliderRef ColRefA; /**< The first colliderRef in the pair. */
+    ColliderRef ColRefB; /**< The second colliderRef in the pair. */
+
+    bool operator==(const ColliderRefPair &other) const {
+        return ColRefA.Index == other.ColRefA.Index && ColRefB.Index == other.ColRefB.Index ||
+               ColRefA.Index == other.ColRefB.Index && ColRefB.Index == other.ColRefA.Index;
+    }
 };
 
 /**
  * @class ColliderPairHash
  * @brief Custom hash function for collider pairs.
  */
-struct ColliderPairHash
-{
+struct ColliderRefPairHash {
     /**
      * @brief Calculate a hash value for a collider pair.
      * @param pair The collider pair to hash.
      * @return The hash value based on the individual hash values of the colliders.
      */
-    std::size_t operator()(const ColliderPair &pair) const
-    {
-        std::size_t hashA = Collider{}(pair.ColA);
-        std::size_t hashB = Collider{}(pair.ColB);
+    std::size_t operator()(const ColliderRefPair &pair) const {
+        std::size_t hashA = std::hash<size_t>{}(pair.ColRefA.Index);
+        std::size_t hashB = std::hash<size_t>{}(pair.ColRefB.Index);
 
-        // XOR to create a combined hash value
+        // XOR to create a combined hash valueS
         return hashA ^ hashB;
-    }
-};
-
-/**
- * @struct ColliderPairEqual
- * @brief Custom equality comparison for collider pairs.
- */
-struct ColliderPairEqual
-{
-    /**
-     * @brief Check if two collider pairs are equal.
-     * @param a The first collider pair.
-     * @param b The second collider pair.
-     * @return `true` if the pairs are equal, `false` otherwise.
-     */
-    bool operator()(const ColliderPair &a, const ColliderPair &b) const
-    {
-        return ColliderPairHash{}(a) == ColliderPairHash{}(b);
     }
 };
 
@@ -132,20 +71,19 @@ struct ColliderPairEqual
  * @class ContactListener
  * @brief An abstract class for handling collision events.
  */
-class ContactListener
-{
+class ContactListener {
 public:
     /**
      * @brief Called when a collision begins.
      * @param col1 The first collider involved in the collision.
      * @param col2 The second collider involved in the collision.
      */
-    virtual void BeginContact(Collider &col1, Collider &col2) noexcept = 0;
+    virtual void BeginContact(ColliderRef &colRef1, ColliderRef &colRef2) noexcept = 0;
 
     /**
      * @brief Called when a collision ends.
      * @param col1 The first collider involved in the collision.
      * @param col2 The second collider involved in the collision.
      */
-    virtual void EndContact(Collider &col1, Collider &col2) noexcept = 0;
+    virtual void EndContact(ColliderRef &colRef1, ColliderRef &colRef2) noexcept = 0;
 };

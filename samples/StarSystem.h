@@ -22,8 +22,7 @@ public:
         BodyRefs.push_back(sunRef);
         SUN_REF = sunRef;
         BodyData sbd;
-        sbd.Shape.Type = Math::ShapeType::Circle;
-        sbd.Shape.Circle = new Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
+        sbd.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
         sbd.Color = {255, 255, 0, 255};
         AllBodyData.push_back(sbd);
 
@@ -44,8 +43,7 @@ public:
             // Graphics
             BodyRefs.push_back(bodyRef);
             BodyData pbd;
-            pbd.Shape.Type = Math::ShapeType::Circle;
-            pbd.Shape.Circle = new Math::Circle(Math::Vec2F::Zero(),
+            pbd.Shape = Math::Circle(Math::Vec2F::Zero(),
                                                 Math::Random::Range(
                                                         Metrics::MetersToPixels(0.05f),
                                                         Metrics::MetersToPixels(0.15f)));

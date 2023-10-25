@@ -15,7 +15,8 @@ struct Color
 
 struct BodyData // for sdl to draw
 {
-    Shape Shape{}; //if radius is 0 then the object is not a Circle
+    std::variant<Math::CircleF, Math::RectangleF, Math::PolygonF> Shape{
+            Math::CircleF(Math::Vec2F::Zero(), 1)};
     Color Color = {0, 255, 0, 255};
 };
 
@@ -27,13 +28,15 @@ protected:
 
     Math::Vec2F _mousePos;
 
+
+
+
 public:
     World World;
 
     std::vector<BodyRef> BodyRefs;
     std::vector<ColliderRef> ColRefs;
     std::vector<BodyData> AllBodyData;
-
 
     virtual void SetUp()
     {
@@ -56,12 +59,7 @@ public:
 
     };
 
-    virtual void PerformAction() // todo
-    {
-
-    }
-
-    virtual void GetMousePos(Math::Vec2F mousePos) // todo
+    virtual void GetMousePos(Math::Vec2F mousePos)
     {
         _mousePos = mousePos;
     }

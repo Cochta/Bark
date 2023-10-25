@@ -32,3 +32,4 @@ TEST_F(ColliderTest, TriggerFunctions) {
     collider.OnTriggerExit();
     EXPECT_FALSE(collider.DoesTrigger());
 }
+// todo: collider pair hash

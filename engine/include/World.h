@@ -5,11 +5,13 @@
 #include <vector>
 #include <unordered_set>
 
-struct Association{
-    ColliderRef cRef;
+struct Association{ //todo:  demander prof
     BodyRef bRef;
-    //AnimatorRef aRef;
+    ColliderRef cRef;
+
+    //RigidBody aRef;
     //OtherRef;
+
     //GetAssociationByRef();
 };
 
@@ -25,7 +27,7 @@ private:
 
     int _colliderIdCount = 0; /**< Counter for generating unique collider IDs. */
 
-    std::unordered_set<ColliderPair, ColliderPairHash, ColliderPairEqual> _colPairs; /**< A set of collider pairs for collision detection. */
+    std::unordered_set<ColliderRefPair, ColliderRefPairHash> _colRefPairs; /**< A set of colliderRef pairs for collision detection. */
 
     ContactListener* _contactListener = nullptr; /**< A listener for contact events between colliders. */
 

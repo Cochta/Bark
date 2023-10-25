@@ -21,7 +21,7 @@ private:
     std::size_t _sampleIdx = 0;
 
 public:
-    std::string_view Title;
+    std::string Title;
     int Width, Height;
     Math::Vec2I MousePos;
 

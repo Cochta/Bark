@@ -1,11 +1,9 @@
 #include "SDLApp.h"
 
-constexpr int width = Metrics::MetersToPixels(8), height = Metrics::MetersToPixels(6);
-
-SDLApp app("Star System", Metrics::Width, Metrics::Height);
-
-int main(int argc, char *argv[])
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
+    SDLApp app("Samples", Metrics::Width, Metrics::Height);
+
     app.SetUp();
 
     app.Run();
