@@ -3,7 +3,7 @@
 #include "Sample.h"
 #include "Random.h"
 
-class StarSystem : public Sample
+class StarSystemSample : public Sample
 {
 public:
 

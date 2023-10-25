@@ -3,7 +3,7 @@
 //
 #include "SDLApp.h"
 
-#include "StarSystem.h"
+#include "StarSystemSample.h"
 #include "TriggerSample.h"
 #include "FormsSample.h"
 
@@ -35,7 +35,7 @@ void SDLApp::SetUp() {
         return;
     }
 
-    samples.push_back(UniquePtr<StarSystem>(new StarSystem()));
+    samples.push_back(UniquePtr<StarSystemSample>(new StarSystemSample()));
     samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
     samples.push_back(UniquePtr<FormsSample>(new FormsSample()));
 

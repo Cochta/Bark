@@ -3,16 +3,35 @@
 #include "Sample.h"
 #include "Random.h"
 
-class FormsSample : public Sample {
+class FormsSample : public Sample, public ContactListener
+{
 public:
 
     BodyRef mouseBodyRef;
     std::vector<Math::Vec2F> Vertices;
 
-    void SetUp() override {
+    std::vector<int> triggerNbrPerCollider;
+
+    void BeginContact(ColliderRef &col1, ColliderRef &col2) noexcept override
+    {
+        triggerNbrPerCollider[col1.Index]++;
+        triggerNbrPerCollider[col2.Index]++;
+
+    }
+
+    void EndContact(ColliderRef &col1, ColliderRef &col2) noexcept override
+    {
+        triggerNbrPerCollider[col1.Index]--;
+        triggerNbrPerCollider[col2.Index]--;
+    }
+
+    void SetUp() override
+    {
         Sample::SetUp();
 
-        //World.SetContactListener(new TriggerListener);// chan^gger
+        World.SetContactListener(this);
+
+        triggerNbrPerCollider.resize(3, 0);
 
         auto polRef = World.CreateBody();
         auto &pol = World.GetBody(polRef);
@@ -24,17 +43,12 @@ public:
         _colRefs.push_back(colRefPol);
         auto &colPol = World.GetCollider(colRefPol);
 
-        Vertices = {{Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                            Math::Random::Range(100.f, Metrics::Height - 100.f)},
-                    {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                            Math::Random::Range(100.f, Metrics::Height - 100.f)},
-                    {Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
-                            Math::Random::Range(100.f, Metrics::Height - 100.f)}};
+        Vertices = {{0.f, 0.f}, {200.f, 330.f}, {350.f, 400.f}};
 
         colPol.Shape = Math::Polygon(Vertices);
 
         BodyData bdPol;
-        bdPol.Shape = colPol.Shape;
+        bdPol.Shape = Math::Polygon(Vertices) + pol.Position;
         AllBodyData.push_back(bdPol);
 
         auto rectRef = World.CreateBody();
@@ -50,7 +64,7 @@ public:
         colRect.Shape = Math::Rectangle(Math::Vec2F::Zero(), Math::Vec2F(200.f, 500.f));
 
         BodyData rbd;
-        rbd.Shape = colRect.Shape;
+        rbd.Shape = Math::Rectangle(Math::Vec2F::Zero(), Math::Vec2F(200.f, 500.f)) + rect.Position;
         AllBodyData.push_back(rbd);
 
 
@@ -68,19 +82,23 @@ public:
         AllBodyData.push_back(bd);
     }
 
-    void Update() override {
-        //Vertices[0] = _mousePos;
-        //World.GetCollider(_colRefs[0]).ColShape->Polygon->SetVertices(Vertices);
-        World.GetBody(mouseBodyRef).Position = _mousePos;
-        for (int i = 0; i < _colRefs.size(); ++i) {
-//            if (World.GetCollider(_colRefs[i]).DoesTrigger())
-//            {
-//                AllBodyData[i].Color = {0, 255, 0, 255};
-//            } else
-//            {
-//                AllBodyData[i].Color = {0, 0, 255, 255};
-//            }
-        }
+    void Update() override
+    {
+        auto &mouseBody = World.GetBody(mouseBodyRef);
+        mouseBody.Position = _mousePos;
+
+        AllBodyData[2].Shape = std::get<Math::CircleF>(World.GetCollider(_colRefs[2]).Shape) + mouseBody.Position;
+
         Sample::Update();
+        for (int i = 0; i < _colRefs.size(); ++i)
+        {
+            if (triggerNbrPerCollider[i] > 0)
+            {
+                AllBodyData[i].Color = {0, 255, 0, 255};
+            } else
+            {
+                AllBodyData[i].Color = {0, 0, 255, 255};
+            }
+        }
     }
 };
