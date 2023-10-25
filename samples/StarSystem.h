@@ -11,6 +11,8 @@ public:
     static constexpr std::size_t PLANET_NBR = 1000;
     BodyRef SUN_REF;
 
+    std::vector<Math::CircleF> circles;
+
     void SetUp() override
     {
         Sample::SetUp();
@@ -19,10 +21,10 @@ public:
         sun.Position = {static_cast<float>(Metrics::Width) / 2, static_cast<float>(Metrics::Height) / 2};
         sun.Mass = 1000000;
 
-        BodyRefs.push_back(sunRef);
+        _bodyRefs.push_back(sunRef);
         SUN_REF = sunRef;
         BodyData sbd;
-        sbd.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
+        circles.emplace_back(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
         sbd.Color = {255, 255, 0, 255};
         AllBodyData.push_back(sbd);
 
@@ -41,12 +43,12 @@ public:
             body.Mass = 10.f;
 
             // Graphics
-            BodyRefs.push_back(bodyRef);
+            _bodyRefs.push_back(bodyRef);
             BodyData pbd;
-            pbd.Shape = Math::Circle(Math::Vec2F::Zero(),
-                                                Math::Random::Range(
-                                                        Metrics::MetersToPixels(0.05f),
-                                                        Metrics::MetersToPixels(0.15f)));
+            circles.emplace_back(Math::Vec2F::Zero(),
+                                 Math::Random::Range(
+                                         Metrics::MetersToPixels(0.05f),
+                                         Metrics::MetersToPixels(0.15f)));
             pbd.Color = {
                     Math::Random::Range(0, 255),
                     Math::Random::Range(0, 255),
@@ -77,12 +79,16 @@ public:
     {
         auto &sun = World.GetBody(SUN_REF);
 
-        for (auto BodyRef : BodyRefs)
+        for (std::size_t i = 0; i < _bodyRefs.size(); ++i)
         {
-            if (BodyRef == SUN_REF) continue; // Skip the Sun
+            auto &body = World.GetBody(_bodyRefs[i]);
 
-            auto &body = World.GetBody(BodyRef);
+            AllBodyData[i].Shape = circles[i] + body.Position;
+
+            if (_bodyRefs[i] == SUN_REF) continue; // Skip the Sun
+
             CalculateGravitationalForce(sun, body);
+
         }
 
         Sample::Update();

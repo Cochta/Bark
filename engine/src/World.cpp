@@ -3,7 +3,8 @@
 //
 #include "World.h"
 
-void World::SetUp() noexcept {
+void World::SetUp() noexcept
+{
     int initSize = 100;
 
     _bodies.resize(initSize, Body());
@@ -12,7 +13,8 @@ void World::SetUp() noexcept {
     ColliderGenIndices.resize(initSize, 0);
 }
 
-void World::TearDown() noexcept {
+void World::TearDown() noexcept
+{
     _bodies.clear();
     BodyGenIndices.clear();
     _colliders.clear();
@@ -23,8 +25,10 @@ void World::TearDown() noexcept {
     _colRefPairs.clear();
 }
 
-void World::Update(float deltaTime) noexcept {
-    for (auto &body: _bodies) {
+void World::Update(float deltaTime) noexcept
+{
+    for (auto &body: _bodies)
+    {
         if (!body.IsEnabled()) continue;
         auto acceleration = body.GetForce() / body.Mass;
         body.Velocity += acceleration * deltaTime;
@@ -33,9 +37,11 @@ void World::Update(float deltaTime) noexcept {
         body.ResetForce();
 
     }
+
     if (_contactListener == nullptr) return;
 
-    for (std::size_t i = 0; i < _colliders.size(); ++i) {
+    for (std::size_t i = 0; i < _colliders.size(); ++i)
+    {
         ColliderRef colRef1{i, ColliderGenIndices[i]};
         auto &col1 = GetCollider(colRef1);
 
@@ -43,22 +49,26 @@ void World::Update(float deltaTime) noexcept {
 
         if (!col1.IsSensor) continue;
 
-        for (std::size_t j = 0; j < _colliders.size(); ++j) {
+        for (std::size_t j = 0; j < _colliders.size(); ++j)
+        {
             ColliderRef colRef2{j, ColliderGenIndices[j]};
             auto &col2 = GetCollider(colRef2);
             if (col1.BodyRef == col2.BodyRef) continue;
             if (!col2.IsAttached) continue;
             if (!col1.IsSensor) continue;
 
-            if (_colRefPairs.find({colRef1, colRef2}) != _colRefPairs.end()) {
-                if (!Overlap(col1, col2)) {
+            if (_colRefPairs.find({colRef1, colRef2}) != _colRefPairs.end())
+            {
+                if (!Overlap(col1, col2))
+                {
                     _contactListener->EndContact(colRef1, colRef2);
                     _colRefPairs.erase({colRef1, colRef2});
                 }
                 continue;
             }
 
-            if (Overlap(col1, col2)) {
+            if (Overlap(col1, col2))
+            {
                 _contactListener->BeginContact(colRef1, colRef2);
                 _colRefPairs.insert({colRef1, colRef2});
             }
@@ -66,12 +76,15 @@ void World::Update(float deltaTime) noexcept {
     }
 }
 
-[[nodiscard]] BodyRef World::CreateBody() noexcept {
-    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body) {
+[[nodiscard]] BodyRef World::CreateBody() noexcept
+{
+    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body)
+    {
         return !body.IsEnabled(); // Get first Disabled body
     });
 
-    if (it != _bodies.end()) {
+    if (it != _bodies.end())
+    {
         std::size_t index = std::distance(_bodies.begin(), it);
         auto bodyRef = BodyRef{index, BodyGenIndices[index]};
         GetBody(bodyRef).Enable();
@@ -88,29 +101,36 @@ void World::Update(float deltaTime) noexcept {
     return bodyRef;
 }
 
-void World::DestroyBody(BodyRef bodyRef) {
-    if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex) {
+void World::DestroyBody(BodyRef bodyRef)
+{
+    if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex)
+    {
         throw std::runtime_error("No body found !");
     }
 
     _bodies[bodyRef.Index].Disable();
 }
 
-[[nodiscard]] Body &World::GetBody(BodyRef bodyRef) {
-    if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex) {
+[[nodiscard]] Body &World::GetBody(BodyRef bodyRef)
+{
+    if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex)
+    {
         throw std::runtime_error("No body found !");
     }
 
     return _bodies[bodyRef.Index];
 }
 
-ColliderRef World::CreateCollider(BodyRef bodyRef) noexcept {
+ColliderRef World::CreateCollider(BodyRef bodyRef) noexcept
+{
     _colliderIdCount++;
-    auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider &collider) {
+    auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider &collider)
+    {
         return !collider.IsAttached; // Get first Disabled collider
     });
 
-    if (it != _colliders.end()) {
+    if (it != _colliders.end())
+    {
         std::size_t index = std::distance(_colliders.begin(), it);
         auto colRef = ColliderRef{index, ColliderGenIndices[index]};
         auto &col = GetCollider(colRef);
@@ -132,65 +152,77 @@ ColliderRef World::CreateCollider(BodyRef bodyRef) noexcept {
     return colRef;
 }
 
-Collider &World::GetCollider(ColliderRef colRef) {
-    if (ColliderGenIndices[colRef.Index] != colRef.GenIndex) {
+Collider &World::GetCollider(ColliderRef colRef)
+{
+    if (ColliderGenIndices[colRef.Index] != colRef.GenIndex)
+    {
         throw std::runtime_error("No collider found !");
     }
 
     return _colliders[colRef.Index];
 }
 
-void World::DestroyCollider(ColliderRef colRef) {
-    if (ColliderGenIndices[colRef.Index] != colRef.GenIndex) {
+void World::DestroyCollider(ColliderRef colRef)
+{
+    if (ColliderGenIndices[colRef.Index] != colRef.GenIndex)
+    {
         throw std::runtime_error("No collider found !");
     }
     _colliders[colRef.Index].IsAttached = false;
 }
 
-[[nodiscard]] bool World::Overlap(const Collider &colA, const Collider &colB) {
-    switch (colA.Shape.index()) {
-        case static_cast<int>( Math::ShapeType::Circle): {
+[[nodiscard]] bool World::Overlap(const Collider &colA, const Collider &colB)
+{
+    switch (colA.Shape.index())
+    {
+        case static_cast<int>( Math::ShapeType::Circle):
+        {
             Math::CircleF circle = std::get<Math::CircleF>(colA.Shape) + GetBody(colA.BodyRef).Position;
-            switch (colB.Shape.index()) {
+            switch (colB.Shape.index())
+            {
                 case static_cast<int>( Math::ShapeType::Circle):
                     return Math::Intersect(circle,
-                                           std::get<Math::CircleF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
                 case static_cast<int>( Math::ShapeType::Rectangle):
                     return Math::Intersect(circle,
-                                           std::get<Math::RectangleF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
                 case static_cast<int>( Math::ShapeType::Polygon):
                     return Math::Intersect(circle,
-                                           std::get<Math::PolygonF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
             }
             break;
         }
-        case static_cast<int>( Math::ShapeType::Rectangle): {
+        case static_cast<int>( Math::ShapeType::Rectangle):
+        {
             Math::RectangleF rect = std::get<Math::RectangleF>(colA.Shape) + GetBody(colA.BodyRef).Position;
-            switch (colB.Shape.index()) {
+            switch (colB.Shape.index())
+            {
                 case static_cast<int>( Math::ShapeType::Circle):
                     return Math::Intersect(rect,
-                                           std::get<Math::CircleF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
                 case static_cast<int>( Math::ShapeType::Rectangle):
                     return Math::Intersect(rect,
-                                           std::get<Math::RectangleF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
                 case static_cast<int>(Math::ShapeType::Polygon):
                     return Math::Intersect(rect,
-                                           std::get<Math::PolygonF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
             }
             break;
         }
-        case static_cast<int>( Math::ShapeType::Polygon): {
+        case static_cast<int>( Math::ShapeType::Polygon):
+        {
             Math::PolygonF pol = std::get<Math::PolygonF>(colA.Shape) + GetBody(colA.BodyRef).Position;
-            switch (colB.Shape.index()) {
+            switch (colB.Shape.index())
+            {
                 case static_cast<int>( Math::ShapeType::Circle):
                     return Math::Intersect(pol,
-                                           std::get<Math::CircleF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
                 case static_cast<int>( Math::ShapeType::Rectangle):
                     return Math::Intersect(pol,
-                                           std::get<Math::RectangleF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
                 case static_cast<int>( Math::ShapeType::Polygon):
                     return Math::Intersect(pol,
-                                           std::get<Math::PolygonF>(colA.Shape) + GetBody(colA.BodyRef).Position);
+                                           std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
             }
             break;
         }

@@ -10,7 +10,7 @@ struct BodyRef {
     /**
      * @brief Check if two BodyRef instances are equal.
      * @param other The BodyRef to compare with.
-     * @return true if the BodyRefs are equal, false otherwise.
+     * @return true if the _bodyRefs are equal, false otherwise.
      */
     constexpr bool operator==(const BodyRef &other) const {
         return (Index == other.Index) && (GenIndex == other.GenIndex);

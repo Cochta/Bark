@@ -18,10 +18,10 @@ public:
         auto &pol = World.GetBody(polRef);
         pol.Position = {static_cast<float>(Metrics::Width) / 2, static_cast<float>(Metrics::Height) / 2};
         pol.Mass = 4.f;
-        BodyRefs.push_back(polRef);
+        _bodyRefs.push_back(polRef);
 
         auto colRefPol = World.CreateCollider(polRef);
-        ColRefs.push_back(colRefPol);
+        _colRefs.push_back(colRefPol);
         auto &colPol = World.GetCollider(colRefPol);
 
         Vertices = {{Math::Random::Range(pol.Position.X, Metrics::Width - 100.f),
@@ -41,10 +41,10 @@ public:
         auto &rect = World.GetBody(rectRef);
         rect.Position = Math::Vec2F::Zero();
 
-        BodyRefs.push_back(rectRef);
+        _bodyRefs.push_back(rectRef);
 
         auto colRefRect = World.CreateCollider(rectRef);
-        ColRefs.push_back(colRefRect);
+        _colRefs.push_back(colRefRect);
         auto &colRect = World.GetCollider(colRefRect);
 
         colRect.Shape = Math::Rectangle(Math::Vec2F::Zero(), Math::Vec2F(200.f, 500.f));
@@ -55,11 +55,11 @@ public:
 
 
         mouseBodyRef = World.CreateBody();
-        BodyRefs.push_back(mouseBodyRef);
+        _bodyRefs.push_back(mouseBodyRef);
         auto &body1 = World.GetBody(mouseBodyRef);
         body1.Position = {200.f, 700.f};
         auto mouseColRef = World.CreateCollider(mouseBodyRef);
-        ColRefs.push_back(mouseColRef);
+        _colRefs.push_back(mouseColRef);
         auto &mouseCol = World.GetCollider(mouseColRef);
         mouseCol.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f));
 
@@ -70,10 +70,10 @@ public:
 
     void Update() override {
         //Vertices[0] = _mousePos;
-        //World.GetCollider(ColRefs[0]).ColShape->Polygon->SetVertices(Vertices);
+        //World.GetCollider(_colRefs[0]).ColShape->Polygon->SetVertices(Vertices);
         World.GetBody(mouseBodyRef).Position = _mousePos;
-        for (int i = 0; i < ColRefs.size(); ++i) {
-//            if (World.GetCollider(ColRefs[i]).DoesTrigger())
+        for (int i = 0; i < _colRefs.size(); ++i) {
+//            if (World.GetCollider(_colRefs[i]).DoesTrigger())
 //            {
 //                AllBodyData[i].Color = {0, 255, 0, 255};
 //            } else

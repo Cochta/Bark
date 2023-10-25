@@ -160,14 +160,11 @@ void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Col
 void SDLApp::DrawAllBodiesData() {
     _vertices.clear();
     _indices.clear();
-    for (auto &bodyRef : samples[_sampleIdx]->BodyRefs) {
-        auto &body = samples[_sampleIdx]->World.GetBody(bodyRef);
-        if (body.IsEnabled()) {
-            BodyData bd = samples[_sampleIdx]->AllBodyData[bodyRef.Index];
+    for (auto &bd : samples[_sampleIdx]->AllBodyData) {
 
             if (bd.Shape.index() == (int)Math::ShapeType::Circle) {
                 Math::CircleF circle = std::get<Math::CircleF>(bd.Shape);
-                DrawCircle(circle.Center() + body.Position, circle.Radius(), 30, {
+                DrawCircle(circle.Center(), circle.Radius(), 30, {
                         static_cast<Uint8>(bd.Color.r),
                         static_cast<Uint8>(bd.Color.g),
                         static_cast<Uint8>(bd.Color.b),
@@ -175,7 +172,7 @@ void SDLApp::DrawAllBodiesData() {
                 });
             } else if (bd.Shape.index() == (int)Math::ShapeType::Rectangle) {
                 auto rect = std::get<Math::RectangleF>(bd.Shape);
-                DrawRectangle(rect.MinBound() + body.Position, rect.MaxBound() + body.Position, {
+                DrawRectangle(rect.MinBound(), rect.MaxBound(), {
                         static_cast<Uint8>(bd.Color.r),
                         static_cast<Uint8>(bd.Color.g),
                         static_cast<Uint8>(bd.Color.b),
@@ -190,7 +187,6 @@ void SDLApp::DrawAllBodiesData() {
                         static_cast<Uint8>(bd.Color.a)
                 });
             }
-        }
     }
     SDL_RenderGeometry(_renderer, nullptr, _vertices.data(), _vertices.size(), _indices.data(), _indices.size());
 }

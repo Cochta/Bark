@@ -17,7 +17,7 @@ struct BodyData // for sdl to draw
 {
     std::variant<Math::CircleF, Math::RectangleF, Math::PolygonF> Shape{
             Math::CircleF(Math::Vec2F::Zero(), 1)};
-    Color Color = {0, 255, 0, 255};
+    Color Color;
 };
 
 class Sample
@@ -28,14 +28,13 @@ protected:
 
     Math::Vec2F _mousePos;
 
-
+    std::vector<BodyRef> _bodyRefs;
+    std::vector<ColliderRef> _colRefs;
 
 
 public:
     World World;
 
-    std::vector<BodyRef> BodyRefs;
-    std::vector<ColliderRef> ColRefs;
     std::vector<BodyData> AllBodyData;
 
     virtual void SetUp()
@@ -52,9 +51,9 @@ public:
 
     virtual void TearDown()
     {
-        BodyRefs.clear();
+        _bodyRefs.clear();
         AllBodyData.clear();
-        ColRefs.clear();
+        _colRefs.clear();
         World.TearDown();
 
     };
