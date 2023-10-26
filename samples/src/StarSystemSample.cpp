@@ -1,30 +1,17 @@
-#pragma once
+#include "StarSystemSample.h"
 
-#include "Sample.h"
-#include "Random.h"
-
-class StarSystemSample : public Sample
+void StarSystemSample::SampleSetUp() noexcept
 {
-public:
-
-    static constexpr float G = 6.67f;
-    static constexpr std::size_t PLANET_NBR = 1000;
-    BodyRef SUN_REF;
-
-    std::vector<Math::CircleF> circles;
-
-    void SetUp() override
     {
-        Sample::SetUp();
         auto sunRef = World.CreateBody();
         auto &sun = World.GetBody(sunRef);
         sun.Position = {static_cast<float>(Metrics::Width) / 2, static_cast<float>(Metrics::Height) / 2};
         sun.Mass = 1000000;
 
         _bodyRefs.push_back(sunRef);
-        SUN_REF = sunRef;
+        _sunRef = sunRef;
         BodyData sbd;
-        circles.emplace_back(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
+        _circles.emplace_back(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
         sbd.Color = {255, 255, 0, 255};
         AllBodyData.push_back(sbd);
 
@@ -45,8 +32,8 @@ public:
             // Graphics
             _bodyRefs.push_back(bodyRef);
             BodyData pbd;
-            circles.emplace_back(Math::Vec2F::Zero(),
-                                 Math::Random::Range(
+            _circles.emplace_back(Math::Vec2F::Zero(),
+                                  Math::Random::Range(
                                          Metrics::MetersToPixels(0.05f),
                                          Metrics::MetersToPixels(0.15f)));
             pbd.Color = {
@@ -58,39 +45,36 @@ public:
             AllBodyData.push_back(pbd);
         }
     }
+}
 
-    static
+void StarSystemSample::CalculateGravitationalForce(const Body &sun, Body &body) noexcept
+{
 
-    void CalculateGravitationalForce(const Body &sun, Body &body)
+    auto m1m2 = sun.Mass * body.Mass;
+    auto r = (sun.Position - body.Position).Length();
+    auto r2 = r * r;
+    auto F = G * (m1m2 / r2);
+
+    Math::Vec2F forceDirection = (sun.Position - body.Position).Normalized();
+    Math::Vec2F force = forceDirection * F;
+    body.ApplyForce(force);
+
+}
+
+void StarSystemSample::SampleUpdate() noexcept
+{
+    auto &sun = World.GetBody(_sunRef);
+
+    for (std::size_t i = 0; i < _bodyRefs.size(); ++i)
     {
-        auto m1m2 = sun.Mass * body.Mass;
-        auto r = (sun.Position - body.Position).Length();
-        auto r2 = r * r;
-        auto F = G * (m1m2 / r2);
+        auto &body = World.GetBody(_bodyRefs[i]);
 
-        Math::Vec2F forceDirection = (sun.Position - body.Position).Normalized();
-        Math::Vec2F force = forceDirection * F;
-        body.ApplyForce(force);
+        AllBodyData[i].Shape = _circles[i] + body.Position;
+
+        if (_bodyRefs[i] == _sunRef) continue; // Skip the Sun
+
+        CalculateGravitationalForce(sun, body);
+
     }
+}
 
-    void Update()
-
-    override
-    {
-        auto &sun = World.GetBody(SUN_REF);
-
-        for (std::size_t i = 0; i < _bodyRefs.size(); ++i)
-        {
-            auto &body = World.GetBody(_bodyRefs[i]);
-
-            AllBodyData[i].Shape = circles[i] + body.Position;
-
-            if (_bodyRefs[i] == SUN_REF) continue; // Skip the Sun
-
-            CalculateGravitationalForce(sun, body);
-
-        }
-
-        Sample::Update();
-    }
-};

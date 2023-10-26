@@ -78,8 +78,7 @@ void World::Update(float deltaTime) noexcept
 
 [[nodiscard]] BodyRef World::CreateBody() noexcept
 {
-    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body)
-    {
+    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body) {
         return !body.IsEnabled(); // Get first Disabled body
     });
 
@@ -124,8 +123,7 @@ void World::DestroyBody(BodyRef bodyRef)
 ColliderRef World::CreateCollider(BodyRef bodyRef) noexcept
 {
     _colliderIdCount++;
-    auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider &collider)
-    {
+    auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider &collider) {
         return !collider.IsAttached; // Get first Disabled collider
     });
 

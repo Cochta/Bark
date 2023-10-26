@@ -54,24 +54,24 @@ foreach(test_file ${ENGINE_TEST_FILES} )
 endforeach()
 
 # Sample library
-file(GLOB_RECURSE SAMPLE_FILES samples/*.h)
+file(GLOB_RECURSE SAMPLE_FILES samples/include/*.h samples/src/*.cpp)
 add_library(Samples ${SAMPLE_FILES})
 set_target_properties(Samples PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Samples PUBLIC samples/)
+target_include_directories(Samples PUBLIC samples/include)
 target_include_directories(Samples PUBLIC engine/include/)
 target_include_directories(Samples PUBLIC libs/Math/include/)
 target_include_directories(Samples PUBLIC common/include/)
 
 # Graphics library
-file(GLOB_RECURSE GRAPHICS_FILES graphics/src/*.cpp graphics/include/*.h)
+file(GLOB_RECURSE GRAPHICS_FILES graphics/include/*.h graphics/src/*.cpp)
 add_library(Graphics ${GRAPHICS_FILES})
 set_target_properties(Graphics PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Graphics PUBLIC graphics/include/)
 target_include_directories(Graphics PUBLIC engine/include/)
 target_include_directories(Graphics PUBLIC libs/Math/include/)
 target_include_directories(Graphics PUBLIC common/include/)
-target_include_directories(Graphics PUBLIC samples/)
-target_link_libraries(Graphics PUBLIC Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+target_include_directories(Graphics PUBLIC samples/include/)
+target_link_libraries(Graphics PUBLIC Samples Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 
 add_executable(Main Main.cpp)
