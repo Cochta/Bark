@@ -38,12 +38,7 @@ void SDLApp::SetUp()
         SDL_Log("SDL_CreateRenderer Error: %s", SDL_GetError());
         return;
     }
-
-    samples.push_back(UniquePtr<StarSystemSample>(new StarSystemSample()));
-    samples.push_back(UniquePtr<QuadTreeTriggerSample>(new QuadTreeTriggerSample()));
-    samples.push_back(UniquePtr<FormsTriggerSample>(new FormsTriggerSample()));
-
-    samples[_sampleIdx]->SetUp();
+    _sampleManager.SetUp();
 }
 
 void SDLApp::TearDown() const noexcept
@@ -74,36 +69,31 @@ void SDLApp::Run() noexcept
                     quit = true;
                     break;
                 case SDL_KEYUP:
-                    samples[_sampleIdx]->TearDown(); // todo: sample manager to load samples
                     switch (e.key.keysym.sym)
                     {
                         case SDLK_LEFT:
-                            if (_sampleIdx <= 0)
-                                _sampleIdx = samples.size() - 1;
-                            else
-                                _sampleIdx--;
+                            _sampleManager.PreviousSample();
                             break;
                         case SDLK_RIGHT:
-                            if (_sampleIdx >= samples.size() - 1)
-                                _sampleIdx = 0;
-                            else
-                                _sampleIdx++;
+                            _sampleManager.NextSample();
+                            break;
+                        case SDLK_SPACE:
+                            _sampleManager.RegenerateSample();
                             break;
                     }
-                    samples[_sampleIdx]->SetUp();
                     break;
             }
         }
-        SDL_GetMouseState(&MousePos.X, &MousePos.Y);
 
         // Clear the renderer
         SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         SDL_RenderClear(_renderer);
 
-        samples[_sampleIdx]->GetMousePos(static_cast<Math::Vec2F>(MousePos));
-        samples[_sampleIdx]->Update(); // the function pointer for the Sample Update
+        SDL_GetMouseState(&MousePos.X, &MousePos.Y);
+        _sampleManager.GiveMousePositionToSample(static_cast<Math::Vec2F>(MousePos));
+        _sampleManager.UpdateSample();
 
-        DrawAllBodiesData();
+        DrawAllGraphicsData();
 
         // Present the renderer
         SDL_RenderPresent(_renderer);
@@ -176,11 +166,11 @@ void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Col
     _indices.push_back(offset + 1);
 }
 
-void SDLApp::DrawAllBodiesData() noexcept
+void SDLApp::DrawAllGraphicsData() noexcept
 {
     _vertices.clear();
     _indices.clear();
-    for (auto &bd: samples[_sampleIdx]->AllBodyData)
+    for (auto &bd: _sampleManager.GetSampleData())
     {
 
         if (bd.Shape.index() == (int) Math::ShapeType::Circle)

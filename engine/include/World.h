@@ -36,7 +36,7 @@ public:
     std::vector<size_t> ColliderGenIndices; /**< Indices of generated colliders. */
 
     /**
-     * @brief Default constructor for the World class.
+     * @brief Default constructor for the _world class.
      */
     World() noexcept = default;
 

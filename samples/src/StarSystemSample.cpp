@@ -3,25 +3,25 @@
 void StarSystemSample::SampleSetUp() noexcept
 {
     {
-        auto sunRef = World.CreateBody();
-        auto &sun = World.GetBody(sunRef);
+        auto sunRef = _world.CreateBody();
+        auto &sun = _world.GetBody(sunRef);
         sun.Position = {static_cast<float>(Metrics::Width) / 2, static_cast<float>(Metrics::Height) / 2};
         sun.Mass = 1000000;
 
         _bodyRefs.push_back(sunRef);
         _sunRef = sunRef;
-        BodyData sbd;
+        GraphicsData sbd;
         _circles.emplace_back(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
         sbd.Color = {255, 255, 0, 255};
-        AllBodyData.push_back(sbd);
+        AllGraphicsData.push_back(sbd);
 
         const auto copiedSun = sun;
 
         for (std::size_t i = 0; i < PLANET_NBR; ++i)
         {
             // Engine
-            auto bodyRef = World.CreateBody();
-            auto &body = World.GetBody(bodyRef);
+            auto bodyRef = _world.CreateBody();
+            auto &body = _world.GetBody(bodyRef);
             body.Position = {Math::Random::Range(100.f, Metrics::Width - 100.f),
                              Math::Random::Range(100.f, Metrics::Height - 100.f)};
             auto r = copiedSun.Position - body.Position;
@@ -31,18 +31,18 @@ void StarSystemSample::SampleSetUp() noexcept
 
             // Graphics
             _bodyRefs.push_back(bodyRef);
-            BodyData pbd;
+            GraphicsData pbd;
             _circles.emplace_back(Math::Vec2F::Zero(),
                                   Math::Random::Range(
-                                         Metrics::MetersToPixels(0.05f),
-                                         Metrics::MetersToPixels(0.15f)));
+                                          Metrics::MetersToPixels(0.05f),
+                                          Metrics::MetersToPixels(0.15f)));
             pbd.Color = {
                     Math::Random::Range(0, 255),
                     Math::Random::Range(0, 255),
                     Math::Random::Range(0, 255),
                     255};
 
-            AllBodyData.push_back(pbd);
+            AllGraphicsData.push_back(pbd);
         }
     }
 }
@@ -63,18 +63,23 @@ void StarSystemSample::CalculateGravitationalForce(const Body &sun, Body &body) 
 
 void StarSystemSample::SampleUpdate() noexcept
 {
-    auto &sun = World.GetBody(_sunRef);
+    auto &sun = _world.GetBody(_sunRef);
 
     for (std::size_t i = 0; i < _bodyRefs.size(); ++i)
     {
-        auto &body = World.GetBody(_bodyRefs[i]);
+        auto &body = _world.GetBody(_bodyRefs[i]);
 
-        AllBodyData[i].Shape = _circles[i] + body.Position;
+        AllGraphicsData[i].Shape = _circles[i] + body.Position;
 
         if (_bodyRefs[i] == _sunRef) continue; // Skip the Sun
 
         CalculateGravitationalForce(sun, body);
 
     }
+}
+
+void StarSystemSample::SampleTearDown() noexcept
+{
+    _circles.clear();
 }
 

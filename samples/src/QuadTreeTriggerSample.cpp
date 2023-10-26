@@ -14,14 +14,14 @@ void QuadTreeTriggerSample::EndContact(ColliderRef &col1, ColliderRef &col2) noe
 
 void QuadTreeTriggerSample::SampleSetUp() noexcept
 {
-    World.SetContactListener(this);
+    _world.SetContactListener(this);
     _triggerNbrPerCollider.resize(CIRCLE_NBR, 0);
 
     for (std::size_t i = 0; i < CIRCLE_NBR; ++i)
     {
-        auto bodyRef1 = World.CreateBody();
+        auto bodyRef1 = _world.CreateBody();
         _bodyRefs.push_back(bodyRef1);
-        auto &body1 = World.GetBody(bodyRef1);
+        auto &body1 = _world.GetBody(bodyRef1);
 
         body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
                                      Math::Random::Range(-1.f, 1.f)) * SPEED;
@@ -29,14 +29,14 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
         body1.Position = {Math::Random::Range(100.f, Metrics::Width - 100.f),
                           Math::Random::Range(100.f, Metrics::Height - 100.f)};
 
-        auto colRef1 = World.CreateCollider(bodyRef1);
+        auto colRef1 = _world.CreateCollider(bodyRef1);
         _colRefs.push_back(colRef1);
-        auto &col1 = World.GetCollider(colRef1);
+        auto &col1 = _world.GetCollider(colRef1);
         col1.Shape = Math::Circle(Math::Vec2F::Zero(), RADIUS);
 
-        BodyData bd;
+        GraphicsData bd;
         bd.Shape = col1.Shape;
-        AllBodyData.push_back(bd);
+        AllGraphicsData.push_back(bd);
     }
 }
 
@@ -44,7 +44,7 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
 {
     for (std::size_t i = 0; i < _bodyRefs.size(); ++i)
     {
-        auto &body = World.GetBody(_bodyRefs[i]);
+        auto &body = _world.GetBody(_bodyRefs[i]);
         if (body.Position.X - RADIUS <= 0)
         {
             body.Velocity.X = Math::Abs(body.Velocity.X);
@@ -60,17 +60,22 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
             body.Velocity.Y = -Math::Abs(body.Velocity.Y);
         }
 
-        AllBodyData[i].Shape = std::get<Math::CircleF>(World.GetCollider(_colRefs[i]).Shape) + body.Position;
+        AllGraphicsData[i].Shape = std::get<Math::CircleF>(_world.GetCollider(_colRefs[i]).Shape) + body.Position;
     }
 
     for (int i = 0; i < _colRefs.size(); ++i)
     {
         if (_triggerNbrPerCollider[i] > 0)
         {
-            AllBodyData[i].Color = {0, 255, 0, 255};
+            AllGraphicsData[i].Color = {0, 255, 0, 255};
         } else
         {
-            AllBodyData[i].Color = {0, 0, 255, 255};
+            AllGraphicsData[i].Color = {0, 0, 255, 255};
         }
     }
+}
+
+void QuadTreeTriggerSample::SampleTearDown() noexcept
+{
+    _triggerNbrPerCollider.clear();
 }

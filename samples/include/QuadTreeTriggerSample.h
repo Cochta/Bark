@@ -25,4 +25,5 @@ protected:
 
     void SampleUpdate() noexcept override;
 
+    void SampleTearDown() noexcept override;
 };

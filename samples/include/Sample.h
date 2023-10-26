@@ -12,8 +12,8 @@ struct Color
 {
     int r = 255, g = 255, b = 255, a = 255;
 };
-
-struct BodyData // for the graphics renderer to draw
+// for the graphics renderer to draw
+struct GraphicsData
 {
     std::variant<Math::CircleF, Math::RectangleF, Math::PolygonF> Shape{
             Math::CircleF(Math::Vec2F::Zero(), 1)};
@@ -22,52 +22,36 @@ struct BodyData // for the graphics renderer to draw
 
 class Sample
 {
-private:
-    Timer _timer;
-
 protected:
+    World _world;
+
     std::vector<BodyRef> _bodyRefs;
     std::vector<ColliderRef> _colRefs;
 
     Math::Vec2F _mousePos;
 
+private:
+    Timer _timer;
+
 public:
-    World World;
+    std::vector<GraphicsData> AllGraphicsData;
 
-    std::vector<BodyData> AllBodyData;
+    void SetUp() noexcept;
 
-    void SetUp() noexcept
-    {
-        _timer.SetUp();
-        World.SetUp();
-        SampleSetUp();
-    };
+    void TearDown() noexcept;
 
-    void Update() noexcept
-    {
-        SampleUpdate();
-        _timer.Tick();
-        World.Update(_timer.DeltaTime);
-    };
+    void Update() noexcept;
 
-    virtual void TearDown() noexcept
-    {
-        _bodyRefs.clear();
-        AllBodyData.clear();
-        _colRefs.clear();
-        World.TearDown();
-    };
 
-    virtual void GetMousePos(Math::Vec2F mousePos) noexcept
-    {
-        _mousePos = mousePos;
-    }
+    virtual void GetMousePos(Math::Vec2F mousePos) noexcept;
 
     virtual ~Sample() noexcept = default;
 
 protected:
-    virtual void SampleUpdate() noexcept = 0;
-
     virtual void SampleSetUp() noexcept = 0;
+
+    virtual void SampleTearDown() noexcept = 0;
+
+    virtual void SampleUpdate() noexcept = 0;
 };
 
