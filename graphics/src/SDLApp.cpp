@@ -152,7 +152,7 @@ void SDLApp::DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBoun
     _indices.push_back(offset + 3);             // Bottom right vertex
 }
 
-void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col)
+void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col) noexcept
 {
     if (vertices.size() < 3) return; // todo exeption
 
@@ -176,7 +176,7 @@ void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Col
     _indices.push_back(offset + 1);
 }
 
-void SDLApp::DrawAllBodiesData()
+void SDLApp::DrawAllBodiesData() noexcept
 {
     _vertices.clear();
     _indices.clear();

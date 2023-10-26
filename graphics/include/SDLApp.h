@@ -27,7 +27,7 @@ public:
 
     std::vector<UniquePtr<Sample>> samples;
 
-    SDLApp(std::string_view title, int width, int height) : _window(nullptr), _renderer(nullptr)
+    SDLApp(std::string_view title, int width, int height) noexcept: _window(nullptr), _renderer(nullptr)
     {
         Width = width;
         Height = height;
@@ -40,11 +40,11 @@ public:
 
     void Run() noexcept;
 
-    void DrawCircle(const Math::Vec2F center, const float radius, const int segments, const SDL_Color &col) noexcept;
+    void DrawCircle(Math::Vec2F center, float radius, int segments, const SDL_Color &col) noexcept;
 
-    void DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBound, const SDL_Color &col) noexcept;
+    void DrawRectangle(Math::Vec2F minBound, Math::Vec2F maxBound, const SDL_Color &col) noexcept;
 
-    void DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col);
+    void DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col) noexcept;
 
-    void DrawAllBodiesData();
+    void DrawAllBodiesData() noexcept;
 };
