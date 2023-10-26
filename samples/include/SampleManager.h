@@ -9,7 +9,7 @@
 class SampleManager
 {
 private:
-    std::vector<UniquePtr<Sample>> samples;
+    std::vector<UniquePtr<Sample>> _samples;
 
     std::size_t _sampleIdx = 0;
 

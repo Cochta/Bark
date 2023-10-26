@@ -8,7 +8,7 @@ class FormsTriggerSample : public Sample, public ContactListener
 private:
     std::vector<int> _triggerNbrPerCollider;
 
-    BodyRef _mouseBodyRef;
+    BodyRef _starBodyRef;
 
 public:
     void BeginContact(ColliderRef &col1, ColliderRef &col2) noexcept override;

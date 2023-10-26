@@ -16,31 +16,79 @@ void FormsTriggerSample::SampleSetUp() noexcept
 {
     _world.SetContactListener(this);
 
-    _triggerNbrPerCollider.resize(3, 0);
+    _triggerNbrPerCollider.resize(4, 0);
 
-    auto polRef = _world.CreateBody();
-    auto &pol = _world.GetBody(polRef);
-    pol.Position = {static_cast<float>(Metrics::Width) / 2, static_cast<float>(Metrics::Height) / 2};
-    pol.Mass = 4.f;
-    _bodyRefs.push_back(polRef);
+    auto triangleRef = _world.CreateBody();
+    auto &triangle = _world.GetBody(triangleRef);
+    triangle.Position = {static_cast<float>(Metrics::Width - Metrics::MetersToPixels(2)),
+                         static_cast<float>(Metrics::Height - Metrics::MetersToPixels(2))};
+    triangle.Mass = 4.f;
+    _bodyRefs.push_back(triangleRef);
 
-    auto colRefPol = _world.CreateCollider(polRef);
-    _colRefs.push_back(colRefPol);
-    auto &colPol = _world.GetCollider(colRefPol);
+    auto triangleColRef = _world.CreateCollider(triangleRef);
+    _colRefs.push_back(triangleColRef);
+    auto &triangleCol = _world.GetCollider(triangleColRef);
 
-    std::vector<Math::Vec2F> vertices = {{0.f,   0.f},
-                                         {200.f, 330.f},
-                                         {350.f, 400.f}};
+    std::vector<Math::Vec2F> verticesTriangle = {{0.f,                         0.f},
+                                                 {-Metrics::MetersToPixels(2), -Metrics::MetersToPixels(1)},
+                                                 {-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(2)}};
 
-    colPol.Shape = Math::Polygon(vertices);
+    triangleCol.Shape = Math::Polygon(verticesTriangle);
 
     GraphicsData bdPol;
-    bdPol.Shape = Math::Polygon(vertices) + pol.Position;
+    bdPol.Shape = Math::Polygon(verticesTriangle) + triangle.Position;
     AllGraphicsData.push_back(bdPol);
+
+
+    _starBodyRef = _world.CreateBody();
+    auto &starBody = _world.GetBody(_starBodyRef);
+    starBody.Position = {static_cast<float>(Metrics::Width) / 2,
+                         static_cast<float>(Metrics::Height) / 2};
+    starBody.Mass = 1.f;
+    _bodyRefs.push_back(_starBodyRef);
+
+    auto starColRef = _world.CreateCollider(_starBodyRef);
+    _colRefs.push_back(starColRef);
+    auto &starCol = _world.GetCollider(starColRef);
+
+    std::vector<Math::Vec2F> verticesStar = {
+            {Metrics::MetersToPixels(0.0f),  Metrics::MetersToPixels(0.f)},
+            {Metrics::MetersToPixels(0.0f),  Metrics::MetersToPixels(-0.3f)},
+            {Metrics::MetersToPixels(0.075f), Metrics::MetersToPixels(-0.075f)},
+            {Metrics::MetersToPixels(0.3f),  Metrics::MetersToPixels(0.0f)},
+            {Metrics::MetersToPixels(0.1f), Metrics::MetersToPixels(0.1f)},
+            {Metrics::MetersToPixels(0.15f), Metrics::MetersToPixels(0.3f)},
+            {Metrics::MetersToPixels(0.0f), Metrics::MetersToPixels(0.15f)},
+            {Metrics::MetersToPixels(-0.15f), Metrics::MetersToPixels(0.3f)},
+            {Metrics::MetersToPixels(-0.1f), Metrics::MetersToPixels(0.1f)},
+            {Metrics::MetersToPixels(-0.3f), Metrics::MetersToPixels(0.0f)},
+            {Metrics::MetersToPixels(-0.075f), Metrics::MetersToPixels(-0.075f)}
+    };
+
+    starCol.Shape = Math::Polygon(verticesStar);
+
+    GraphicsData bdStar;
+    bdStar.Shape = Math::Polygon(verticesStar) + starBody.Position;
+    AllGraphicsData.push_back(bdStar);
+
+
+    auto circleBodyRef = _world.CreateBody();
+    _bodyRefs.push_back(circleBodyRef);
+    auto &circleBody = _world.GetBody(circleBodyRef);
+    circleBody.Position = {Metrics::MetersToPixels(7), Metrics::MetersToPixels(2)};
+    auto circleColRef = _world.CreateCollider(circleBodyRef);
+    _colRefs.push_back(circleColRef);
+    auto &circleCol = _world.GetCollider(circleColRef);
+    circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f));
+
+    GraphicsData bd;
+    bd.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f)) + circleBody.Position;
+    AllGraphicsData.push_back(bd);
 
     auto rectRef = _world.CreateBody();
     auto &rect = _world.GetBody(rectRef);
-    rect.Position = Math::Vec2F::Zero();
+    rect.Position = Math::Vec2F(Metrics::MetersToPixels(2),
+                                Metrics::MetersToPixels(2));
 
     _bodyRefs.push_back(rectRef);
 
@@ -48,33 +96,26 @@ void FormsTriggerSample::SampleSetUp() noexcept
     _colRefs.push_back(colRefRect);
     auto &colRect = _world.GetCollider(colRefRect);
 
-    colRect.Shape = Math::Rectangle(Math::Vec2F::Zero(), Math::Vec2F(200.f, 500.f));
+    colRect.Shape = Math::Rectangle(Math::Vec2F::Zero(),
+                                    Math::Vec2F(
+                                            Metrics::MetersToPixels(2),
+                                            Metrics::MetersToPixels(2)));
 
     GraphicsData rbd;
-    rbd.Shape = Math::Rectangle(Math::Vec2F::Zero(), Math::Vec2F(200.f, 500.f)) + rect.Position;
+    rbd.Shape = Math::Rectangle(Math::Vec2F::Zero(),
+                                Math::Vec2F(
+                                        Metrics::MetersToPixels(2),
+                                        Metrics::MetersToPixels(2))) + rect.Position;
     AllGraphicsData.push_back(rbd);
 
-
-    _mouseBodyRef = _world.CreateBody();
-    _bodyRefs.push_back(_mouseBodyRef);
-    auto &body1 = _world.GetBody(_mouseBodyRef);
-    body1.Position = {200.f, 700.f};
-    auto mouseColRef = _world.CreateCollider(_mouseBodyRef);
-    _colRefs.push_back(mouseColRef);
-    auto &mouseCol = _world.GetCollider(mouseColRef);
-    mouseCol.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f));
-
-    GraphicsData bd;
-    bd.Shape = mouseCol.Shape;
-    AllGraphicsData.push_back(bd);
 }
 
 void FormsTriggerSample::SampleUpdate() noexcept
 {
-    auto &mouseBody = _world.GetBody(_mouseBodyRef);
+    auto &mouseBody = _world.GetBody(_starBodyRef);
     mouseBody.Position = _mousePos;
 
-    AllGraphicsData[2].Shape = std::get<Math::CircleF>(_world.GetCollider(_colRefs[2]).Shape) + mouseBody.Position;
+    AllGraphicsData[1].Shape = std::get<Math::PolygonF>(_world.GetCollider(_colRefs[1]).Shape) + mouseBody.Position;
 
     for (int i = 0; i < _colRefs.size(); ++i)
     {

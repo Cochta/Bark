@@ -11,7 +11,7 @@ private:
     BodyRef _sunRef;
 
     static constexpr float G = 6.67f;
-    static constexpr std::size_t PLANET_NBR = 10000;
+    static constexpr std::size_t PLANET_NBR = 1000;
 protected:
     void SampleSetUp() noexcept override;
 
