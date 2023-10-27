@@ -31,6 +31,8 @@ void FormsTriggerSample::SampleSetUp() noexcept
 
     std::vector<Math::Vec2F> verticesTriangle = {{0.f,                         0.f},
                                                  {-Metrics::MetersToPixels(2), -Metrics::MetersToPixels(1)},
+                                                 {-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(1)},
+                                                 {-Metrics::MetersToPixels(1), Metrics::MetersToPixels(1)},
                                                  {-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(2)}};
 
     triangleCol.Shape = Math::Polygon(verticesTriangle);
@@ -107,7 +109,8 @@ void FormsTriggerSample::SampleSetUp() noexcept
                                         Metrics::MetersToPixels(2),
                                         Metrics::MetersToPixels(2))) + rect.Position;
     AllGraphicsData.push_back(rbd);
-
+    printf("%i\n", Math::IsConvex(Math::Polygon(verticesStar)));
+    printf("%i\n", Math::IsConvex(Math::Polygon(verticesTriangle)));
 }
 
 void FormsTriggerSample::SampleUpdate() noexcept

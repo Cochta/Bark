@@ -185,6 +185,26 @@ namespace Math
 
             return Polygon<T>(vertices);
         }
+
+        [[nodiscard]] bool Contains(Vec2<T> point) const
+        {
+            int verticesCount = _vertices.size();
+            if (verticesCount < 3) {
+                throw std::invalid_argument("Polygon must have at least 3 vertices");
+            }
+
+            bool inside = false;
+            for (int i = 0, j = verticesCount - 1; i < verticesCount; j = i++) {
+                const Vec2<T>& vertexI = _vertices[i];
+                const Vec2<T>& vertexJ = _vertices[j];
+
+                if (((vertexI.Y > point.Y) != (vertexJ.Y > point.Y)) &&
+                    (point.X < (vertexJ.X - vertexI.X) * (point.Y - vertexI.Y) / (vertexJ.Y - vertexI.Y) + vertexI.X)) {
+                    inside = !inside;
+                }
+            }
+            return inside;
+        }
     };
 
     using PolygonF = Polygon<float>;
@@ -258,6 +278,46 @@ namespace Math
     [[nodiscard]] constexpr bool Intersect(const Circle<T> circle, const Rectangle<T> rectangle) noexcept
     {
         return Intersect(rectangle, circle);
+    }
+
+    template<typename T>
+    constexpr bool IsConvex(const Polygon<T> &polygon) noexcept
+    {
+        int n = polygon.VerticesCount();
+        if (n < 3)
+        {
+            throw std::invalid_argument("Polygon must have at least 3 vertices");
+        }
+
+        auto vertices = polygon.Vertices();
+
+        bool hasPositive = false;
+        bool hasNegative = false;
+
+        for (int i = 0; i < n; ++i) {
+            Vec2<T> p0 = vertices[i];
+            Vec2<T> p1 = vertices[(i + 1) % n];
+            Vec2<T> p2 = vertices[(i + 2) % n];
+
+            // Calculate the cross product of two adjacent edges.
+            T crossProduct = (p1.X - p0.X) * (p2.Y - p1.Y) - (p1.Y - p0.Y) * (p2.X - p1.X);
+
+            if (crossProduct > 0) {
+                hasPositive = true;
+            } else if (crossProduct < 0) {
+                hasNegative = true;
+            }
+
+            // If both positive and negative cross products are encountered, it's concave.
+            if (hasPositive && hasNegative) {
+                return false;
+            }
+        }
+
+        // If it reaches here, the polygon is convex.
+        return true;
+
+        return true; // The polygon is convex.
     }
 
     template<typename T>
@@ -345,6 +405,8 @@ namespace Math
     template<typename T>
     constexpr bool Intersect(const Polygon<T> &polygon, const Circle<T> &circle) noexcept
     {
+
+        //todo: check if polygon is concave
         const auto center = circle.Center();
         const auto radius = circle.Radius();
 

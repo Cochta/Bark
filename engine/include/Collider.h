@@ -27,10 +27,6 @@ public:
     bool IsAttached = false; /**< Flag indicating if the collider is attached to a body. */
     BodyRef BodyRef; /**< Reference to the body associated with the collider. */
 
-private:
-    //todo: if no body ref then collider is not attached
-    std::size_t _triggerNbr = 0; /**< Counter for tracking the number of triggers.*/
-
 };
 
 /**
