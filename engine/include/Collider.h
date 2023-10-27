@@ -35,8 +35,8 @@ public:
  */
 struct ColliderRefPair // todo; colliderRef au lieu de collider
 {
-    ColliderRef ColRefA; /**< The first colliderRef in the pair. */
-    ColliderRef ColRefB; /**< The second colliderRef in the pair. */
+    const ColliderRef ColRefA; /**< The first colliderRef in the pair. */
+    const ColliderRef ColRefB; /**< The second colliderRef in the pair. */
 
     bool operator==(const ColliderRefPair &other) const {
         return ColRefA.Index == other.ColRefA.Index && ColRefB.Index == other.ColRefB.Index ||
