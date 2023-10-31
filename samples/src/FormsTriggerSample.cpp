@@ -31,8 +31,6 @@ void FormsTriggerSample::SampleSetUp() noexcept
 
     std::vector<Math::Vec2F> verticesTriangle = {{0.f,                         0.f},
                                                  {-Metrics::MetersToPixels(2), -Metrics::MetersToPixels(1)},
-                                                 {-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(1)},
-                                                 {-Metrics::MetersToPixels(1), Metrics::MetersToPixels(1)},
                                                  {-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(2)}};
 
     triangleCol.Shape = Math::Polygon(verticesTriangle);
@@ -54,16 +52,16 @@ void FormsTriggerSample::SampleSetUp() noexcept
     auto &starCol = _world.GetCollider(starColRef);
 
     std::vector<Math::Vec2F> verticesStar = {
-            {Metrics::MetersToPixels(0.0f),  Metrics::MetersToPixels(0.f)},
-            {Metrics::MetersToPixels(0.0f),  Metrics::MetersToPixels(-0.3f)},
-            {Metrics::MetersToPixels(0.075f), Metrics::MetersToPixels(-0.075f)},
-            {Metrics::MetersToPixels(0.3f),  Metrics::MetersToPixels(0.0f)},
-            {Metrics::MetersToPixels(0.1f), Metrics::MetersToPixels(0.1f)},
-            {Metrics::MetersToPixels(0.15f), Metrics::MetersToPixels(0.3f)},
-            {Metrics::MetersToPixels(0.0f), Metrics::MetersToPixels(0.15f)},
-            {Metrics::MetersToPixels(-0.15f), Metrics::MetersToPixels(0.3f)},
-            {Metrics::MetersToPixels(-0.1f), Metrics::MetersToPixels(0.1f)},
-            {Metrics::MetersToPixels(-0.3f), Metrics::MetersToPixels(0.0f)},
+            {Metrics::MetersToPixels(0.0f),    Metrics::MetersToPixels(0.f)},
+            {Metrics::MetersToPixels(0.0f),    Metrics::MetersToPixels(-0.3f)},
+            {Metrics::MetersToPixels(0.075f),  Metrics::MetersToPixels(-0.075f)},
+            {Metrics::MetersToPixels(0.3f),    Metrics::MetersToPixels(0.0f)},
+            {Metrics::MetersToPixels(0.1f),    Metrics::MetersToPixels(0.1f)},
+            {Metrics::MetersToPixels(0.15f),   Metrics::MetersToPixels(0.3f)},
+            {Metrics::MetersToPixels(0.0f),    Metrics::MetersToPixels(0.15f)},
+            {Metrics::MetersToPixels(-0.15f),  Metrics::MetersToPixels(0.3f)},
+            {Metrics::MetersToPixels(-0.1f),   Metrics::MetersToPixels(0.1f)},
+            {Metrics::MetersToPixels(-0.3f),   Metrics::MetersToPixels(0.0f)},
             {Metrics::MetersToPixels(-0.075f), Metrics::MetersToPixels(-0.075f)}
     };
 
@@ -109,8 +107,6 @@ void FormsTriggerSample::SampleSetUp() noexcept
                                         Metrics::MetersToPixels(2),
                                         Metrics::MetersToPixels(2))) + rect.Position;
     AllGraphicsData.push_back(rbd);
-    printf("%i\n", Math::IsConvex(Math::Polygon(verticesStar)));
-    printf("%i\n", Math::IsConvex(Math::Polygon(verticesTriangle)));
 }
 
 void FormsTriggerSample::SampleUpdate() noexcept
@@ -119,7 +115,6 @@ void FormsTriggerSample::SampleUpdate() noexcept
     mouseBody.Position = _mousePos;
 
     AllGraphicsData[1].Shape = std::get<Math::PolygonF>(_world.GetCollider(_colRefs[1]).Shape) + mouseBody.Position;
-
     for (int i = 0; i < _colRefs.size(); ++i)
     {
         if (_triggerNbrPerCollider[i] > 0)

@@ -1,4 +1,6 @@
 #pragma once
+
+#include "cstddef"
 /**
  * @brief Represents a reference to a body in the world.
  * @note It consists of an index and a generation index.

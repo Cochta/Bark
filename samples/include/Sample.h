@@ -17,6 +17,7 @@ struct GraphicsData
 {
     std::variant<Math::CircleF, Math::RectangleF, Math::PolygonF> Shape{
             Math::CircleF(Math::Vec2F::Zero(), 1)};
+    bool Filled = true;
     Color Color;
 };
 

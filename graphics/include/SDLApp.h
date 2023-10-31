@@ -41,6 +41,7 @@ private:
     void DrawCircle(Math::Vec2F center, float radius, int segments, const SDL_Color &col) noexcept;
 
     void DrawRectangle(Math::Vec2F minBound, Math::Vec2F maxBound, const SDL_Color &col) noexcept;
+    void DrawRectangleBorder(Math::Vec2F minBound, Math::Vec2F maxBound, const SDL_Color &col) noexcept;
 
     void DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col) noexcept;
 

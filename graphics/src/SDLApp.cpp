@@ -150,6 +150,21 @@ void SDLApp::DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBoun
     _indices.push_back(offset + 3);             // Bottom right vertex
 }
 
+void SDLApp::DrawRectangleBorder(const Math::Vec2F minBound, const Math::Vec2F maxBound, const SDL_Color &col) noexcept
+{
+    // Draw the top border
+    DrawRectangle(minBound, {maxBound.X, minBound.Y + 1.0f}, col);
+
+    // Draw the left border
+    DrawRectangle(minBound, {minBound.X + 1.0f, maxBound.Y}, col);
+
+    // Draw the bottom border
+    DrawRectangle({minBound.X, maxBound.Y - 1.0f}, maxBound, col);
+
+    // Draw the right border
+    DrawRectangle({maxBound.X - 1.0f, minBound.Y}, maxBound, col);
+}
+
 void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col) noexcept
 {
     if (vertices.size() < 3)
@@ -203,12 +218,23 @@ void SDLApp::DrawAllGraphicsData() noexcept
         } else if (bd.Shape.index() == (int) Math::ShapeType::Rectangle)
         {
             auto rect = std::get<Math::RectangleF>(bd.Shape);
-            DrawRectangle(rect.MinBound(), rect.MaxBound(), {
-                    static_cast<Uint8>(bd.Color.r),
-                    static_cast<Uint8>(bd.Color.g),
-                    static_cast<Uint8>(bd.Color.b),
-                    static_cast<Uint8>(bd.Color.a)
-            });
+            if (!bd.Filled)
+            {
+                DrawRectangleBorder(rect.MinBound(), rect.MaxBound(), {
+                        static_cast<Uint8>(bd.Color.r),
+                        static_cast<Uint8>(bd.Color.g),
+                        static_cast<Uint8>(bd.Color.b),
+                        static_cast<Uint8>(bd.Color.a)
+                });
+            } else
+            {
+                DrawRectangle(rect.MinBound(), rect.MaxBound(), {
+                        static_cast<Uint8>(bd.Color.r),
+                        static_cast<Uint8>(bd.Color.g),
+                        static_cast<Uint8>(bd.Color.b),
+                        static_cast<Uint8>(bd.Color.a)
+                });
+            }
         } else if (bd.Shape.index() == (int) Math::ShapeType::Polygon)
         {
             auto polygon = std::get<Math::PolygonF>(bd.Shape);

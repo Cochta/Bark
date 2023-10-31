@@ -11,6 +11,8 @@ void World::SetUp() noexcept
     BodyGenIndices.resize(initSize, 0);
     _colliders.resize(initSize, Collider());
     ColliderGenIndices.resize(initSize, 0);
+
+    _quadTree.SetUp(Math::RectangleF(Math::Vec2F::Zero(), Math::Vec2F::Zero()));
 }
 
 void World::TearDown() noexcept
@@ -39,6 +41,57 @@ void World::Update(float deltaTime) noexcept
     }
 
     if (_contactListener == nullptr) return;
+
+    Math::Vec2F maxBounds(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
+    Math::Vec2F minBounds(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    for (int i = 0; i < _colliders.size(); i++)
+    {
+        if (!_bodies[i].IsEnabled()) continue;
+        auto circle = std::get<Math::CircleF>(_colliders[i].Shape) + _bodies[i].Position;
+        if (circle.Center().X - circle.Radius() < minBounds.X)
+            minBounds.X = circle.Center().X - circle.Radius();
+        if (circle.Center().Y - circle.Radius() < minBounds.Y)
+            minBounds.Y = circle.Center().Y - circle.Radius();
+        if (circle.Center().X + circle.Radius() > maxBounds.X)
+            maxBounds.X = circle.Center().X + circle.Radius();
+        if (circle.Center().Y + circle.Radius() > maxBounds.Y)
+            maxBounds.Y = circle.Center().Y + circle.Radius();
+
+    }
+    _quadTree.SetUp(Math::RectangleF(minBounds, maxBounds));
+    int nbColisions = 0;
+    for (int i = 0; i < _colliders.size(); i++)
+    {
+        if (Math::Intersect(std::get<Math::CircleF>(_colliders[i].Shape) + _bodies[i].Position, _quadTree._root.Bounds))
+        {
+            nbColisions++;
+        }
+    }
+    if (nbColisions > _quadTree._root.MaxColNbr)
+    {
+        _quadTree._root.Subdivide();
+    }
+    if (_quadTree._root.Children[0] != nullptr)
+    {
+
+        for (auto& child : _quadTree._root.Children)
+        {
+            nbColisions = 0;
+            for (int i = 0; i < _colliders.size(); i++)
+            {
+                if (Math::Intersect(std::get<Math::CircleF>(_colliders[i].Shape) + _bodies[i].Position, child->Bounds))
+                {
+                    nbColisions++;
+                }
+            }
+            if (nbColisions > _quadTree._root.MaxColNbr)
+            {
+                child->Subdivide();
+            }
+        }
+
+    }
+
 
     for (std::size_t i = 0; i < _colliders.size(); ++i)
     {
@@ -78,7 +131,8 @@ void World::Update(float deltaTime) noexcept
 
 [[nodiscard]] BodyRef World::CreateBody() noexcept
 {
-    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body) {
+    auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body &body)
+    {
         return !body.IsEnabled(); // Get first Disabled body
     });
 
@@ -123,7 +177,8 @@ void World::DestroyBody(BodyRef bodyRef)
 ColliderRef World::CreateCollider(BodyRef bodyRef) noexcept
 {
     _colliderIdCount++;
-    auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider &collider) {
+    auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider &collider)
+    {
         return !collider.IsAttached; // Get first Disabled collider
     });
 

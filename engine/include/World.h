@@ -2,18 +2,9 @@
 
 #include "Body.h"
 #include "Collider.h"
+#include "QuadTree.h"
 #include <vector>
 #include <unordered_set>
-
-struct Association{ //todo:  demander prof
-    BodyRef bRef;
-    ColliderRef cRef;
-
-    //RigidBody aRef;
-    //OtherRef;
-
-    //GetAssociationByRef();
-};
 
 /**
  * @brief Represents the physics world containing bodies and interactions.
@@ -31,10 +22,12 @@ private:
 
     ContactListener* _contactListener = nullptr; /**< A listener for contact events between colliders. */
 
+
+
 public:
     std::vector<size_t> BodyGenIndices; /**< Indices of generated bodies. */
     std::vector<size_t> ColliderGenIndices; /**< Indices of generated colliders. */
-
+    QuadTree _quadTree;
     /**
      * @brief Default constructor for the _world class.
      */

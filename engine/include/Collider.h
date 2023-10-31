@@ -17,7 +17,8 @@
  * @class Collider
  * @brief Represents a collider in a physics simulation.
  */
-class Collider {
+class Collider
+{
 public:
     std::variant<Math::CircleF, Math::RectangleF, Math::PolygonF> Shape{
             Math::CircleF(Math::Vec2F::Zero(), 1)}; /**< The shape associated with the collider. */
@@ -35,10 +36,11 @@ public:
  */
 struct ColliderRefPair // todo; colliderRef au lieu de collider
 {
-    const ColliderRef ColRefA; /**< The first colliderRef in the pair. */
-    const ColliderRef ColRefB; /**< The second colliderRef in the pair. */
+    ColliderRef ColRefA; /**< The first colliderRef in the pair. */
+    ColliderRef ColRefB; /**< The second colliderRef in the pair. */
 
-    bool operator==(const ColliderRefPair &other) const {
+    constexpr bool operator==(const ColliderRefPair &other) const
+    {
         return ColRefA.Index == other.ColRefA.Index && ColRefB.Index == other.ColRefB.Index ||
                ColRefA.Index == other.ColRefB.Index && ColRefB.Index == other.ColRefA.Index;
     }
@@ -48,15 +50,17 @@ struct ColliderRefPair // todo; colliderRef au lieu de collider
  * @class ColliderPairHash
  * @brief Custom hash function for collider pairs.
  */
-struct ColliderRefPairHash {
+struct ColliderRefPairHash
+{
     /**
      * @brief Calculate a hash value for a collider pair.
      * @param pair The collider pair to hash.
      * @return The hash value based on the individual hash values of the colliders.
      */
-    std::size_t operator()(const ColliderRefPair &pair) const {
-        std::size_t hashA = std::hash<size_t>{}(pair.ColRefA.Index);
-        std::size_t hashB = std::hash<size_t>{}(pair.ColRefB.Index);
+    constexpr std::size_t operator()(const ColliderRefPair &pair) const
+    {
+        const std::size_t hashA = std::hash<size_t>{}(pair.ColRefA.Index);
+        const std::size_t hashB = std::hash<size_t>{}(pair.ColRefB.Index);
 
         // XOR to create a combined hash valueS
         return hashA ^ hashB;
@@ -67,7 +71,8 @@ struct ColliderRefPairHash {
  * @class ContactListener
  * @brief An abstract class for handling collision events.
  */
-class ContactListener {
+class ContactListener
+{
 public:
     /**
      * @brief Called when a collision begins.
