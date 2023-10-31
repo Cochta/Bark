@@ -18,7 +18,7 @@ void QuadNode::Subdivide() noexcept
     }
 }
 
-void QuadNode::Insert(Collider& collider) noexcept
+void QuadNode::Insert(std::pair<Collider &, Math::Vec2F> collider) noexcept
 {
     if (Colliders.size() >= MaxColNbr && _depth < _maxDepth)
     {
@@ -27,8 +27,10 @@ void QuadNode::Insert(Collider& collider) noexcept
         {
             for (auto &child: Children)
             {
-                //if collide
-                child->Insert(col);
+                if (Math::Intersect(std::get<Math::CircleF>(col.first.Shape) + col.second, Bounds))
+                {
+                    child->Insert(col);
+                }
             }
         }
         Colliders.clear();
