@@ -56,38 +56,43 @@ void World::Update(float deltaTime) noexcept
 
     }
     _quadTree.SetUp(Math::RectangleF(minBounds, maxBounds));
-    int nbColisions = 0;
-    for (int i = 0; i < _colliders.size(); i++)
-    {
-        if (Math::Intersect(std::get<Math::CircleF>(_colliders[i].Shape) + _bodies[i].Position, _quadTree._root.Bounds))
-        {
-            nbColisions++;
-        }
-    }
-    if (nbColisions > _quadTree._root.MaxColNbr)
-    {
-        _quadTree._root.Subdivide();
-    }
-    if (_quadTree._root.Children[0] != nullptr)
-    {
 
-        for (auto& child : _quadTree._root.Children)
-        {
-            nbColisions = 0;
-            for (int i = 0; i < _colliders.size(); i++)
-            {
-                if (Math::Intersect(std::get<Math::CircleF>(_colliders[i].Shape) + _bodies[i].Position, child->Bounds))
-                {
-                    nbColisions++;
-                }
-            }
-            if (nbColisions > _quadTree._root.MaxColNbr)
-            {
-                child->Subdivide();
-            }
-        }
-
+    for (int i = 0; i < _colliders.size(); ++i)
+    {
+        _quadTree._root.Insert({_colliders[i], _bodies[i].Position});
     }
+//    int nbColisions = 0;
+//    for (int i = 0; i < _colliders.size(); i++)
+//    {
+//        if (Math::Intersect(std::get<Math::CircleF>(_colliders[i].Shape) + _bodies[i].Position, _quadTree._root.Bounds))
+//        {
+//            nbColisions++;
+//        }
+//    }
+//    if (nbColisions > _quadTree._root.MaxColNbr)
+//    {
+//        _quadTree._root.Subdivide();
+//    }
+//    if (_quadTree._root.Children[0] != nullptr)
+//    {
+//
+//        for (auto& child : _quadTree._root.Children)
+//        {
+//            nbColisions = 0;
+//            for (int i = 0; i < _colliders.size(); i++)
+//            {
+//                if (Math::Intersect(std::get<Math::CircleF>(_colliders[i].Shape) + _bodies[i].Position, child->Bounds))
+//                {
+//                    nbColisions++;
+//                }
+//            }
+//            if (nbColisions > _quadTree._root.MaxColNbr)
+//            {
+//                child->Subdivide();
+//            }
+//        }
+//
+//    }
 
 
     for (std::size_t i = 0; i < _colliders.size(); ++i)

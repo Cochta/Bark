@@ -15,6 +15,10 @@ private:
 
     static constexpr std::size_t CIRCLE_NBR = 10;
 
+    int toDrawNbr = 0;
+
+    void DrawQuadtree(const QuadNode *node);
+
 public:
     void BeginContact(ColliderRef &col1, ColliderRef &col2) noexcept override;
 

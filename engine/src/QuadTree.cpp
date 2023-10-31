@@ -23,24 +23,36 @@ void QuadNode::Insert(std::pair<Collider &, Math::Vec2F> collider) noexcept
     if (Colliders.size() >= MaxColNbr && _depth < _maxDepth)
     {
         Subdivide();
-        for (auto &col: Colliders)
+        for (auto &child: Children)
         {
-            for (auto &child: Children)
+            for (auto &col: Colliders)
             {
-                if (Math::Intersect(std::get<Math::CircleF>(col.first.Shape) + col.second, Bounds))
+                if (Math::Intersect(std::get<Math::CircleF>(col.first.Shape) + col.second, child->Bounds))
                 {
                     child->Insert(col);
                 }
             }
         }
         Colliders.clear();
-    } else
+    }
+    else if (Children[0] != nullptr)
+    {
+        for (auto &child: Children)
+        {
+            if (Math::Intersect(std::get<Math::CircleF>(collider.first.Shape) + collider.second, child->Bounds))
+            {
+                child->Insert(collider);
+            }
+        }
+    }
+    else
     {
         Colliders.push_back(collider);
     }
 }
 
-void QuadTree::SetUp(const Math::RectangleF &Boundary) noexcept
+void QuadTree::SetUp(const Math::RectangleF &bounds) noexcept
 {
-    _root.Bounds = Boundary;
+    _root.Bounds = bounds;
+    _root.Children = {nullptr,nullptr,nullptr,nullptr};
 }
