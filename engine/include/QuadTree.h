@@ -1,20 +1,19 @@
 #pragma once
 
-#include "Refs.h"
-#include "Shape.h"
+#include "Collider.h"
 
 class QuadNode
 {
 public:
     Math::RectangleF Bounds{Math::Vec2F::Zero(), Math::Vec2F::Zero()};
     std::array<QuadNode *, 4> Children{nullptr, nullptr, nullptr, nullptr};
-    //std::vector<Collider> Colliders;
+    std::vector<Collider> Colliders;
 
     QuadNode() noexcept = default;
     QuadNode(Math::RectangleF bounds) noexcept : Bounds(bounds){};
 
     void Subdivide() noexcept;
-    //void Insert(Collider& col) noexcept;
+    void Insert(Collider& collider) noexcept;
 
     static constexpr int MaxColNbr = 2;
 
@@ -27,8 +26,6 @@ class QuadTree
 {
 public:
     QuadNode _root;
-
-
 
     void SetUp(const Math::RectangleF &bounds) noexcept;
 

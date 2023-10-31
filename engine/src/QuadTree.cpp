@@ -18,25 +18,25 @@ void QuadNode::Subdivide() noexcept
     }
 }
 
-//void QuadNode::Insert(Collider& col) noexcept
-//{
-//    if (ColRefs.size() >= MaxColNbr && _depth < _maxDepth)
-//    {
-//        Subdivide();
-//        for (auto &ref: ColRefs)
-//        {
-//            for (auto &child: Children)
-//            {
-//                //if collide
-//                child->Insert(ref);
-//            }
-//        }
-//        ColRefs.clear();
-//    } else
-//    {
-//        ColRefs.push_back(colRef);
-//    }
-//}
+void QuadNode::Insert(Collider& collider) noexcept
+{
+    if (Colliders.size() >= MaxColNbr && _depth < _maxDepth)
+    {
+        Subdivide();
+        for (auto &col: Colliders)
+        {
+            for (auto &child: Children)
+            {
+                //if collide
+                child->Insert(col);
+            }
+        }
+        Colliders.clear();
+    } else
+    {
+        Colliders.push_back(collider);
+    }
+}
 
 void QuadTree::SetUp(const Math::RectangleF &Boundary) noexcept
 {
