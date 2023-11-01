@@ -1,10 +1,10 @@
 #include "QuadTree.h"
 
-void QuadNode::Subdivide() noexcept
+void QuadNode::Subdivide() noexcept // pas besoin de mettre depth dans le neud
 {
     Math::Vec2F halfSize = (Bounds.MaxBound() - Bounds.MinBound()) / 2;
     Math::Vec2F minBound = Bounds.MinBound();
-
+    
     Children[0] = new QuadNode({minBound, minBound + halfSize});
     Children[1] = new QuadNode({{minBound.X,              minBound.Y + halfSize.Y},
                                 {minBound.X + halfSize.X, minBound.Y + 2 * halfSize.Y}});
@@ -12,6 +12,7 @@ void QuadNode::Subdivide() noexcept
                                 {minBound.X + 2 * halfSize.X, minBound.Y + halfSize.Y}});
     Children[3] = new QuadNode(
             {{minBound.X + halfSize.X, minBound.Y + halfSize.Y}, Bounds.MaxBound()});
+    
     for (auto &child: Children)
     {
         child->_depth = _depth + 1;
@@ -20,8 +21,19 @@ void QuadNode::Subdivide() noexcept
 
 void QuadNode::Insert(std::pair<Collider &, Math::Vec2F> collider) noexcept
 {
-    if (Colliders.size() >= MaxColNbr && _depth < _maxDepth)
+    if (Children[0] != nullptr)
     {
+        for (auto &child: Children)
+        {
+            if (Math::Intersect(std::get<Math::CircleF>(collider.first.Shape) + collider.second, child->Bounds))
+            {
+                child->Insert(collider);
+            }
+        }
+    }
+    else if (Colliders.size() >= MaxColNbr && _depth < _maxDepth)
+    {
+        Colliders.push_back(collider);
         Subdivide();
         for (auto &child: Children)
         {
@@ -35,24 +47,36 @@ void QuadNode::Insert(std::pair<Collider &, Math::Vec2F> collider) noexcept
         }
         Colliders.clear();
     }
-    else if (Children[0] != nullptr)
-    {
-        for (auto &child: Children)
-        {
-            if (Math::Intersect(std::get<Math::CircleF>(collider.first.Shape) + collider.second, child->Bounds))
-            {
-                child->Insert(collider);
-            }
-        }
-    }
     else
     {
         Colliders.push_back(collider);
     }
 }
 
+void QuadNode::Delete()
+{
+    if (Children[0] != nullptr)
+    {
+        for (auto &child: Children)
+        {
+            child->Delete();
+        }
+    }
+    for (auto &child: Children)
+    {
+        delete child;
+        child = nullptr;
+    }
+}
+
 void QuadTree::SetUp(const Math::RectangleF &bounds) noexcept
 {
+    TearDown();
+    _root.Children = {nullptr, nullptr, nullptr, nullptr};
     _root.Bounds = bounds;
-    _root.Children = {nullptr,nullptr,nullptr,nullptr};
+}
+
+void QuadTree::TearDown() noexcept
+{
+    _root.Delete();
 }

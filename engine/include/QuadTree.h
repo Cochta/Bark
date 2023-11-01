@@ -17,9 +17,11 @@ public:
 
     void Subdivide() noexcept;
 
-    void Insert(std::pair<Collider&, Math::Vec2F>) noexcept;
+    void Insert(std::pair<Collider&, Math::Vec2F> collider) noexcept;
 
-    static constexpr int MaxColNbr = 2;
+    void Delete();
+
+    static constexpr int MaxColNbr = 16;
 
     int _depth = 0;
 
@@ -33,4 +35,5 @@ public:
 
     void SetUp(const Math::RectangleF &bounds) noexcept;
 
+    void TearDown() noexcept;
 };

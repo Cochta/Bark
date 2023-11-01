@@ -38,35 +38,42 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
         bd.Shape = Math::Circle(Math::Vec2F::Zero(), RADIUS) + body1.Position;
         AllGraphicsData.push_back(bd);
     }
-    for (int i = 0; i < 100; ++i)
-    {
-        GraphicsData gd;
-        gd.Filled = false;
-        AllGraphicsData.push_back(gd);
-    }
+//    for (int i = 0; i < 100; ++i)
+//    {
+//        GraphicsData gd;
+//        gd.Filled = false;
+//        AllGraphicsData.push_back(gd);
+//    }
 }
 
 void QuadTreeTriggerSample::DrawQuadtree(const QuadNode *node)
 {
     if (node->Children[0] == nullptr)
     {
-        toDrawNbr++;
-    }
-
-    for (int i = 0; i < 4; i++)
+        //AllGraphicsData[CIRCLE_NBR + toDrawNbr].Shape = Math::RectangleF(node->Bounds);
+        _quadTreeGraphicsData.push_back({Math::RectangleF(node->Bounds), false});
+    } else
     {
-        DrawQuadtree(node->Children[i]);
+        for (int i = 0; i < 4; i++)
+        {
+            DrawQuadtree(node->Children[i]);
+        }
     }
 }
 
 void QuadTreeTriggerSample::SampleUpdate() noexcept
 {
-    GraphicsData test;
-    for (int i = 0; i < 100; ++i)
+//    GraphicsData test;
+//    for (int i = 0; i < 100; ++i)
+//    {
+//        AllGraphicsData[CIRCLE_NBR + i] = test;
+//        AllGraphicsData[CIRCLE_NBR + i].Filled = false;
+//    }
+    if (CIRCLE_NBR < AllGraphicsData.size())
     {
-        AllGraphicsData[CIRCLE_NBR + i] = test;
-        AllGraphicsData[CIRCLE_NBR + i].Filled = false;
+        AllGraphicsData.erase(AllGraphicsData.begin() + CIRCLE_NBR, AllGraphicsData.end());
     }
+
     for (std::size_t i = 0; i < _bodyRefs.size(); ++i)
     {
         auto &body = _world.GetBody(_bodyRefs[i]);
@@ -99,24 +106,10 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
         }
     }
 
-    AllGraphicsData[CIRCLE_NBR].Shape = Math::RectangleF(_world._quadTree._root.Bounds);
+    _quadTreeGraphicsData.clear();
+    DrawQuadtree(&_world._quadTree._root);
+    AllGraphicsData.insert(AllGraphicsData.end(), _quadTreeGraphicsData.begin(), _quadTreeGraphicsData.end());
 
-    if (_world._quadTree._root.Children[0] != nullptr)
-    {
-        for (int i = 0; i < _world._quadTree._root.Children.size(); ++i)
-        {
-            AllGraphicsData[CIRCLE_NBR + 1 * i].Shape = Math::RectangleF(_world._quadTree._root.Children[i]->Bounds);
-
-            if (_world._quadTree._root.Children[i]->Children[0] != nullptr)
-            {
-                for (int j = 0; j < _world._quadTree._root.Children[i]->Children.size(); ++j)
-                {
-                    AllGraphicsData[CIRCLE_NBR + 1 * i + 4 * j].Shape = Math::RectangleF(
-                            _world._quadTree._root.Children[i]->Children[j]->Bounds);
-                }
-            }
-        }
-    }
 }
 
 void QuadTreeTriggerSample::SampleTearDown() noexcept

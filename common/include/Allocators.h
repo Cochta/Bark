@@ -18,7 +18,7 @@ public:
 class LinearAllocator : public Allocator
 {
 public:
-    LinearAllocator(std::size_t size) : _size(size), _ptr(new char[size]), _offset(0)
+    LinearAllocator(std::size_t size) : _size(size), _ptr(new char[size]), _offset(0)//todo: donner juste le pointer
     {}
 
     ~LinearAllocator() override
@@ -26,7 +26,7 @@ public:
         delete[] _ptr;
     }
 
-    void *Allocate(std::size_t size, std::size_t typeSize) override
+    void *Allocate(std::size_t size, std::size_t typeSize) override // todo: ajouter alignement
     {
         if (_offset + size * typeSize > _size)
         {
@@ -47,7 +47,7 @@ public:
 
 private:
     std::size_t _size;
-    char *_ptr; // todo: demander prof si utiliser UniquePtr c'est mieux
+    char *_ptr = nullptr;
     std::size_t _offset;
 };
 
@@ -94,7 +94,7 @@ public:
         return allocationPtr + headerSize;
     }
 
-    void Deallocate(void *ptr) override
+    void Deallocate(void *ptr) override // todo: checker que celui a desalouer soit le top
     {
         // To deallocate, we use the allocation header to get the size
         // and then move the top of the stack back by that amount.
