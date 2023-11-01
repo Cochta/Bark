@@ -13,7 +13,7 @@ private:
     
     static constexpr float SPEED = 100;
     static constexpr float RADIUS = Metrics::MetersToPixels(0.2f);
-    static constexpr std::size_t CIRCLE_NBR = 200;
+    static constexpr std::size_t CIRCLE_NBR = 500;
 
 public:
     void BeginContact(ColliderRef &col1, ColliderRef &col2) noexcept override;

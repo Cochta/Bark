@@ -19,37 +19,37 @@ void QuadNode::Subdivide() noexcept // pas besoin de mettre depth dans le neud
     }
 }
 
-void QuadNode::Insert(std::pair<Collider &, Math::Vec2F> collider) noexcept
+void QuadNode::Insert( const ColliderRefAabb &colliderRefAabb) noexcept
 {
     if (Children[0] != nullptr)
     {
         for (auto &child: Children)
         {
-            if (Math::Intersect(std::get<Math::CircleF>(collider.first.Shape) + collider.second, child->Bounds))
+            if (Math::Intersect(colliderRefAabb.Aabb, child->Bounds))
             {
-                child->Insert(collider);
+                child->Insert(colliderRefAabb);
             }
         }
     }
-    else if (Colliders.size() >= MaxColNbr && _depth < _maxDepth)
+    else if (ColliderRefAabbs.size() >= MaxColNbr && _depth < _maxDepth)
     {
-        Colliders.push_back(collider);
         Subdivide();
+        ColliderRefAabbs.push_back(colliderRefAabb);
         for (auto &child: Children)
         {
-            for (auto &col: Colliders)
+            for (auto &col: ColliderRefAabbs)
             {
-                if (Math::Intersect(std::get<Math::CircleF>(col.first.Shape) + col.second, child->Bounds))
+                if (Math::Intersect(col.Aabb, child->Bounds))
                 {
                     child->Insert(col);
                 }
             }
         }
-        Colliders.clear();
+        ColliderRefAabbs.clear();
     }
     else
     {
-        Colliders.push_back(collider);
+        ColliderRefAabbs.push_back(colliderRefAabb);
     }
 }
 

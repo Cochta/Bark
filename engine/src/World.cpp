@@ -71,12 +71,13 @@ void World::Update(float deltaTime) noexcept
     }
     _quadTree.SetUp(Math::RectangleF(minBounds, maxBounds));
     
-    for (auto &collider: _colliders)
+    for (std::size_t i = 0; i < _colliders.size(); ++i)
     {
-        if (!collider.IsAttached)
+        if (!_colliders[i].IsAttached)
         { continue; }
         
-        _quadTree._root.Insert({collider, GetBody(collider.BodyRef).Position});
+        //ColliderRefAabb cb{{i, ColliderGenIndices[i]}, (_colliders[i].GetBounds())};
+        _quadTree._root.Insert({{i, ColliderGenIndices[i]}, (_colliders[i].GetBounds())});
     }
     
     for (std::size_t i = 0; i < _colliders.size(); ++i)
