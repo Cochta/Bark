@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Metrics // Meter in physical world ~=~ centimeter irl
+namespace Metrics // Meter in physical world != meter irl
 {
     constexpr float MeterRatio = 100.f;
 

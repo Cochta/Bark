@@ -27,7 +27,42 @@ public:
     bool IsSensor = true; /**< Flag indicating if the collider is a sensor (non-physical). */
     bool IsAttached = false; /**< Flag indicating if the collider is attached to a body. */
     BodyRef BodyRef; /**< Reference to the body associated with the collider. */
-
+    
+    Math::Vec2F BodyPosition = Math::Vec2F::Zero();
+    
+    [[nodiscard]] Math::RectangleF Collider::GetBounds() const noexcept
+    {
+        switch (Shape.index())
+        {
+            case static_cast<int>(Math::ShapeType::Circle):
+            {
+                auto circle = std::get<Math::CircleF>(Shape);
+                return Math::RectangleF::FromCenter(circle.Center(), {circle.Radius(), circle.Radius()}) + BodyPosition;
+            }
+            case static_cast<int>(Math::ShapeType::Rectangle):
+            {
+                return std::get<Math::RectangleF>(Shape) + BodyPosition;
+            }
+//            case static_cast<int>(Math::ShapeType::Polygon):
+//            {
+//                float minX = std::numeric_limits<float>::max();
+//                float minY = std::numeric_limits<float>::max();
+//                float maxX = std::numeric_limits<float>::min();
+//                float maxY = std::numeric_limits<float>::min();
+//                Math::PolygonF polygon = GetPolygon();
+//
+//                for (auto &vertex: polygon.Vertices())
+//                {
+//                    minX = std::min(minX, vertex.X);
+//                    minY = std::min(minY, vertex.Y);
+//                    maxX = std::max(maxX, vertex.X);
+//                    maxY = std::max(maxY, vertex.Y);
+//                }
+//
+//                return Math::RectangleF{Math::Vec2F{minX, minY}, Math::Vec2F{maxX, maxY}} + _position;
+//            }
+        }
+    }
 };
 
 /**
@@ -38,7 +73,7 @@ struct ColliderRefPair // todo; colliderRef au lieu de collider
 {
     ColliderRef ColRefA; /**< The first colliderRef in the pair. */
     ColliderRef ColRefB; /**< The second colliderRef in the pair. */
-
+    
     constexpr bool operator==(const ColliderRefPair &other) const
     {
         return ColRefA.Index == other.ColRefA.Index && ColRefB.Index == other.ColRefB.Index ||
@@ -61,7 +96,7 @@ struct ColliderRefPairHash
     {
         const std::size_t hashA = std::hash<size_t>{}(pair.ColRefA.Index);
         const std::size_t hashB = std::hash<size_t>{}(pair.ColRefB.Index);
-
+        
         // XOR to create a combined hash valueS
         return hashA ^ hashB;
     }
@@ -80,7 +115,7 @@ public:
      * @param col2 The second collider involved in the collision.
      */
     virtual void BeginContact(ColliderRef &colRef1, ColliderRef &colRef2) noexcept = 0;
-
+    
     /**
      * @brief Called when a collision ends.
      * @param col1 The first collider involved in the collision.
