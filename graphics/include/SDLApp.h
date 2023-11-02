@@ -1,11 +1,12 @@
 #pragma once
-//
-// Created by Coch on 09.10.2023.
-//
 
-#include <SDL2/SDL.h>
 
 #include "SampleManager.h"
+
+#include <SDL2/SDL.h>
+#include <imgui.h>
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_sdlrenderer2.h"
 
 
 class SDLApp

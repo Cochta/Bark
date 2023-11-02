@@ -93,7 +93,7 @@ struct ColliderRefPairHash
      * @param pair The collider pair to hash.
      * @return The hash value based on the individual hash values of the colliders.
      */
-    constexpr std::size_t operator()(const ColliderRefPair &pair) const
+    std::size_t operator()(const ColliderRefPair &pair) const
     {
         const std::size_t hashA = std::hash<size_t>{}(pair.ColRefA.Index);
         const std::size_t hashB = std::hash<size_t>{}(pair.ColRefB.Index);
@@ -115,12 +115,12 @@ public:
      * @param col1 The first collider involved in the collision.
      * @param col2 The second collider involved in the collision.
      */
-    virtual void BeginContact(ColliderRef &colRef1, ColliderRef &colRef2) noexcept = 0;
+    virtual void BeginContact(ColliderRef colRef1, ColliderRef colRef2) noexcept = 0;
     
     /**
      * @brief Called when a collision ends.
      * @param col1 The first collider involved in the collision.
      * @param col2 The second collider involved in the collision.
      */
-    virtual void EndContact(ColliderRef &colRef1, ColliderRef &colRef2) noexcept = 0;
+    virtual void EndContact(ColliderRef colRef1, ColliderRef colRef2) noexcept = 0;
 };

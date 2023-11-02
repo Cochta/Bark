@@ -12,13 +12,13 @@ private:
     std::vector<int> _triggerNbrPerCollider;
     
     static constexpr float SPEED = 100;
-    static constexpr float RADIUS = Metrics::MetersToPixels(0.2f);
-    static constexpr std::size_t CIRCLE_NBR = 500;
+    static constexpr float RADIUS = Metrics::MetersToPixels(0.1f);
+    static constexpr std::size_t CIRCLE_NBR = 1000;
 
 public:
-    void BeginContact(ColliderRef &col1, ColliderRef &col2) noexcept override;
+    void BeginContact(ColliderRef col1, ColliderRef col2) noexcept override;
     
-    void EndContact(ColliderRef &col1, ColliderRef &col2) noexcept override;
+    void EndContact(ColliderRef col1, ColliderRef col2) noexcept override;
 
 protected:
     void SampleSetUp() noexcept override;

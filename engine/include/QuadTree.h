@@ -17,7 +17,7 @@ public:
     
     QuadNode() noexcept = default;
     
-    QuadNode(Math::RectangleF bounds) noexcept: Bounds(bounds)
+    explicit QuadNode(Math::RectangleF bounds) noexcept: Bounds(bounds)
     {};
     
     void Subdivide() noexcept;

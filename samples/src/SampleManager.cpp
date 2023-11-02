@@ -2,7 +2,7 @@
 
 void SampleManager::SetUp() noexcept
 {
-    //_samples.push_back(UniquePtr<FormsTriggerSample>(new FormsTriggerSample()));
+    _samples.push_back(UniquePtr<FormsTriggerSample>(new FormsTriggerSample()));
     _samples.push_back(UniquePtr<QuadTreeTriggerSample>(new QuadTreeTriggerSample()));
     _samples.push_back(UniquePtr<StarSystemSample>(new StarSystemSample()));
 

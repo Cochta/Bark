@@ -3,19 +3,16 @@
 void StarSystemSample::SampleSetUp() noexcept
 {
     {
-        auto sunRef = _world.CreateBody();
-        auto &sun = _world.GetBody(sunRef);
+        _sunRef = _world.CreateBody();
+        auto &sun = _world.GetBody(_sunRef);
         sun.Position = {static_cast<float>(Metrics::Width) / 2, static_cast<float>(Metrics::Height) / 2};
         sun.Mass = 1000000;
 
-        _bodyRefs.push_back(sunRef);
-        _sunRef = sunRef;
+        _bodyRefs.push_back(_sunRef);
         GraphicsData sbd;
-        _circles.emplace_back(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03));
+        _circles.emplace_back(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03f));
         sbd.Color = {255, 255, 0, 255};
         AllGraphicsData.push_back(sbd);
-
-        const auto copiedSun = sun;
 
         for (std::size_t i = 0; i < PLANET_NBR; ++i)
         {
@@ -24,8 +21,8 @@ void StarSystemSample::SampleSetUp() noexcept
             auto &body = _world.GetBody(bodyRef);
             body.Position = {Math::Random::Range(100.f, Metrics::Width - 100.f),
                              Math::Random::Range(100.f, Metrics::Height - 100.f)};
-            auto r = copiedSun.Position - body.Position;
-            auto v = sqrt(G * (copiedSun.Mass / r.Length()));
+            auto r = _world.GetBody(_sunRef).Position - body.Position;
+            auto v = sqrt(G * (_world.GetBody(_sunRef).Mass / r.Length()));
             body.Velocity = Math::Vec2F(-r.Y, r.X).Normalized() * v;
             body.Mass = 10.f;
 

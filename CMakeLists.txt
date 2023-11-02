@@ -6,6 +6,27 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(GTest CONFIG REQUIRED)
 
 find_package(SDL2 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+
+option(ENABLE_ADDRESS_SANITIZER "Enable AddressSanitizer" OFF)
+
+IF(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX2 /Oi /Oy-")
+
+    # Check if AddressSanitizer is enabled
+    if(ENABLE_ADDRESS_SANITIZER)
+        # Enable AddressSanitizer flags and options
+        add_compile_options(/fsanitize=address /DEBUG)
+    endif()
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps -march=haswell -ffast-math")
+
+    # Check if AddressSanitizer is enabled
+    if(ENABLE_ADDRESS_SANITIZER)
+        # Enable AddressSanitizer flags and options
+        add_compile_options(-fsanitize=address /DEBUG)
+    endif()
+ENDIF()
 
 # Common library
 file(GLOB_RECURSE COMMON_FILES common/include/*.h common/src/*.cpp)
@@ -72,7 +93,7 @@ target_include_directories(Graphics PUBLIC libs/Math/include/)
 target_include_directories(Graphics PUBLIC common/include/)
 target_include_directories(Graphics PUBLIC samples/include/)
 target_link_libraries(Graphics PUBLIC Samples Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> imgui::imgui)
 
 add_executable(Main Main.cpp)
 target_link_libraries(Main Graphics)

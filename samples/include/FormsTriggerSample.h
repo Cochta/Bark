@@ -11,9 +11,9 @@ private:
     BodyRef _starBodyRef;
 
 public:
-    void BeginContact(ColliderRef &col1, ColliderRef &col2) noexcept override;
+    void BeginContact(ColliderRef col1, ColliderRef col2) noexcept override;
 
-    void EndContact(ColliderRef &col1, ColliderRef &col2) noexcept override;
+    void EndContact(ColliderRef col1, ColliderRef col2) noexcept override;
 
 protected:
     void SampleSetUp() noexcept override;

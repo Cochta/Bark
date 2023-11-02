@@ -22,7 +22,8 @@ private:
 
     ContactListener* _contactListener = nullptr; /**< A listener for contact events between colliders. */
 
-
+    void UpdateQuadTreeCollisions(const QuadNode& node);
+    void UpdateCollisions();
 
 public:
     std::vector<size_t> BodyGenIndices; /**< Indices of generated bodies. */
