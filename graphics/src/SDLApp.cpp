@@ -165,7 +165,7 @@ void SDLApp::DrawRectangleBorder(const Math::Vec2F minBound, const Math::Vec2F m
     DrawRectangle({maxBound.X - 1.0f, minBound.Y}, maxBound, col);
 }
 
-void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col) noexcept
+void SDLApp::DrawPolygon(const std::vector<Math::Vec2F> &vertices, const SDL_Color &col)
 {
     if (vertices.size() < 3)
     {

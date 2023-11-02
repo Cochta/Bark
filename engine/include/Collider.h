@@ -30,7 +30,7 @@ public:
     
     Math::Vec2F BodyPosition = Math::Vec2F::Zero();
     
-    [[nodiscard]] Math::RectangleF Collider::GetBounds() const noexcept
+    [[nodiscard]] Math::RectangleF GetBounds() const noexcept
     {
         switch (Shape.index())
         {
@@ -62,6 +62,7 @@ public:
 //                return Math::RectangleF{Math::Vec2F{minX, minY}, Math::Vec2F{maxX, maxY}} + _position;
 //            }
         }
+        return {Math::Vec2F::Zero(), Math::Vec2F::Zero()};
     }
 };
 

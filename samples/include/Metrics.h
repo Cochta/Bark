@@ -14,6 +14,6 @@ namespace Metrics // Meter in physical world != meter irl
         return meters * MeterRatio;
     }
 
-    constexpr int Width = MetersToPixels(10);
-    constexpr int Height = MetersToPixels(9);
+    constexpr int Width = MetersToPixels(12);
+    constexpr int Height = MetersToPixels(8);
 }
