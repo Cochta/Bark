@@ -12,8 +12,8 @@ private:
     std::vector<int> _triggerNbrPerCollider;
     
     static constexpr float SPEED = 100;
-    static constexpr float RADIUS = Metrics::MetersToPixels(0.1f);
-    static constexpr std::size_t CIRCLE_NBR = 1000;
+    static constexpr float RADIUS = Metrics::MetersToPixels(0.3f);
+    static constexpr std::size_t CIRCLE_NBR = 100;
 
 public:
     void BeginContact(ColliderRef col1, ColliderRef col2) noexcept override;

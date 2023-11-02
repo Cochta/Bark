@@ -50,7 +50,7 @@ void QuadTreeTriggerSample::DrawQuadtree(const QuadNode* node)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			DrawQuadtree(node->Children[i]);
+			DrawQuadtree(node->Children[i].get());
 		}
 	}
 }

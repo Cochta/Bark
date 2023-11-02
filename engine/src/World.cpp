@@ -79,12 +79,10 @@ void World::Update(float deltaTime) noexcept
 
 	for (std::size_t i = 0; i < _colliders.size(); ++i)
 	{
-		if (!_colliders[i].IsAttached)
+		if (_colliders[i].IsAttached)
 		{
-			continue;
+			_quadTree._root.Insert({ {i, ColliderGenIndices[i]}, (_colliders[i].GetBounds()) });
 		}
-
-		_quadTree._root.Insert({ {i, ColliderGenIndices[i]}, (_colliders[i].GetBounds()) });
 	}
 
 	UpdateQuadTreeCollisions(_quadTree._root);

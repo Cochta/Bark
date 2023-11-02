@@ -4,7 +4,6 @@ project(PhysicalMotor)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(GTest CONFIG REQUIRED)
-
 find_package(SDL2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
