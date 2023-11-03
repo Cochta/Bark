@@ -69,6 +69,8 @@ void SDLApp::Run() noexcept
 	bool quit = false;
 	SDL_Event e;
 
+	bool adjustWindow = true;
+
 	while (!quit)
 	{
 
@@ -105,7 +107,14 @@ void SDLApp::Run() noexcept
 		static float f = 0.0f;
 		static int counter = 0;
 
-		ImGui::Begin("Sample Manager");                
+		if (adjustWindow)
+		{
+			ImGui::SetNextWindowSize(ImVec2(Metrics::Width / 3, Metrics::Height / 5));
+			adjustWindow = false;
+		}
+
+
+		ImGui::Begin("Sample Manager");
 
 		if (ImGui::BeginCombo("Select a Sample", _sampleManager.GetSampleName(_sampleManager.GetCurrentIndex()).c_str()))
 		{
@@ -151,7 +160,7 @@ void SDLApp::Run() noexcept
 		ImGui::Render();
 
 		// Clear the renderer
-		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0);
+		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
 		SDL_RenderClear(_renderer);
 
 		SDL_GetMouseState(&MousePos.X, &MousePos.Y);
