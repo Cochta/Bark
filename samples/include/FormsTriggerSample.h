@@ -11,6 +11,9 @@ private:
     BodyRef _starBodyRef;
 
 public:
+    std::string GetName() noexcept override;
+    std::string GetDescription() noexcept override;
+
     void BeginContact(ColliderRef col1, ColliderRef col2) noexcept override;
 
     void EndContact(ColliderRef col1, ColliderRef col2) noexcept override;

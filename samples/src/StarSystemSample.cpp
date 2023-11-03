@@ -1,5 +1,15 @@
 #include "StarSystemSample.h"
 
+std::string StarSystemSample::GetName() noexcept
+{
+     return "Star System"; 
+}
+
+std::string StarSystemSample::GetDescription() noexcept
+{
+    return "Randomly generated physical object rotating around a \"sun\" using real physics.";
+}
+
 void StarSystemSample::SampleSetUp() noexcept
 {
     {

@@ -1,5 +1,15 @@
 #include "QuadTreeTriggerSample.h"
 
+std::string QuadTreeTriggerSample::GetName() noexcept
+{
+	return "Trigger";
+}
+
+std::string QuadTreeTriggerSample::GetDescription() noexcept
+{
+	return "Randomly generated objects, they become green if they detect a collision otherwise they stay blue, the collision detection uses a QuadTree. ";
+}
+
 void QuadTreeTriggerSample::BeginContact(ColliderRef col1, ColliderRef col2) noexcept
 {
 	_triggerNbrPerCollider[col1.Index]++;
@@ -24,7 +34,7 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
 		auto& body1 = _world.GetBody(bodyRef1);
 
 		body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
-									 Math::Random::Range(-1.f, 1.f)) * SPEED;
+			Math::Random::Range(-1.f, 1.f)) * SPEED;
 
 		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
 						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
@@ -98,7 +108,7 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
 	}
 
 	_quadTreeGraphicsData.clear();
-	DrawQuadtree(&_world._quadTree._root);
+	DrawQuadtree(&_world._quadTree);
 	AllGraphicsData.insert(AllGraphicsData.end(), _quadTreeGraphicsData.begin(), _quadTreeGraphicsData.end());
 
 }

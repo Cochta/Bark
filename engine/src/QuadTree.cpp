@@ -2,8 +2,8 @@
 
 void QuadNode::Subdivide() noexcept // pas besoin de mettre depth dans le neud
 {
-	Math::Vec2F halfSize = (Bounds.MaxBound() - Bounds.MinBound()) / 2;
-	Math::Vec2F minBound = Bounds.MinBound();
+	const Math::Vec2F halfSize = (Bounds.MaxBound() - Bounds.MinBound()) / 2;
+	const Math::Vec2F minBound = Bounds.MinBound();
 
 	Children[0] = std::make_unique<QuadNode>(QuadNode({ minBound, minBound + halfSize }));
 	Children[1] = std::make_unique<QuadNode>(QuadNode({ {minBound.X,              minBound.Y + halfSize.Y},
@@ -13,7 +13,7 @@ void QuadNode::Subdivide() noexcept // pas besoin de mettre depth dans le neud
 	Children[3] = std::make_unique<QuadNode>(QuadNode(
 		{ {minBound.X + halfSize.X, minBound.Y + halfSize.Y}, Bounds.MaxBound() }));
 
-	for (auto& child : Children)
+	for (const auto& child : Children)
 	{
 		child->_depth = _depth + 1;
 	}
@@ -23,7 +23,7 @@ void QuadNode::Insert(const ColliderRefAabb& colliderRefAabb) noexcept
 {
 	if (Children[0] != nullptr)
 	{
-		for (auto& child : Children)
+		for (const auto& child : Children)
 		{
 			if (Math::Intersect(colliderRefAabb.Aabb, child->Bounds))
 			{
@@ -31,11 +31,11 @@ void QuadNode::Insert(const ColliderRefAabb& colliderRefAabb) noexcept
 			}
 		}
 	}
-	else if (ColliderRefAabbs.size() >= MaxColNbr && _depth < _maxDepth)
+	else if (ColliderRefAabbs.size() >= _MAX_COL_NBR && _depth < _MAX_DEPTH)
 	{
 		Subdivide();
 		ColliderRefAabbs.push_back(colliderRefAabb);
-		for (auto& child : Children)
+		for (const auto& child : Children)
 		{
 			for (auto& col : ColliderRefAabbs)
 			{
@@ -97,13 +97,13 @@ void QuadNode::Insert(const ColliderRefAabb& colliderRefAabb) noexcept
 	//}
 }
 
-void QuadTree::SetUp(const Math::RectangleF& bounds) noexcept
+void QuadNode::SetUpRoot(const Math::RectangleF& bounds) noexcept
 {
-	_root.ColliderRefAabbs.clear();
-	for (auto& child : _root.Children)
+	ColliderRefAabbs.clear();
+	for (auto& child : Children)
 	{
 		child = nullptr;
 	}
-	_root.Bounds = bounds;
+	Bounds = bounds;
 }
 

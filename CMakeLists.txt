@@ -7,7 +7,8 @@ find_package(GTest CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
-option(ENABLE_ADDRESS_SANITIZER "Enable AddressSanitizer" OFF)
+option(ENABLE_ADDRESS_SANITIZER "Enable Address Sanitizer" OFF)
+option(ENABLE_TRACY_PROFILER "Enable Tracy Profiler" OFF)
 
 IF(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX2 /Oi /Oy-")

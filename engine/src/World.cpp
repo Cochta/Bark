@@ -8,8 +8,6 @@ void World::SetUp() noexcept
 	BodyGenIndices.resize(initSize, 0);
 	_colliders.resize(initSize, Collider());
 	ColliderGenIndices.resize(initSize, 0);
-
-	_quadTree.SetUp(Math::RectangleF(Math::Vec2F::Zero(), Math::Vec2F::Zero()));
 }
 
 void World::TearDown() noexcept
@@ -24,7 +22,116 @@ void World::TearDown() noexcept
 	_colRefPairs.clear();
 }
 
-void World::Update(float deltaTime) noexcept
+void World::Update(const float deltaTime) noexcept
+{
+	UpdateBodies(deltaTime);
+
+	if (_contactListener == nullptr)
+	{
+		return;
+	}
+
+	//UpdateCollisions();
+
+	SetUpQuadTree();
+
+	UpdateQuadTreeCollisions(_quadTree);
+}
+
+[[nodiscard]] BodyRef World::CreateBody() noexcept
+{
+	auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body& body) {
+		return !body.IsEnabled(); // Get first Disabled body
+		});
+
+	if (it != _bodies.end())
+	{
+		std::size_t index = std::distance(_bodies.begin(), it);
+		auto bodyRef = BodyRef{ index, BodyGenIndices[index] };
+		GetBody(bodyRef).Enable();
+		return bodyRef;
+	}
+
+	std::size_t previousSize = _bodies.size();
+
+	_bodies.resize(previousSize * 2, Body());
+	BodyGenIndices.resize(previousSize * 2, 0);
+
+	BodyRef bodyRef = { previousSize, BodyGenIndices[previousSize] };
+	GetBody(bodyRef).Enable();
+	return bodyRef;
+}
+
+void World::DestroyBody(const BodyRef bodyRef)
+{
+	if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex)
+	{
+		throw std::runtime_error("No body found !");
+	}
+
+	_bodies[bodyRef.Index].Disable();
+}
+
+[[nodiscard]] Body& World::GetBody(const BodyRef bodyRef)
+{
+	if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex)
+	{
+		throw std::runtime_error("No body found !");
+	}
+
+	return _bodies[bodyRef.Index];
+}
+
+ColliderRef World::CreateCollider(const BodyRef bodyRef) noexcept
+{
+	_colliderIdCount++;
+	auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider& collider) {
+		return !collider.IsAttached; // Get first Disabled collider
+		});
+
+	if (it != _colliders.end())
+	{
+		std::size_t index = std::distance(_colliders.begin(), it);
+		auto colRef = ColliderRef{ index, ColliderGenIndices[index] };
+		auto& col = GetCollider(colRef);
+		col.IsAttached = true;
+		col.BodyRef = bodyRef;
+
+		return colRef;
+	}
+
+	std::size_t previousSize = _colliders.size();
+
+	_colliders.resize(previousSize * 2, Collider());
+	ColliderGenIndices.resize(previousSize * 2, 0);
+
+	ColliderRef colRef = { previousSize, ColliderGenIndices[previousSize] };
+	auto& col = GetCollider(colRef);
+	col.IsAttached = true;
+	col.BodyRef = bodyRef;
+	return colRef;
+}
+
+Collider& World::GetCollider(const ColliderRef colRef)
+{
+	if (ColliderGenIndices[colRef.Index] != colRef.GenIndex)
+	{
+		throw std::runtime_error("No collider found !");
+	}
+
+	return _colliders[colRef.Index];
+}
+
+void World::DestroyCollider(const ColliderRef colRef)
+{
+	if (ColliderGenIndices[colRef.Index] != colRef.GenIndex)
+	{
+		throw std::runtime_error("No collider found !");
+	}
+	_colliders[colRef.Index].IsAttached = false;
+}
+
+void World::UpdateBodies(const float deltaTime) noexcept
 {
 	for (auto& body : _bodies)
 	{
@@ -37,118 +144,10 @@ void World::Update(float deltaTime) noexcept
 		body.Position += body.Velocity * deltaTime;
 
 		body.ResetForce();
-
-	}
-
-	if (_contactListener == nullptr)
-	{
-		return;
-	}
-
-	Math::Vec2F maxBounds(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
-	Math::Vec2F minBounds(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-	for (auto& collider : _colliders)
-	{
-		if (!collider.IsAttached)
-		{
-			continue;
-		}
-
-		collider.BodyPosition = GetBody(collider.BodyRef).Position;
-
-		auto bounds = collider.GetBounds();
-		if (bounds.MinBound().X < minBounds.X)
-		{
-			minBounds.X = bounds.MinBound().X;
-		}
-		if (bounds.MinBound().Y < minBounds.Y)
-		{
-			minBounds.Y = bounds.MinBound().Y;
-		}
-		if (bounds.MaxBound().X > maxBounds.X)
-		{
-			maxBounds.X = bounds.MaxBound().X;
-		}
-		if (bounds.MaxBound().Y > maxBounds.Y)
-		{
-			maxBounds.Y = bounds.MaxBound().Y;
-		}
-
-	}
-	_quadTree.SetUp(Math::RectangleF(minBounds, maxBounds));
-
-	for (std::size_t i = 0; i < _colliders.size(); ++i)
-	{
-		if (_colliders[i].IsAttached)
-		{
-			_quadTree._root.Insert({ {i, ColliderGenIndices[i]}, (_colliders[i].GetBounds()) });
-		}
-	}
-
-	UpdateQuadTreeCollisions(_quadTree._root);
-}
-
-void World::UpdateQuadTreeCollisions(const QuadNode& node)
-{
-	if (node.Children[0] == nullptr)
-	{
-		for (const auto& colRefAabb1 : node.ColliderRefAabbs)
-		{
-			auto& col1 = GetCollider(colRefAabb1.ColRef);
-
-			if (!col1.IsAttached)
-			{
-				continue;
-			}
-
-			if (!col1.IsSensor)
-			{
-				continue;
-			}
-
-			for (const auto& colRefAabb2 : node.ColliderRefAabbs)
-			{
-				auto& col2 = GetCollider(colRefAabb2.ColRef);
-				if (col1.BodyRef == col2.BodyRef)
-				{
-					continue;
-				}
-				if (!col2.IsAttached)
-				{
-					continue;
-				}
-				if (!col1.IsSensor)
-				{
-					continue;
-				}
-				if (_colRefPairs.find({ colRefAabb1.ColRef, colRefAabb2.ColRef }) != _colRefPairs.end())
-				{
-					if (!Overlap(col1, col2))
-					{
-						_contactListener->EndContact(colRefAabb1.ColRef, colRefAabb2.ColRef);
-						_colRefPairs.erase({ colRefAabb1.ColRef, colRefAabb2.ColRef });
-					}
-					continue;
-				}
-
-				if (Overlap(col1, col2))
-				{
-					_contactListener->BeginContact(colRefAabb1.ColRef, colRefAabb2.ColRef);
-					_colRefPairs.insert({ colRefAabb1.ColRef, colRefAabb2.ColRef });
-				}
-			}
-		}
-	}
-	else
-	{
-		for (const auto& child : node.Children)
-		{
-			UpdateQuadTreeCollisions(*child);
-		}
 	}
 }
 
-void World::UpdateCollisions()
+void World::UpdateCollisions() noexcept
 {
 	for (std::size_t i = 0; i < _colliders.size(); ++i)
 	{
@@ -201,100 +200,104 @@ void World::UpdateCollisions()
 	}
 }
 
-[[nodiscard]] BodyRef World::CreateBody() noexcept
+void World::SetUpQuadTree() noexcept
 {
-	auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body& body) {
-		return !body.IsEnabled(); // Get first Disabled body
-	});
-
-	if (it != _bodies.end())
+	Math::Vec2F maxBounds(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
+	Math::Vec2F minBounds(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+	for (auto& collider : _colliders)
 	{
-		std::size_t index = std::distance(_bodies.begin(), it);
-		auto bodyRef = BodyRef{ index, BodyGenIndices[index] };
-		GetBody(bodyRef).Enable();
-		return bodyRef;
+		if (!collider.IsAttached)
+		{
+			continue;
+		}
+
+		collider.BodyPosition = GetBody(collider.BodyRef).Position;
+
+		auto bounds = collider.GetBounds();
+		if (bounds.MinBound().X < minBounds.X)
+		{
+			minBounds.X = bounds.MinBound().X;
+		}
+		if (bounds.MinBound().Y < minBounds.Y)
+		{
+			minBounds.Y = bounds.MinBound().Y;
+		}
+		if (bounds.MaxBound().X > maxBounds.X)
+		{
+			maxBounds.X = bounds.MaxBound().X;
+		}
+		if (bounds.MaxBound().Y > maxBounds.Y)
+		{
+			maxBounds.Y = bounds.MaxBound().Y;
+		}
+
 	}
+	_quadTree.SetUpRoot(Math::RectangleF(minBounds, maxBounds));
 
-	std::size_t previousSize = _bodies.size();
+	for (std::size_t i = 0; i < _colliders.size(); ++i)
+	{
+		if (_colliders[i].IsAttached)
+		{
 
-	_bodies.resize(previousSize * 2, Body());
-	BodyGenIndices.resize(previousSize * 2, 0);
-
-	BodyRef bodyRef = { previousSize, BodyGenIndices[previousSize] };
-	GetBody(bodyRef).Enable();
-	return bodyRef;
+			_quadTree.Insert({ _colliders[i].GetBounds(), { i, ColliderGenIndices[i] } });
+		}
+	}
 }
 
-void World::DestroyBody(BodyRef bodyRef)
+void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 {
-	if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex)
+	if (node.Children[0] == nullptr)
 	{
-		throw std::runtime_error("No body found !");
-	}
+		for (const auto& colRefAabb1 : node.ColliderRefAabbs)
+		{
+			auto& col1 = GetCollider(colRefAabb1.ColRef);
 
-	_bodies[bodyRef.Index].Disable();
+			if (!col1.IsSensor)
+			{
+				continue;
+			}
+
+
+			for (const auto& colRefAabb2 : node.ColliderRefAabbs)
+			{
+				auto& col2 = GetCollider(colRefAabb2.ColRef);
+				if (col1.BodyRef == col2.BodyRef)
+				{
+					continue;
+				}
+				if (!col2.IsSensor)
+				{
+					continue;
+				}
+
+				if (_colRefPairs.find({ colRefAabb1.ColRef, colRefAabb2.ColRef }) != _colRefPairs.end())
+				{
+					if (!Overlap(col1, col2))
+					{
+						_contactListener->EndContact(colRefAabb1.ColRef, colRefAabb2.ColRef);
+						_colRefPairs.erase({ colRefAabb1.ColRef, colRefAabb2.ColRef });
+					}
+					continue;
+				}
+
+				if (Overlap(col1, col2))
+				{
+					_contactListener->BeginContact(colRefAabb1.ColRef, colRefAabb2.ColRef);
+					_colRefPairs.insert({ colRefAabb1.ColRef, colRefAabb2.ColRef });
+				}
+			}
+		}
+	}
+	else
+	{
+		for (const auto& child : node.Children)
+		{
+			UpdateQuadTreeCollisions(*child);
+		}
+	}
 }
 
-[[nodiscard]] Body& World::GetBody(BodyRef bodyRef)
-{
-	if (BodyGenIndices[bodyRef.Index] != bodyRef.GenIndex)
-	{
-		throw std::runtime_error("No body found !");
-	}
-
-	return _bodies[bodyRef.Index];
-}
-
-ColliderRef World::CreateCollider(BodyRef bodyRef) noexcept
-{
-	_colliderIdCount++;
-	auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider& collider) {
-		return !collider.IsAttached; // Get first Disabled collider
-	});
-
-	if (it != _colliders.end())
-	{
-		std::size_t index = std::distance(_colliders.begin(), it);
-		auto colRef = ColliderRef{ index, ColliderGenIndices[index] };
-		auto& col = GetCollider(colRef);
-		col.IsAttached = true;
-		col.BodyRef = bodyRef;
-
-		return colRef;
-	}
-
-	std::size_t previousSize = _colliders.size();
-
-	_colliders.resize(previousSize * 2, Collider());
-	ColliderGenIndices.resize(previousSize * 2, 0);
-
-	ColliderRef colRef = { previousSize, ColliderGenIndices[previousSize] };
-	auto& col = GetCollider(colRef);
-	col.IsAttached = true;
-	col.BodyRef = bodyRef;
-	return colRef;
-}
-
-Collider& World::GetCollider(ColliderRef colRef)
-{
-	if (ColliderGenIndices[colRef.Index] != colRef.GenIndex)
-	{
-		throw std::runtime_error("No collider found !");
-	}
-
-	return _colliders[colRef.Index];
-}
-
-void World::DestroyCollider(ColliderRef colRef)
-{
-	if (ColliderGenIndices[colRef.Index] != colRef.GenIndex)
-	{
-		throw std::runtime_error("No collider found !");
-	}
-	_colliders[colRef.Index].IsAttached = false;
-}
-
-[[nodiscard]] bool World::Overlap(const Collider& colA, const Collider& colB)
+[[nodiscard]] bool World::Overlap(const Collider& colA, const Collider& colB) noexcept
 {
 	switch (colA.Shape.index())
 	{
@@ -304,14 +307,14 @@ void World::DestroyCollider(ColliderRef colRef)
 		switch (colB.Shape.index())
 		{
 		case static_cast<int>(Math::ShapeType::Circle):
-		return Math::Intersect(circle,
-							   std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(circle,
+				std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		case static_cast<int>(Math::ShapeType::Rectangle):
-		return Math::Intersect(circle,
-							   std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(circle,
+				std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		case static_cast<int>(Math::ShapeType::Polygon):
-		return Math::Intersect(circle,
-							   std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(circle,
+				std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		}
 		break;
 	}
@@ -321,14 +324,14 @@ void World::DestroyCollider(ColliderRef colRef)
 		switch (colB.Shape.index())
 		{
 		case static_cast<int>(Math::ShapeType::Circle):
-		return Math::Intersect(rect,
-							   std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(rect,
+				std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		case static_cast<int>(Math::ShapeType::Rectangle):
-		return Math::Intersect(rect,
-							   std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(rect,
+				std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		case static_cast<int>(Math::ShapeType::Polygon):
-		return Math::Intersect(rect,
-							   std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(rect,
+				std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		}
 		break;
 	}
@@ -338,14 +341,14 @@ void World::DestroyCollider(ColliderRef colRef)
 		switch (colB.Shape.index())
 		{
 		case static_cast<int>(Math::ShapeType::Circle):
-		return Math::Intersect(pol,
-							   std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(pol,
+				std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		case static_cast<int>(Math::ShapeType::Rectangle):
-		return Math::Intersect(pol,
-							   std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(pol,
+				std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		case static_cast<int>(Math::ShapeType::Polygon):
-		return Math::Intersect(pol,
-							   std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+			return Math::Intersect(pol,
+				std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		}
 		break;
 	}

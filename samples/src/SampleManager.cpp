@@ -14,6 +14,13 @@ void SampleManager::UpdateSample() noexcept
     _samples[_sampleIdx]->Update();
 }
 
+void SampleManager::ChangeSample(int idx) noexcept
+{
+    _samples[_sampleIdx]->TearDown();
+    _sampleIdx = idx;
+    _samples[_sampleIdx]->SetUp();
+}
+
 void SampleManager::NextSample() noexcept
 {
     _samples[_sampleIdx]->TearDown();

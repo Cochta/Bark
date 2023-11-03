@@ -12,6 +12,9 @@ private:
 
     static constexpr float G = 6.67f;
     static constexpr std::size_t PLANET_NBR = 1000;
+public:
+    std::string GetName() noexcept override;
+    std::string GetDescription() noexcept override;
 protected:
     void SampleSetUp() noexcept override;
 

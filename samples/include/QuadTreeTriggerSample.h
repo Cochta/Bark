@@ -12,10 +12,13 @@ private:
     std::vector<int> _triggerNbrPerCollider;
     
     static constexpr float SPEED = 100;
-    static constexpr float RADIUS = Metrics::MetersToPixels(0.3f);
+    static constexpr float RADIUS = Metrics::MetersToPixels(0.2f);
     static constexpr std::size_t CIRCLE_NBR = 100;
 
 public:
+    std::string GetName() noexcept override;
+    std::string GetDescription() noexcept override;
+
     void BeginContact(ColliderRef col1, ColliderRef col2) noexcept override;
     
     void EndContact(ColliderRef col1, ColliderRef col2) noexcept override;
@@ -29,4 +32,5 @@ protected:
 
 private:
     void DrawQuadtree(const QuadNode *node);
+
 };

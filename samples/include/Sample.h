@@ -23,6 +23,9 @@ struct GraphicsData
 
 class Sample
 {
+public:
+    std::vector<GraphicsData> AllGraphicsData;
+
 protected:
     World _world;
 
@@ -35,14 +38,14 @@ private:
     Timer _timer;
 
 public:
-    std::vector<GraphicsData> AllGraphicsData;
+    virtual std::string GetName() noexcept = 0;
+    virtual std::string GetDescription() noexcept = 0;
 
     void SetUp() noexcept;
 
     void TearDown() noexcept;
 
     void Update() noexcept;
-
 
     virtual void GetMousePos(Math::Vec2F mousePos) noexcept;
 

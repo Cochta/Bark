@@ -6,8 +6,8 @@
 
 struct ColliderRefAabb
 {
-	const ColliderRef ColRef;
 	const Math::RectangleF Aabb;
+	const ColliderRef ColRef;
 };
 
 class QuadNode
@@ -16,29 +16,24 @@ public:
 	Math::RectangleF Bounds{ Math::Vec2F::Zero(), Math::Vec2F::Zero() };
 	std::array<std::unique_ptr<QuadNode>, 4> Children{ nullptr, nullptr, nullptr, nullptr };
 	std::vector<ColliderRefAabb> ColliderRefAabbs;
+private:
+	static constexpr int _MAX_COL_NBR = 16;
 
-	QuadNode() noexcept = default;
-
-	explicit QuadNode(Math::RectangleF bounds) noexcept : Bounds(bounds)
-	{};
-
-	void Subdivide() noexcept;
-
-	void Insert(const ColliderRefAabb& colliderRefAabb) noexcept;
-
-	static constexpr int MaxColNbr = 16;
+	static constexpr int _MAX_DEPTH = 5;
 
 	int _depth = 0;
 
-	static constexpr int _maxDepth = 5;
-
-};
-
-class QuadTree
-{
 public:
-	QuadNode _root;
+	QuadNode() noexcept = default;
 
-	void SetUp(const Math::RectangleF& bounds) noexcept;
+	explicit QuadNode(const Math::RectangleF& bounds) noexcept : Bounds(bounds)
+	{};
+
+	void SetUpRoot(const Math::RectangleF& bounds) noexcept;
+
+	void Insert(const ColliderRefAabb& colliderRefAabb) noexcept;
+
+private:
+	void Subdivide() noexcept;
 
 };

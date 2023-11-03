@@ -1,5 +1,15 @@
 #include "FormsTriggerSample.h"
 
+std::string FormsTriggerSample::GetName() noexcept
+{
+ return "Forms Intersect"; 
+}
+
+std::string FormsTriggerSample::GetDescription() noexcept
+{
+	return "Implementation not finished yet";
+}
+
 void FormsTriggerSample::BeginContact(ColliderRef col1, ColliderRef col2) noexcept
 {
 	_triggerNbrPerCollider[col1.Index]++;

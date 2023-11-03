@@ -9,22 +9,30 @@
 class SampleManager
 {
 private:
-    std::vector<UniquePtr<Sample>> _samples;
+	std::vector<UniquePtr<Sample>> _samples;
 
-    std::size_t _sampleIdx = 0;
+	std::size_t _sampleIdx = 0;
 
 public:
-    void SetUp() noexcept;
+	[[nodiscard]] int GetSampleNbr() noexcept { return _samples.size(); }
+	[[nodiscard]] int GetCurrentIndex() noexcept { return _sampleIdx; }
 
-    void UpdateSample() noexcept;
+	[[nodiscard]] std::string GetSampleName(int idx) { return _samples[idx].Get()->GetName(); }
+	[[nodiscard]] std::string GetSampleDescription(int idx) { return _samples[idx].Get()->GetDescription(); }
 
-    void NextSample() noexcept;
+	void SetUp() noexcept;
 
-    void PreviousSample() noexcept;
+	void UpdateSample() noexcept;
 
-    void RegenerateSample() noexcept;
+	void ChangeSample(int idx) noexcept;
 
-    std::vector<GraphicsData> &GetSampleData() noexcept;
+	void NextSample() noexcept;
 
-    void GiveMousePositionToSample(Math::Vec2F mousePosition) noexcept;
+	void PreviousSample() noexcept;
+
+	void RegenerateSample() noexcept;
+
+	[[nodiscard]] std::vector<GraphicsData>& GetSampleData() noexcept;
+
+	void GiveMousePositionToSample(Math::Vec2F mousePosition) noexcept;
 };
