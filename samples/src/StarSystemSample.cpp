@@ -7,7 +7,7 @@ std::string StarSystemSample::GetName() noexcept
 
 std::string StarSystemSample::GetDescription() noexcept
 {
-    return "Randomly generated physical object rotating around a \"sun\" using real physics.";
+    return "Randomly generated physical object rotating around a \"sun\" using real forces.";
 }
 
 void StarSystemSample::SampleSetUp() noexcept

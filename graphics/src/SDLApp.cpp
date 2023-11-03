@@ -125,6 +125,8 @@ void SDLApp::Run() noexcept
 
 		ImGui::Spacing();
 
+		ImGui::SetCursorPosY(ImGui::GetWindowHeight() - (ImGui::GetFrameHeightWithSpacing()));
+
 		if (ImGui::ArrowButton("PreviousSample", ImGuiDir_Left))
 		{
 			_sampleManager.PreviousSample();
