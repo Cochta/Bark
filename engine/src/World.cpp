@@ -200,45 +200,29 @@ void World::UpdateCollisions() noexcept
 	}
 }
 
-void World::SetUpQuadTree() noexcept
-{
+void World::SetUpQuadTree() noexcept {
 	Math::Vec2F maxBounds(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
 	Math::Vec2F minBounds(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-	for (auto& collider : _colliders)
-	{
-		if (!collider.IsAttached)
-		{
+
+	for (auto& collider : _colliders) {
+		if (!collider.IsAttached) {
 			continue;
 		}
 
 		collider.BodyPosition = GetBody(collider.BodyRef).Position;
 
 		auto bounds = collider.GetBounds();
-		if (bounds.MinBound().X < minBounds.X)
-		{
-			minBounds.X = bounds.MinBound().X;
-		}
-		if (bounds.MinBound().Y < minBounds.Y)
-		{
-			minBounds.Y = bounds.MinBound().Y;
-		}
-		if (bounds.MaxBound().X > maxBounds.X)
-		{
-			maxBounds.X = bounds.MaxBound().X;
-		}
-		if (bounds.MaxBound().Y > maxBounds.Y)
-		{
-			maxBounds.Y = bounds.MaxBound().Y;
-		}
 
+		minBounds.X = std::min(minBounds.X, bounds.MinBound().X);
+		minBounds.Y = std::min(minBounds.Y, bounds.MinBound().Y);
+		maxBounds.X = std::max(maxBounds.X, bounds.MaxBound().X);
+		maxBounds.Y = std::max(maxBounds.Y, bounds.MaxBound().Y);
 	}
+
 	_quadTree.SetUpRoot(Math::RectangleF(minBounds, maxBounds));
 
-	for (std::size_t i = 0; i < _colliders.size(); ++i)
-	{
-		if (_colliders[i].IsAttached)
-		{
-
+	for (std::size_t i = 0; i < _colliders.size(); ++i) {
+		if (_colliders[i].IsAttached) {
 			_quadTree.Insert({ _colliders[i].GetBounds(), { i, ColliderGenIndices[i] } });
 		}
 	}

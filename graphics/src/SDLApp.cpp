@@ -40,9 +40,7 @@ void SDLApp::SetUp()
 	// Initialize ImGui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	ImGui::StyleColorsDark();
+	ImGui::StyleColorsDark;
 
 	ImGui_ImplSDL2_InitForSDLRenderer(_window, _renderer);
 	ImGui_ImplSDLRenderer2_Init(_renderer);
@@ -111,7 +109,6 @@ void SDLApp::Run() noexcept
 
 		if (ImGui::BeginCombo("Select a Sample", _sampleManager.GetSampleName(_sampleManager.GetCurrentIndex()).c_str()))
 		{
-
 			for (std::size_t index = 0; index < _sampleManager.GetSampleNbr(); index++)
 			{
 				if (ImGui::Selectable(_sampleManager.GetSampleName(index).c_str(), _sampleManager.GetCurrentIndex() == index))
@@ -126,8 +123,28 @@ void SDLApp::Run() noexcept
 
 		ImGui::TextWrapped(_sampleManager.GetSampleDescription(_sampleManager.GetCurrentIndex()).c_str());
 
-		ImGui::End();
+		ImGui::Spacing();
 
+		if (ImGui::ArrowButton("PreviousSample", ImGuiDir_Left))
+		{
+			_sampleManager.PreviousSample();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Regenerate"))
+		{
+			_sampleManager.RegenerateSample();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::ArrowButton("NextSample", ImGuiDir_Right))
+		{
+			_sampleManager.NextSample();
+		}
+
+		ImGui::End();
 
 		ImGui::Render();
 
@@ -144,7 +161,6 @@ void SDLApp::Run() noexcept
 		// Present the renderer
 		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 		SDL_RenderPresent(_renderer);
-
 	}
 }
 

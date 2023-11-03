@@ -3,6 +3,7 @@
 #include "StarSystemSample.h"
 #include "FormsTriggerSample.h"
 #include "QuadTreeTriggerSample.h"
+#include "DefaultSample.h"
 
 #include "UniquePtr.h"
 
