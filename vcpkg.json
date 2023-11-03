@@ -1,5 +1,5 @@
 {
-  "name": "physicalmotor",
+  "name": "bark",
   "version-string": "1.0",
   "dependencies": [
     "gtest",
