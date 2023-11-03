@@ -1,4 +1,4 @@
-# Physical Motor
+# Bark
 
 ## Menu
 
@@ -7,4 +7,4 @@
 
 ## Description
 
-Physical motor for the summativ SAE Institute Geneva.
+Physics engine for the summativ SAE Institute Geneva.
