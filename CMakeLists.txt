@@ -12,14 +12,16 @@ option(ENABLE_TRACY_PROFILER "Enable Tracy Profiler" OFF)
 
 
 
-IF(ENABLE_TRACY_PROFILER)
-    # Enable Tracy profiling by setting the preprocessor directive
-    add_compile_definitions(TRACY_ENABLE)
-    # Include Tracy's headers for the entire project
-    include_directories(libs/TracyProfiler/tracy)
 
-    # Add the Tracy source code as part of the project
-    add_library(TracyClient STATIC libs/TracyProfiler/TracyClient.cpp)
+
+IF(ENABLE_TRACY_PROFILER)
+
+    add_compile_definitions(TRACY_ENABLE)
+
+    add_subdirectory(libs/tracy) 
+
+    set_target_properties(TracyClient PROPERTIES FOLDER libs/)
+    
 endif()
 
 IF(MSVC)
@@ -70,11 +72,6 @@ target_include_directories(Engine PUBLIC engine/include/)
 target_include_directories(Engine PUBLIC libs/Math/include/)
 target_include_directories(Engine PUBLIC common/include/)
 
-IF(TRACY_ENABLE)
-    target_compile_definitions(Engine PUBLIC TRACY_ENABLE)
-    target_link_libraries(Engine PUBLIC TracyClient)
-endif()
-
 # Engine tests
 file(GLOB ENGINE_TEST_FILES engine/tests/*.cpp )
 foreach(test_file ${ENGINE_TEST_FILES} )
@@ -109,9 +106,8 @@ target_include_directories(Graphics PUBLIC engine/include/)
 target_include_directories(Graphics PUBLIC libs/Math/include/)
 target_include_directories(Graphics PUBLIC common/include/)
 target_include_directories(Graphics PUBLIC samples/include/)
-target_link_libraries(Graphics PUBLIC Samples Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> imgui::imgui)
 
+target_link_libraries(Graphics PUBLIC Samples Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main> $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> imgui::imgui)
 IF(TRACY_ENABLE)
     target_compile_definitions(Graphics PUBLIC TRACY_ENABLE)
     target_link_libraries(Graphics PUBLIC TracyClient)
@@ -119,10 +115,3 @@ endif()
 
 add_executable(Main Main.cpp)
 target_link_libraries(Main Graphics)
-
-IF(TRACY_ENABLE)
-    target_compile_definitions(Main PUBLIC TRACY_ENABLE)
-    target_link_libraries(Main PUBLIC TracyClient)
-endif()
-
-
