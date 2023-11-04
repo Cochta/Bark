@@ -12,6 +12,7 @@ void Sample::Update() noexcept
     SampleUpdate();
     _timer.Tick();
     _world.Update(_timer.DeltaTime);
+
 }
 
 void Sample::TearDown() noexcept

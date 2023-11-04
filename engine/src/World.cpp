@@ -1,5 +1,10 @@
 #include "World.h"
 
+
+//#ifdef TRACY_ENABLE
+//#include "Tracy.hpp"
+//#endif // TRACY_ENABLE
+
 void World::SetUp() noexcept
 {
 	int initSize = 100;
@@ -153,13 +158,14 @@ void World::UpdateCollisions() noexcept
 	{
 		ColliderRef colRef1{ i, ColliderGenIndices[i] };
 		auto& col1 = GetCollider(colRef1);
+		col1.BodyPosition = GetBody({ i, ColliderGenIndices[i] }).Position;
 
 		if (!col1.IsAttached)
 		{
 			continue;
 		}
 
-		if (!col1.IsSensor)
+		if (!col1.IsTrigger)
 		{
 			continue;
 		}
@@ -176,7 +182,7 @@ void World::UpdateCollisions() noexcept
 			{
 				continue;
 			}
-			if (!col1.IsSensor)
+			if (!col1.IsTrigger)
 			{
 				continue;
 			}
@@ -185,7 +191,7 @@ void World::UpdateCollisions() noexcept
 			{
 				if (!Overlap(col1, col2))
 				{
-					_contactListener->EndContact(colRef1, colRef2);
+					_contactListener->OnTriggerExit(colRef1, colRef2);
 					_colRefPairs.erase({ colRef1, colRef2 });
 				}
 				continue;
@@ -193,7 +199,7 @@ void World::UpdateCollisions() noexcept
 
 			if (Overlap(col1, col2))
 			{
-				_contactListener->BeginContact(colRef1, colRef2);
+				_contactListener->OnTriggerEnter(colRef1, colRef2);
 				_colRefPairs.insert({ colRef1, colRef2 });
 			}
 		}
@@ -234,40 +240,37 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 	{
 		for (const auto& colRefAabb1 : node.ColliderRefAabbs)
 		{
-			auto& col1 = GetCollider(colRefAabb1.ColRef);
-
-			if (!col1.IsSensor)
-			{
-				continue;
-			}
-
+			const auto& col1 = GetCollider(colRefAabb1.ColRef);
 
 			for (const auto& colRefAabb2 : node.ColliderRefAabbs)
 			{
-				auto& col2 = GetCollider(colRefAabb2.ColRef);
+				const auto& col2 = GetCollider(colRefAabb2.ColRef);
+
 				if (col1.BodyRef == col2.BodyRef)
 				{
 					continue;
 				}
-				if (!col2.IsSensor)
-				{
-					continue;
-				}
 
-				if (_colRefPairs.find({ colRefAabb1.ColRef, colRefAabb2.ColRef }) != _colRefPairs.end())
+				if (!col2.IsTrigger && !col1.IsTrigger)
+				{
+					continue; // collision check
+				}
+				const ColliderRefPair& colPair = { colRefAabb1.ColRef, colRefAabb2.ColRef };
+
+				if (_colRefPairs.find(colPair) != _colRefPairs.end())
 				{
 					if (!Overlap(col1, col2))
 					{
-						_contactListener->EndContact(colRefAabb1.ColRef, colRefAabb2.ColRef);
-						_colRefPairs.erase({ colRefAabb1.ColRef, colRefAabb2.ColRef });
+						_contactListener->OnTriggerExit(colPair.ColRefA, colPair.ColRefB);
+						_colRefPairs.erase(colPair);
 					}
 					continue;
 				}
 
 				if (Overlap(col1, col2))
 				{
-					_contactListener->BeginContact(colRefAabb1.ColRef, colRefAabb2.ColRef);
-					_colRefPairs.insert({ colRefAabb1.ColRef, colRefAabb2.ColRef });
+					_contactListener->OnTriggerEnter(colPair.ColRefA, colPair.ColRefB);
+					_colRefPairs.insert(colPair);
 				}
 			}
 		}

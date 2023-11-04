@@ -27,7 +27,7 @@ void SampleManager::NextSample() noexcept
 {
     _samples[_sampleIdx]->TearDown();
     if (_sampleIdx >= _samples.size() - 1)
-        _sampleIdx = 0;
+        _sampleIdx = 1;
     else
         _sampleIdx++;
     _samples[_sampleIdx]->SetUp();
@@ -36,7 +36,7 @@ void SampleManager::NextSample() noexcept
 void SampleManager::PreviousSample() noexcept
 {
     _samples[_sampleIdx]->TearDown();
-    if (_sampleIdx <= 0)
+    if (_sampleIdx <= 1)
         _sampleIdx = _samples.size() - 1;
     else
         _sampleIdx--;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Body.h"
-#include "Collider.h"
+#include "Contact.h"
 #include "QuadTree.h"
 #include <vector>
 #include <unordered_set>

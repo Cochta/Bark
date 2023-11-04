@@ -7,16 +7,16 @@ std::string FormsTriggerSample::GetName() noexcept
 
 std::string FormsTriggerSample::GetDescription() noexcept
 {
-	return "Implementation not finished yet";
+	return "In Developement Implementation not finished yet";
 }
 
-void FormsTriggerSample::BeginContact(ColliderRef col1, ColliderRef col2) noexcept
+void FormsTriggerSample::OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept
 {
 	_triggerNbrPerCollider[col1.Index]++;
 	_triggerNbrPerCollider[col2.Index]++;
 }
 
-void FormsTriggerSample::EndContact(ColliderRef col1, ColliderRef col2) noexcept
+void FormsTriggerSample::OnTriggerExit(ColliderRef col1, ColliderRef col2) noexcept
 {
 	_triggerNbrPerCollider[col1.Index]--;
 	_triggerNbrPerCollider[col2.Index]--;
@@ -45,6 +45,7 @@ void FormsTriggerSample::SampleSetUp() noexcept
 												 {-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(2)} };
 
 	triangleCol.Shape = Math::Polygon(verticesTriangle);
+	triangleCol.IsTrigger = true;
 
 	GraphicsData bdPol;
 	bdPol.Shape = Math::Polygon(verticesTriangle) + triangle.Position;
@@ -77,6 +78,7 @@ void FormsTriggerSample::SampleSetUp() noexcept
 	};
 
 	starCol.Shape = Math::Polygon(verticesStar);
+	starCol.IsTrigger = true;
 
 	GraphicsData bdStar;
 	bdStar.Shape = Math::Polygon(verticesStar) + starBody.Position;
@@ -91,6 +93,7 @@ void FormsTriggerSample::SampleSetUp() noexcept
 	_colRefs.push_back(circleColRef);
 	auto& circleCol = _world.GetCollider(circleColRef);
 	circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f));
+	circleCol.IsTrigger = true;
 
 	GraphicsData bd;
 	bd.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f)) + circleBody.Position;
@@ -111,6 +114,7 @@ void FormsTriggerSample::SampleSetUp() noexcept
 									Math::Vec2F(
 									Metrics::MetersToPixels(2),
 									Metrics::MetersToPixels(2)));
+	colRect.IsTrigger = true;
 
 	GraphicsData rbd;
 	rbd.Shape = Math::Rectangle(Math::Vec2F::Zero(),

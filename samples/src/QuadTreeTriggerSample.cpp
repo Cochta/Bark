@@ -10,13 +10,13 @@ std::string QuadTreeTriggerSample::GetDescription() noexcept
 	return "Randomly generated objects, they become green if they detect a trigger otherwise they stay blue, the trigger detection uses a QuadTree. ";
 }
 
-void QuadTreeTriggerSample::BeginContact(ColliderRef col1, ColliderRef col2) noexcept
+void QuadTreeTriggerSample::OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept
 {
 	_triggerNbrPerCollider[col1.Index]++;
 	_triggerNbrPerCollider[col2.Index]++;
 }
 
-void QuadTreeTriggerSample::EndContact(ColliderRef col1, ColliderRef col2) noexcept
+void QuadTreeTriggerSample::OnTriggerExit(ColliderRef col1, ColliderRef col2) noexcept
 {
 	_triggerNbrPerCollider[col1.Index]--;
 	_triggerNbrPerCollider[col2.Index]--;
@@ -48,6 +48,8 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
+		col1.BodyPosition = body1.Position;
+		col1.IsTrigger = true;
 
 		GraphicsData bd;
 		bd.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS) + body1.Position;
@@ -71,6 +73,8 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS);
+		col1.BodyPosition = body1.Position;
+		col1.IsTrigger = true;
 
 		GraphicsData bd;
 		bd.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS) + body1.Position;
@@ -93,6 +97,8 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::PolygonF(TRIANGLE_VERTICES);
+		col1.BodyPosition = body1.Position;
+		col1.IsTrigger = true;
 
 		GraphicsData bd;
 		bd.Shape = Math::PolygonF(TRIANGLE_VERTICES) + body1.Position;
@@ -122,38 +128,41 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
 		AllGraphicsData.erase(AllGraphicsData.begin() + _nbObjects, AllGraphicsData.end());
 	}
 
-	for (std::size_t i = 0; i < _bodyRefs.size(); ++i)
-	{
-		auto& body = _world.GetBody(_bodyRefs[i]);
-		if (body.Position.X - CIRCLE_RADIUS <= 0)
+	for (std::size_t i = 0; i < _colRefs.size(); ++i)
+	{		
+		auto& col = _world.GetCollider(_colRefs[i]);
+		auto& bounds = col.GetBounds();
+		auto& body = _world.GetBody(col.BodyRef);
+
+		if (bounds.MinBound().X <= 0)
 		{
 			body.Velocity.X = Math::Abs(body.Velocity.X);
 		}
-		else if (body.Position.X + CIRCLE_RADIUS >= Metrics::Width)
+		else if (bounds.MaxBound().X >= Metrics::Width)
 		{
 			body.Velocity.X = -Math::Abs(body.Velocity.X);
 		}
-		if (body.Position.Y - CIRCLE_RADIUS <= 0)
+		if (bounds.MinBound().Y <= 0)
 		{
 			body.Velocity.Y = Math::Abs(body.Velocity.Y);
 		}
-		else if (body.Position.Y + CIRCLE_RADIUS >= Metrics::Height)
+		else if (bounds.MaxBound().Y >= Metrics::Height)
 		{
 			body.Velocity.Y = -Math::Abs(body.Velocity.Y);
 		}
 
-		auto shape = _world.GetCollider(_colRefs[i]).Shape;
+		auto& shape = _world.GetCollider(_colRefs[i]).Shape;
 
 		switch (shape.index())
 		{
 		case static_cast<int>(Math::ShapeType::Circle):
-			AllGraphicsData[i].Shape = std::get<Math::CircleF>(shape) + body.Position;
+			AllGraphicsData[i].Shape = std::get<Math::CircleF>(shape) + col.BodyPosition;
 			break;
 		case static_cast<int>(Math::ShapeType::Rectangle):
-			AllGraphicsData[i].Shape = std::get<Math::RectangleF>(shape) + body.Position;
+			AllGraphicsData[i].Shape = std::get<Math::RectangleF>(shape) + col.BodyPosition;
 			break;
 		case static_cast<int>(Math::ShapeType::Polygon):
-			AllGraphicsData[i].Shape = std::get<Math::PolygonF>(shape) + body.Position;
+			AllGraphicsData[i].Shape = std::get<Math::PolygonF>(shape) + col.BodyPosition;
 			break;
 		}
 	}

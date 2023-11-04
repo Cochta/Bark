@@ -3,6 +3,9 @@
 //
 #include "SDLApp.h"
 
+//#ifdef TRACY_ENABLE
+//#include "Tracy.hpp"
+//#endif // TRACY_ENABLE
 
 void SDLApp::SetUp()
 {
@@ -172,6 +175,10 @@ void SDLApp::Run() noexcept
 		// Present the renderer
 		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 		SDL_RenderPresent(_renderer);
+
+//#ifdef TRACY_ENABLE
+//		FrameMark;
+//#endif // TRACY_ENABLE
 	}
 }
 

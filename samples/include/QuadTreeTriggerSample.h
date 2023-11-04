@@ -19,11 +19,11 @@ private:
 	};
 	static constexpr Math::Vec2F RECTANGLE_BOUNDS = { Metrics::MetersToPixels(0.4f), Metrics::MetersToPixels(0.4f) };
 	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.2f);
-	static constexpr float SPEED = 200;
+	static constexpr float SPEED = 100;
 
-	static constexpr std::size_t CIRCLE_NBR = 10;
-	static constexpr std::size_t RECTANGLE_NBR = 10;
-	static constexpr std::size_t TRIANGLE_NBR = 10;
+	static constexpr std::size_t CIRCLE_NBR = 3000;
+	static constexpr std::size_t RECTANGLE_NBR = 0;
+	static constexpr std::size_t TRIANGLE_NBR = 0;
 
 	std::size_t _nbObjects;
 
@@ -31,9 +31,13 @@ public:
 	std::string GetName() noexcept override;
 	std::string GetDescription() noexcept override;
 
-	void BeginContact(ColliderRef col1, ColliderRef col2) noexcept override;
+	void OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept override;
 
-	void EndContact(ColliderRef col1, ColliderRef col2) noexcept override;
+	void OnTriggerExit(ColliderRef col1, ColliderRef col2) noexcept override;
+
+	void OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept override {};
+
+	void OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept override {};
 
 protected:
 	void SampleSetUp() noexcept override;
