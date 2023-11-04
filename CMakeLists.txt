@@ -8,20 +8,18 @@ find_package(SDL2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
 option(ENABLE_ADDRESS_SANITIZER "Enable Address Sanitizer" OFF)
-option(ENABLE_TRACY_PROFILER "Enable Tracy Profiler" OFF)
 
+# Add a CMake option to enable or disable Tracy Profiler
+option(USE_TRACY "Use Tracy Profiler" OFF)
 
-
-
-
-IF(ENABLE_TRACY_PROFILER)
-
+if (USE_TRACY)
+    # Enable Tracy profiling by setting the preprocessor directive
     add_compile_definitions(TRACY_ENABLE)
+    # Include Tracy's headers for the entire project
+    include_directories(libs/TracyProfiler)
 
-    add_subdirectory(libs/tracy) 
-
-    set_target_properties(TracyClient PROPERTIES FOLDER libs/)
-    
+    # Add the Tracy source code as part of the project
+    add_library(tracyClient STATIC libs/TracyProfiler/TracyClient.cpp)
 endif()
 
 IF(MSVC)
@@ -108,9 +106,10 @@ target_include_directories(Graphics PUBLIC common/include/)
 target_include_directories(Graphics PUBLIC samples/include/)
 
 target_link_libraries(Graphics PUBLIC Samples Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main> $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> imgui::imgui)
-IF(TRACY_ENABLE)
+if (USE_TRACY)
     target_compile_definitions(Graphics PUBLIC TRACY_ENABLE)
-    target_link_libraries(Graphics PUBLIC TracyClient)
+    # Link the TracyClient library
+    target_link_libraries(Graphics PRIVATE tracyClient)
 endif()
 
 add_executable(Main Main.cpp)
