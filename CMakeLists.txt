@@ -16,7 +16,7 @@ if (USE_TRACY)
     # Enable Tracy profiling by setting the preprocessor directive
     add_compile_definitions(TRACY_ENABLE)
     # Include Tracy's headers for the entire project
-    include_directories(libs/TracyProfiler)
+    include_directories(libs/TracyProfiler/tracy)
 
     # Add the Tracy source code as part of the project
     add_library(tracyClient STATIC libs/TracyProfiler/TracyClient.cpp)
@@ -69,6 +69,12 @@ set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Engine PUBLIC engine/include/)
 target_include_directories(Engine PUBLIC libs/Math/include/)
 target_include_directories(Engine PUBLIC common/include/)
+
+if (USE_TRACY)
+    target_compile_definitions(Engine PUBLIC TRACY_ENABLE)
+    # Link the TracyClient library
+    target_link_libraries(Engine PRIVATE tracyClient)
+endif()
 
 # Engine tests
 file(GLOB ENGINE_TEST_FILES engine/tests/*.cpp )

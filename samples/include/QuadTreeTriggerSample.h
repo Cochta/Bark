@@ -21,7 +21,7 @@ private:
 	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.2f);
 	static constexpr float SPEED = 100;
 
-	static constexpr std::size_t CIRCLE_NBR = 3000;
+	static constexpr std::size_t CIRCLE_NBR = 1000;
 	static constexpr std::size_t RECTANGLE_NBR = 0;
 	static constexpr std::size_t TRIANGLE_NBR = 0;
 

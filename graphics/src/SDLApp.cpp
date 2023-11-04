@@ -4,8 +4,8 @@
 #include "SDLApp.h"
 
 #ifdef TRACY_ENABLE
-#include "tracy/Tracy.hpp"
-#include "tracy/TracyC.h"
+#include "Tracy.hpp"
+#include "TracyC.h"
 #endif // TRACY_ENABLE
 
 void SDLApp::SetUp()

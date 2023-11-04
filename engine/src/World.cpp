@@ -1,9 +1,10 @@
 #include "World.h"
 
 
-//#ifdef TRACY_ENABLE
-//#include "Tracy.hpp"
-//#endif // TRACY_ENABLE
+#ifdef TRACY_ENABLE
+#include "Tracy.hpp"
+#include "TracyC.h"
+#endif // TRACY_ENABLE
 
 void World::SetUp() noexcept
 {
@@ -29,6 +30,9 @@ void World::TearDown() noexcept
 
 void World::Update(const float deltaTime) noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	UpdateBodies(deltaTime);
 
 	if (_contactListener == nullptr)
@@ -138,6 +142,9 @@ void World::DestroyCollider(const ColliderRef colRef)
 
 void World::UpdateBodies(const float deltaTime) noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	for (auto& body : _bodies)
 	{
 		if (!body.IsEnabled())
@@ -207,6 +214,9 @@ void World::UpdateCollisions() noexcept
 }
 
 void World::SetUpQuadTree() noexcept {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	Math::Vec2F maxBounds(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
 	Math::Vec2F minBounds(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
@@ -236,6 +246,9 @@ void World::SetUpQuadTree() noexcept {
 
 void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	if (node.Children[0] == nullptr)
 	{
 		for (const auto& colRefAabb1 : node.ColliderRefAabbs)
