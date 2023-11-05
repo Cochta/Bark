@@ -161,6 +161,9 @@ void World::UpdateBodies(const float deltaTime) noexcept
 
 void World::UpdateCollisions() noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	for (std::size_t i = 0; i < _colliders.size(); ++i)
 	{
 		ColliderRef colRef1{ i, ColliderGenIndices[i] };
@@ -236,7 +239,9 @@ void World::SetUpQuadTree() noexcept {
 	}
 
 	_quadTree.SetUpRoot(Math::RectangleF(minBounds, maxBounds));
-
+#ifdef TRACY_ENABLE
+	ZoneNamedN(Insert, "Insert in QuadTree", true);
+#endif
 	for (std::size_t i = 0; i < _colliders.size(); ++i) {
 		if (_colliders[i].IsAttached) {
 			_quadTree.Insert({ _colliders[i].GetBounds(), { i, ColliderGenIndices[i] } });
@@ -253,31 +258,53 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 	{
 		for (const auto& colRefAabb1 : node.ColliderRefAabbs)
 		{
-			const auto& col1 = GetCollider(colRefAabb1.ColRef);
+			auto& col1 = GetCollider(colRefAabb1.ColRef);
 
 			for (const auto& colRefAabb2 : node.ColliderRefAabbs)
 			{
-				const auto& col2 = GetCollider(colRefAabb2.ColRef);
+				auto& col2 = GetCollider(colRefAabb2.ColRef);
 
 				if (col1.BodyRef == col2.BodyRef)
 				{
 					continue;
 				}
 
-				if (!col2.IsTrigger && !col1.IsTrigger)
-				{
-					continue; // collision check
-				}
 				const ColliderRefPair& colPair = { colRefAabb1.ColRef, colRefAabb2.ColRef };
 
 				if (_colRefPairs.find(colPair) != _colRefPairs.end())
 				{
+					if (!col2.IsTrigger && !col1.IsTrigger)
+					{
+						if (!Overlap(col1, col2))
+						{
+							_contactListener->OnCollisionExit(colRefAabb1.ColRef, colRefAabb2.ColRef);
+							_colRefPairs.erase(colPair);
+						}
+
+						continue; // collision check
+					}
+
 					if (!Overlap(col1, col2))
 					{
 						_contactListener->OnTriggerExit(colPair.ColRefA, colPair.ColRefB);
 						_colRefPairs.erase(colPair);
 					}
 					continue;
+				}
+
+				if (!col2.IsTrigger && !col1.IsTrigger)
+				{
+					if (Overlap(col1, col2))
+					{
+						Contact contact;
+						contact.CollidingBodies[0] = { &GetBody(col1.BodyRef), &col1 };
+						contact.CollidingBodies[1] = { &GetBody(col2.BodyRef), &col2 };
+						contact.Resolve();
+						_contactListener->OnCollisionEnter(colRefAabb1.ColRef, colRefAabb2.ColRef);
+						_colRefPairs.insert(colPair);
+					}
+
+					continue; // collision check
 				}
 
 				if (Overlap(col1, col2))
@@ -295,10 +322,13 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 			UpdateQuadTreeCollisions(*child);
 		}
 	}
-}
+	}
 
 [[nodiscard]] bool World::Overlap(const Collider& colA, const Collider& colB) noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	switch (colA.Shape.index())
 	{
 	case static_cast<int>(Math::ShapeType::Circle):

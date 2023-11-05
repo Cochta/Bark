@@ -5,11 +5,11 @@
 #include "Random.h"
 
 
-class QuadTreeTriggerSample : public Sample, public ContactListener
+class CollisionSample : public Sample, public ContactListener
 {
 private:
 	std::vector<GraphicsData> _quadTreeGraphicsData;
-	std::vector<int> _triggerNbrPerCollider;
+	std::vector<int> _collisionNbrPerCollider;
 
 
 	std::vector<Math::Vec2F> TRIANGLE_VERTICES = {
@@ -21,7 +21,7 @@ private:
 	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.2f);
 	static constexpr float SPEED = 100;
 
-	static constexpr std::size_t CIRCLE_NBR = 100;
+	static constexpr std::size_t CIRCLE_NBR = 2;
 	static constexpr std::size_t RECTANGLE_NBR = 0;
 	static constexpr std::size_t TRIANGLE_NBR = 0;
 
@@ -31,13 +31,13 @@ public:
 	std::string GetName() noexcept override;
 	std::string GetDescription() noexcept override;
 
-	void OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept override;
+	void OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept override {};
 
-	void OnTriggerExit(ColliderRef col1, ColliderRef col2) noexcept override;
+	void OnTriggerExit(ColliderRef col1, ColliderRef col2) noexcept override {};
 
-	void OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept override {};
+	void OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept override;
 
-	void OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept override {};
+	void OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept override;
 
 protected:
 	void SampleSetUp() noexcept override;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Collider.h"
+#include "Body.h"
 
 /**
  * @class ContactListener
@@ -38,14 +39,21 @@ public:
 	virtual void OnCollisionExit(ColliderRef colRef1, ColliderRef colRef2) noexcept = 0;
 };
 
+struct CollidingBody
+{
+	Body* body = nullptr;
+	Collider* collider = nullptr;
+};
+
 struct Contact
 {
-	Math::Vec2F ContactNormal;
-	Math::Vec2F ContactPoint{};
+	std::array<CollidingBody, 2> CollidingBodies{};
+	Math::Vec2F Normal{};
+	Math::Vec2F Position{};
 	float Restitution{ 1 };
 	float Penetration{};
-	void ResolveInterpenetration(float dt) const;
-	void Resolve(float dt);
-	float CalculateSeparateVelocity() const;
-	void ResolveVelocity(float dt) const;
+	void Resolve();
+	float CalculateSeparateVelocity() const noexcept;
+	void ResolveVelocity() const noexcept;
+	void ResolveInterpenetration() const noexcept;
 };

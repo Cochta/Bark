@@ -1,9 +1,11 @@
 #pragma once
 
+#include "DefaultSample.h"
 #include "StarSystemSample.h"
 #include "FormsTriggerSample.h"
 #include "QuadTreeTriggerSample.h"
-#include "DefaultSample.h"
+#include "CollisionSample.h"
+
 
 #include "UniquePtr.h"
 

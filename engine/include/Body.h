@@ -2,6 +2,15 @@
 
 #include "Vec2.h"
 
+enum class BodyType
+{
+    DYNAMIC,
+    KINEMATIC,
+    STATIC,
+    NONE
+};
+
+
 /**
  * @brief Represents a 2D body with position, velocity, and mass.
  * @note A body is disabled if its mass is negative.
@@ -12,6 +21,7 @@ public:
     Math::Vec2F Velocity = Math::Vec2F::Zero();
     float Mass = -1.f; // Body is disabled if mass is negative
     Math::Vec2F _force = Math::Vec2F::Zero(); // Total force acting on the body
+    BodyType type = BodyType::DYNAMIC;
 
 public:
     /**

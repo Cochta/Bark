@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Collider.h"
+#include "Allocators.h"
 
 #include <memory>
 
@@ -15,7 +16,8 @@ class QuadNode
 public:
 	Math::RectangleF Bounds{ Math::Vec2F::Zero(), Math::Vec2F::Zero() };
 	std::array<std::unique_ptr<QuadNode>, 4> Children{ nullptr, nullptr, nullptr, nullptr };
-	std::vector<ColliderRefAabb> ColliderRefAabbs;
+	Allocator* HeapAlloc = new HeapAllocator();
+	CustomlyAllocatedVector<ColliderRefAabb> ColliderRefAabbs{ *HeapAlloc };
 private:
 	static constexpr int _MAX_COL_NBR = 16;
 

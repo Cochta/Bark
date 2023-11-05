@@ -46,6 +46,12 @@ add_library(Common ${COMMON_FILES})
 set_target_properties(Common PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Common PUBLIC common/include/)
 
+if (USE_TRACY)
+    target_compile_definitions(Common PUBLIC TRACY_ENABLE)
+    # Link the TracyClient library
+    target_link_libraries(Common PRIVATE tracyClient)
+endif()
+
 # Common tests
 file(GLOB COMMON_TEST_FILES common/tests/*.cpp )
 foreach(test_file ${COMMON_TEST_FILES} )

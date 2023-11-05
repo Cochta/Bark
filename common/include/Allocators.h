@@ -5,12 +5,21 @@
 #include <cstdlib>
 #include <stdexcept>
 
+#ifdef TRACY_ENABLE
+#include <Tracy.hpp>
+#endif
+
 class Allocator
 {
 public:
     virtual ~Allocator() = default;
 
     virtual void *Allocate(std::size_t count, std::size_t typeSize) = 0;
+    template<typename T>
+    T* Allocate(std::size_t count)
+    {
+        return static_cast<T*>(Allocate(count, sizeof(T)));
+    }
 
     virtual void Deallocate(void *ptr) = 0;
 };
@@ -119,12 +128,20 @@ class HeapAllocator final : public Allocator
 public:
     void *Allocate(std::size_t size, std::size_t typeSize) override
     {
-        return ::operator new(size * typeSize);
+        const auto count = size * typeSize;
+        auto* ptr = std::malloc(count);
+#ifdef TRACY_ENABLE
+        TracyAlloc(ptr, count);
+#endif
+        return ptr;
     }
 
     void Deallocate(void *ptr) override
     {
-        ::operator delete(ptr);
+#ifdef TRACY_ENABLE
+        TracyFree(ptr);
+#endif
+        std::free(ptr);
     }
 };
 
@@ -308,3 +325,53 @@ private:
         }
     }
 };
+
+/**
+ * \brief Custom proxy allocator respecting allocator_traits
+ */
+template<typename T>
+class StandardAllocator
+{
+public:
+    typedef T value_type;
+    StandardAllocator(Allocator& allocator);
+    template <class U>
+    StandardAllocator(const StandardAllocator<U>& allocator) noexcept : _allocator(allocator.GetAllocator()) {}
+    T* allocate(std::size_t n);
+    void deallocate(T* ptr, std::size_t n);
+    [[nodiscard]] Allocator& GetAllocator() const { return _allocator; }
+protected:
+    Allocator& _allocator;
+};
+
+template <class T, class U>
+constexpr bool operator== (const StandardAllocator<T>&, const StandardAllocator<U>&) noexcept
+{
+    return true;
+}
+
+template <class T, class U>
+constexpr bool operator!= (const StandardAllocator<T>&, const StandardAllocator<U>&) noexcept
+{
+    return false;
+}
+
+template <typename T>
+StandardAllocator<T>::StandardAllocator(Allocator& allocator) : _allocator(allocator)
+{
+}
+
+template <typename T>
+T* StandardAllocator<T>::allocate(std::size_t n)
+{
+    return static_cast<T*>(_allocator.Allocate(n * sizeof(T), alignof(T)));
+}
+
+template <typename T>
+void StandardAllocator<T>::deallocate(T* ptr, [[maybe_unused]] std::size_t n)
+{
+    _allocator.Deallocate(ptr);
+}
+
+template<typename T>
+using CustomlyAllocatedVector = std::vector<T, StandardAllocator<T>>;

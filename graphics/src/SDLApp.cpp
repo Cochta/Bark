@@ -185,6 +185,9 @@ void SDLApp::Run() noexcept
 
 void SDLApp::DrawCircle(const Math::Vec2F center, const float radius, const int segments, const SDL_Color& col) noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	int offset = static_cast<int>(_vertices.size());
 
 	// Reserve space for the vertices and indices in advance to avoid reallocation.
@@ -284,6 +287,9 @@ void SDLApp::DrawPolygon(const std::vector<Math::Vec2F>& vertices, const SDL_Col
 
 void SDLApp::DrawAllGraphicsData() noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	_vertices.clear();
 	_indices.clear();
 	for (auto& bd : _sampleManager.GetSampleData())
@@ -291,7 +297,7 @@ void SDLApp::DrawAllGraphicsData() noexcept
 
 		if (bd.Shape.index() == (int)Math::ShapeType::Circle)
 		{
-			Math::CircleF circle = std::get<Math::CircleF>(bd.Shape);
+			auto& circle = std::get<Math::CircleF>(bd.Shape);
 			DrawCircle(circle.Center(), circle.Radius(), 30, {
 					static_cast<Uint8>(bd.Color.r),
 					static_cast<Uint8>(bd.Color.g),
@@ -301,7 +307,7 @@ void SDLApp::DrawAllGraphicsData() noexcept
 		}
 		else if (bd.Shape.index() == (int)Math::ShapeType::Rectangle)
 		{
-			auto rect = std::get<Math::RectangleF>(bd.Shape);
+			auto& rect = std::get<Math::RectangleF>(bd.Shape);
 			if (!bd.Filled)
 			{
 				DrawRectangleBorder(rect.MinBound(), rect.MaxBound(), {
@@ -323,7 +329,7 @@ void SDLApp::DrawAllGraphicsData() noexcept
 		}
 		else if (bd.Shape.index() == (int)Math::ShapeType::Polygon)
 		{
-			auto polygon = std::get<Math::PolygonF>(bd.Shape);
+			auto& polygon = std::get<Math::PolygonF>(bd.Shape);
 			DrawPolygon(polygon.Vertices(), {
 					static_cast<Uint8>(bd.Color.r),
 					static_cast<Uint8>(bd.Color.g),
@@ -332,5 +338,8 @@ void SDLApp::DrawAllGraphicsData() noexcept
 				});
 		}
 	}
+#ifdef TRACY_ENABLE
+	ZoneNamedN(Render, "Render", true);
+#endif
 	SDL_RenderGeometry(_renderer, nullptr, _vertices.data(), _vertices.size(), _indices.data(), _indices.size());
 }
