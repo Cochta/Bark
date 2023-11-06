@@ -273,7 +273,7 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 
 				if (_colRefPairs.find(colPair) != _colRefPairs.end())
 				{
-					if (!col2.IsTrigger && !col1.IsTrigger)
+					if (!col2.IsTrigger && !col1.IsTrigger) // physical collision
 					{
 						if (!Overlap(col1, col2))
 						{
@@ -281,10 +281,10 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 							_colRefPairs.erase(colPair);
 						}
 
-						continue; // collision check
+						continue;
 					}
 
-					if (!Overlap(col1, col2))
+					if (!Overlap(col1, col2)) // Trigger collision
 					{
 						_contactListener->OnTriggerExit(colPair.ColRefA, colPair.ColRefB);
 						_colRefPairs.erase(colPair);
@@ -292,7 +292,7 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 					continue;
 				}
 
-				if (!col2.IsTrigger && !col1.IsTrigger)
+				if (!col2.IsTrigger && !col1.IsTrigger) // physical collision
 				{
 					if (Overlap(col1, col2))
 					{
@@ -304,10 +304,10 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 						_colRefPairs.insert(colPair);
 					}
 
-					continue; // collision check
+					continue;
 				}
 
-				if (Overlap(col1, col2))
+				if (Overlap(col1, col2)) // Trigger collision
 				{
 					_contactListener->OnTriggerEnter(colPair.ColRefA, colPair.ColRefB);
 					_colRefPairs.insert(colPair);
@@ -322,7 +322,7 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 			UpdateQuadTreeCollisions(*child);
 		}
 	}
-	}
+}
 
 [[nodiscard]] bool World::Overlap(const Collider& colA, const Collider& colB) noexcept
 {

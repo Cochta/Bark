@@ -2,6 +2,7 @@
 
 #include "Collider.h"
 #include "Allocators.h"
+#include "UniquePtr.h"
 
 #include <memory>
 
@@ -16,10 +17,10 @@ class QuadNode
 public:
 	Math::RectangleF Bounds{ Math::Vec2F::Zero(), Math::Vec2F::Zero() };
 	std::array<std::unique_ptr<QuadNode>, 4> Children{ nullptr, nullptr, nullptr, nullptr };
-	Allocator* HeapAlloc = new HeapAllocator();
+	UniquePtr<Allocator> HeapAlloc = UniquePtr<Allocator>(new HeapAllocator());
 	CustomlyAllocatedVector<ColliderRefAabb> ColliderRefAabbs{ *HeapAlloc };
 private:
-	static constexpr int _MAX_COL_NBR = 16;
+	static constexpr int _MAX_COL_NBR = 1000;
 
 	static constexpr int _MAX_DEPTH = 5;
 

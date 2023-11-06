@@ -45,8 +45,9 @@ struct CollidingBody
 	Collider* collider = nullptr;
 };
 
-struct Contact
+class Contact
 {
+public:
 	std::array<CollidingBody, 2> CollidingBodies{};
 	Math::Vec2F Normal{};
 	Math::Vec2F Position{};
@@ -56,4 +57,5 @@ struct Contact
 	float CalculateSeparateVelocity() const noexcept;
 	void ResolveVelocity() const noexcept;
 	void ResolveInterpenetration() const noexcept;
+
 };

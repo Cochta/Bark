@@ -17,12 +17,12 @@ private:
 		{Metrics::MetersToPixels(0.2f),    Metrics::MetersToPixels(0.2f)},
 		{Metrics::MetersToPixels(-0.2f),  Metrics::MetersToPixels(0.2f)},
 	};
-	static constexpr Math::Vec2F RECTANGLE_BOUNDS = { Metrics::MetersToPixels(0.4f), Metrics::MetersToPixels(0.4f) };
-	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.2f);
-	static constexpr float SPEED = 100;
+	static constexpr Math::Vec2F RECTANGLE_BOUNDS = { Metrics::MetersToPixels(0.6f), Metrics::MetersToPixels(0.6f) };
+	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.3f);
+	static constexpr float SPEED = 200;
 
-	static constexpr std::size_t CIRCLE_NBR = 2;
-	static constexpr std::size_t RECTANGLE_NBR = 0;
+	static constexpr std::size_t CIRCLE_NBR = 20;
+	static constexpr std::size_t RECTANGLE_NBR = 20;
 	static constexpr std::size_t TRIANGLE_NBR = 0;
 
 	std::size_t _nbObjects;

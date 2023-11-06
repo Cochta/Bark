@@ -13,10 +13,10 @@ std::string CollisionSample::GetDescription() noexcept
 void CollisionSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept
 {
 	AllGraphicsData[col1.Index].Color = {
-		Math::Random::Range(0, 255),
-			Math::Random::Range(0, 255),
-			Math::Random::Range(0, 255),
-			255 };
+Math::Random::Range(0, 255),
+	Math::Random::Range(0, 255),
+	Math::Random::Range(0, 255),
+	255 };
 	AllGraphicsData[col2.Index].Color = {
 		Math::Random::Range(0, 255),
 			Math::Random::Range(0, 255),
@@ -26,6 +26,7 @@ void CollisionSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexc
 
 void CollisionSample::OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept
 {
+
 }
 
 void CollisionSample::SampleSetUp() noexcept
@@ -44,40 +45,39 @@ void CollisionSample::SampleSetUp() noexcept
 		_bodyRefs.push_back(bodyRef1);
 		auto& body1 = _world.GetBody(bodyRef1);
 
-		//body1.Mass = 1;
+		body1.Mass = 1;
 
-		//body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
-		//	Math::Random::Range(-1.f, 1.f)) * SPEED;
-
-
-		//body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
-		//				  Math::Random::Range(100.f, Metrics::Height - 100.f) };
-
-		if (i % 2 == 0)
-		{
-			body1.Mass = 1;
-
-			body1.Velocity = Math::Vec2F(100, 0);
+		body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
+			Math::Random::Range(-1.f, 1.f)) * SPEED;
 
 
-			body1.Position = { 200.f*i, 200.f };
-		}
-		else
-		{
-			body1.Mass = 1;
+		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
+						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
 
-			body1.Velocity = Math::Vec2F(0, 0);
+		//if (i % 2 == 0)
+		//{
+		//	body1.Mass = 1;
+
+		//	body1.Velocity = Math::Vec2F(100, 0);
 
 
-			body1.Position = { 400.f*i, 200.f };
-		}
+		//	body1.Position = { 200.f*i, 200.f };
+		//}
+		//else
+		//{
+		//	body1.Mass = 1;
+
+		//	body1.Velocity = Math::Vec2F(0, 0);
+
+
+		//	body1.Position = { 400.f*i, 200.f };
+		//}
 
 		auto colRef1 = _world.CreateCollider(bodyRef1);
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
 		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = false;
 
 		GraphicsData bd;
 		bd.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS) + body1.Position;
@@ -102,7 +102,6 @@ void CollisionSample::SampleSetUp() noexcept
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS);
 		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
 
 		GraphicsData bd;
 		bd.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS) + body1.Position;
@@ -126,7 +125,6 @@ void CollisionSample::SampleSetUp() noexcept
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::PolygonF(TRIANGLE_VERTICES);
 		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
 
 		GraphicsData bd;
 		bd.Shape = Math::PolygonF(TRIANGLE_VERTICES) + body1.Position;
@@ -194,13 +192,13 @@ void CollisionSample::SampleUpdate() noexcept
 			break;
 		}
 	}
-	float accumalated = 0;
-	for each (auto ref in _bodyRefs)
-	{
-		accumalated += _world.GetBody(ref).Velocity.Length();
-		
-	}
-	printf("%f\n", accumalated);
+	//float accumalated = 0;
+	//for each (auto ref in _bodyRefs)
+	//{
+	//	accumalated += _world.GetBody(ref).Velocity.Length();
+	//	
+	//}
+	//printf("%f\n", accumalated);
 
 	_quadTreeGraphicsData.clear();
 	DrawQuadtree(&_world._quadTree);
