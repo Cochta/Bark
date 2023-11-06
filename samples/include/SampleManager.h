@@ -5,6 +5,7 @@
 #include "FormsTriggerSample.h"
 #include "QuadTreeTriggerSample.h"
 #include "CollisionSample.h"
+#include "BouncingBallSample.h"
 
 
 #include "UniquePtr.h"
@@ -38,4 +39,6 @@ public:
 	[[nodiscard]] std::vector<GraphicsData>& GetSampleData() noexcept;
 
 	void GiveMousePositionToSample(Math::Vec2F mousePosition) noexcept;
+
+	void GiveMouseClickToSample() noexcept;
 };

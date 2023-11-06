@@ -12,7 +12,7 @@ void Sample::Update() noexcept
     SampleUpdate();
     _timer.Tick();
     _world.Update(_timer.DeltaTime);
-
+    _wasMouseReleased = false;
 }
 
 void Sample::TearDown() noexcept
@@ -22,10 +22,14 @@ void Sample::TearDown() noexcept
     AllGraphicsData.clear();
     _colRefs.clear();
     _world.TearDown();
-
 }
 
 void Sample::GetMousePos(const Math::Vec2F mousePos) noexcept
 {
     _mousePos = mousePos;
+}
+
+void Sample::OnClick() noexcept
+{
+    _wasMouseReleased = true;
 }

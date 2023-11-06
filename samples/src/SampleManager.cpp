@@ -7,6 +7,7 @@ void SampleManager::SetUp() noexcept
     _samples.push_back(UniquePtr<FormsTriggerSample>(new FormsTriggerSample()));
     _samples.push_back(UniquePtr<QuadTreeTriggerSample>(new QuadTreeTriggerSample()));
     _samples.push_back(UniquePtr<CollisionSample>(new CollisionSample()));
+    _samples.push_back(UniquePtr<BouncingBallSample>(new BouncingBallSample()));
 
 
     _samples[_sampleIdx]->SetUp();
@@ -58,4 +59,9 @@ std::vector<GraphicsData> &SampleManager::GetSampleData() noexcept
 void SampleManager::GiveMousePositionToSample(const Math::Vec2F mousePosition) noexcept
 {
     _samples[_sampleIdx]->GetMousePos(mousePosition);
+}
+
+void SampleManager::GiveMouseClickToSample() noexcept
+{
+    _samples[_sampleIdx]->OnClick();
 }

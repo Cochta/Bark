@@ -100,6 +100,12 @@ void SDLApp::Run() noexcept
 					break;
 				}
 				break;
+			case SDL_MOUSEBUTTONUP:
+				// Handle mouse button release here
+				if (e.button.button == SDL_BUTTON_LEFT) {
+					_sampleManager.GiveMouseClickToSample();
+				}
+				break;
 			}
 		}
 
@@ -181,7 +187,7 @@ void SDLApp::Run() noexcept
 		FrameMark;
 #endif // TRACY_ENABLE
 	}
-}
+	}
 
 void SDLApp::DrawCircle(const Math::Vec2F center, const float radius, const int segments, const SDL_Color& col) noexcept
 {

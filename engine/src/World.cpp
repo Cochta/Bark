@@ -151,6 +151,10 @@ void World::UpdateBodies(const float deltaTime) noexcept
 		{
 			continue;
 		}
+		if (body.type  == BodyType::STATIC)
+		{
+			continue;
+		}
 		auto acceleration = body.GetForce() / body.Mass;
 		body.Velocity += acceleration * deltaTime;
 		body.Position += body.Velocity * deltaTime;

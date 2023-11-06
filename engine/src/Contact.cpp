@@ -99,10 +99,20 @@ void Contact::ResolveVelocity() const noexcept
 	{
 		CollidingBodies[0].body->Velocity += impulsePerIMass * inverseMass1;
 	}
+	else if (CollidingBodies[0].body->type == BodyType::STATIC)
+	{
+		CollidingBodies[1].body->Velocity -= impulsePerIMass * inverseMass2;
+	}
+
 	if (CollidingBodies[1].body->type == BodyType::DYNAMIC)
 	{
 		CollidingBodies[1].body->Velocity -= impulsePerIMass * inverseMass2;
 	}
+	else if (CollidingBodies[1].body->type == BodyType::STATIC)
+	{
+		CollidingBodies[0].body->Velocity += impulsePerIMass * inverseMass2;
+	}
+
 }
 
 void Contact::ResolveInterpenetration() const noexcept
