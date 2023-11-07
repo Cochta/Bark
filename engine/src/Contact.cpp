@@ -3,7 +3,7 @@
 void Contact::Resolve()
 {
 	const auto delta = CollidingBodies[0].body->Position - CollidingBodies[1].body->Position;
-	Position = CollidingBodies[0].body->Position + delta / 2;
+	//Position = CollidingBodies[0].body->Position + delta / 2;
 
 	switch (CollidingBodies[0].collider->Shape.index())
 	{
@@ -13,7 +13,8 @@ void Contact::Resolve()
 		case static_cast<int>(Math::ShapeType::Circle):
 		{
 			Normal = delta.Normalized();
-			Penetration = std::get<Math::CircleF>(CollidingBodies[0].collider->Shape).Radius() + std::get<Math::CircleF>(CollidingBodies[1].collider->Shape).Radius() - delta.Length();
+			Penetration = std::get<Math::CircleF>(CollidingBodies[0].collider->Shape).Radius() +
+				std::get<Math::CircleF>(CollidingBodies[1].collider->Shape).Radius() - delta.Length();
 		}
 		break;
 		case static_cast<int>(Math::ShapeType::Rectangle):
@@ -29,21 +30,14 @@ void Contact::Resolve()
 
 			float distance = delta.Length();
 
-			if (distance < circle.Radius())
+			if (distance >= Math::Epsilon)
 			{
+				Normal = -delta.Normalized();
 				Penetration = circle.Radius() - distance;
-
-				Position = CollidingBodies[0].body->Position + Normal * (circle.Radius() - Penetration);
-
-				if (distance >= Math::Epsilon)
-				{
-					Normal = -delta.Normalized();
-				}
 			}
-			else
-			{
-				Penetration = 0;
-			}
+
+			//Position = CollidingBodies[0].body->Position + Normal * (circle.Radius() - Penetration);
+
 		}
 		break;
 		}
@@ -156,7 +150,7 @@ void Contact::ResolveInterpenetration() noexcept
 	const float totalInverseMass = inverseMass1 + inverseMass2;
 
 	if (totalInverseMass <= 0) {
-		return; // All particles have infinite mass, do nothing.
+		return;
 	}
 
 	// Calculate the amount of penetration resolution per unit of inverse mass.
@@ -165,10 +159,31 @@ void Contact::ResolveInterpenetration() noexcept
 	// Apply the penetration resolution to dynamic bodies.
 	if (CollidingBodies[0].body->type == BodyType::DYNAMIC)
 	{
-		CollidingBodies[0].body->Position += movePerIMass * inverseMass1;
+		auto impulse = movePerIMass * inverseMass1;
+
+		if (CollidingBodies[0].collider->Shape.index() == static_cast<int>(Math::ShapeType::Circle) && impulse.Length() <= 0.1f)
+		{
+			impulse = impulse.Normalized() / 15;
+		}
+		else if (CollidingBodies[0].collider->Shape.index() == static_cast<int>(Math::ShapeType::Rectangle))
+		{
+			impulse = impulse.Normalized() / 5;
+		}
+
+		CollidingBodies[0].body->Position += impulse;
 	}
 	if (CollidingBodies[1].body->type == BodyType::DYNAMIC)
 	{
-		CollidingBodies[1].body->Position -= movePerIMass * inverseMass2;
+		auto impulse = movePerIMass * inverseMass2;
+
+		if (CollidingBodies[1].collider->Shape.index() == static_cast<int>(Math::ShapeType::Circle) && impulse.Length() <= 0.1f)
+		{
+			impulse = impulse.Normalized() / 15;
+		}
+		else if (CollidingBodies[1].collider->Shape.index() == static_cast<int>(Math::ShapeType::Rectangle))
+		{
+			impulse = impulse.Normalized() / 5;
+		}
+		CollidingBodies[1].body->Position -= impulse;
 	}
 }

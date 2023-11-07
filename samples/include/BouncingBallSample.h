@@ -8,10 +8,10 @@
 class BouncingBallSample : public Sample, public ContactListener
 {
 private:
-
-	static constexpr Math::Vec2F RECTANGLE_BOUNDS = { Metrics::Width / 3, Metrics::Height / 5 };
 	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.3f);
 	static constexpr float SPEED = 200;
+
+	bool WhichForm = false;
 
 public:
 	std::string GetName() noexcept override;
