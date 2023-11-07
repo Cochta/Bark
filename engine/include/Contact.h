@@ -50,7 +50,6 @@ class Contact
 public:
 	std::array<CollidingBody, 2> CollidingBodies{};
 	Math::Vec2F Normal{};
-	//Math::Vec2F Position{};
 	float Restitution{ 1 };
 	float Penetration{};
 	void Resolve();

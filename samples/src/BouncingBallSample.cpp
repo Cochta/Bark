@@ -12,24 +12,21 @@ std::string BouncingBallSample::GetDescription() noexcept
 
 void BouncingBallSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept
 {
-
+	//	AllGraphicsData[col1.Index].Color = {
+//Math::Random::Range(0, 255),
+//	Math::Random::Range(0, 255),
+//	Math::Random::Range(0, 255),
+//	255 };
+//	AllGraphicsData[col2.Index].Color = {
+//		Math::Random::Range(0, 255),
+//			Math::Random::Range(0, 255),
+//			Math::Random::Range(0, 255),
+//			255 };
 }
 
 void BouncingBallSample::OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept
 {
 
-
-
-	//	AllGraphicsData[col1.Index].Color = {
-	//Math::Random::Range(0, 255),
-	//	Math::Random::Range(0, 255),
-	//	Math::Random::Range(0, 255),
-	//	255 };
-	//	AllGraphicsData[col2.Index].Color = {
-	//		Math::Random::Range(0, 255),
-	//			Math::Random::Range(0, 255),
-	//			Math::Random::Range(0, 255),
-	//			255 };
 }
 
 void BouncingBallSample::SampleSetUp() noexcept
@@ -47,7 +44,7 @@ void BouncingBallSample::SampleSetUp() noexcept
 	auto colRef1 = _world.CreateCollider(bodyRef1);
 	_colRefs.push_back(colRef1);
 	auto& col1 = _world.GetCollider(colRef1);
-	col1.Shape = Math::RectangleF({ -Metrics::Width / 3 , 0 }, { Metrics::Width / 3 ,Metrics::Height / 6 });
+	col1.Shape = Math::RectangleF({ -Metrics::Width / 2 , 0 }, { Metrics::Width / 2 ,Metrics::Height / 6 });
 	col1.BodyPosition = body1.Position;
 
 	AllGraphicsData.emplace_back();
@@ -104,7 +101,7 @@ void BouncingBallSample::CreateBall(Math::Vec2F position) noexcept
 		auto colRef1 = _world.CreateCollider(bodyRef1);
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::RectangleF(Math::Vec2F::Zero(), { 40,40 });
+		col1.Shape = Math::RectangleF({ -20,-20 }, { 40,40 });
 		col1.BodyPosition = body1.Position;
 		col1.Restitution = 0.5f;
 	}

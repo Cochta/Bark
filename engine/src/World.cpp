@@ -179,11 +179,6 @@ void World::UpdateCollisions() noexcept
 			continue;
 		}
 
-		if (!col1.IsTrigger)
-		{
-			continue;
-		}
-
 		for (std::size_t j = 0; j < _colliders.size(); ++j)
 		{
 			ColliderRef colRef2{ j, ColliderGenIndices[j] };
@@ -196,8 +191,22 @@ void World::UpdateCollisions() noexcept
 			{
 				continue;
 			}
-			if (!col1.IsTrigger)
+
+			if (!col2.IsTrigger && !col1.IsTrigger) // physical collision
 			{
+				if (!Overlap(col1, col2))
+				{
+					_contactListener->OnCollisionExit(colRef1, colRef2);
+				}
+				else
+				{
+					Contact contact;
+					contact.CollidingBodies[0] = { &GetBody(col1.BodyRef), &col1 };
+					contact.CollidingBodies[1] = { &GetBody(col2.BodyRef), &col2 };
+					contact.Resolve();
+					_contactListener->OnCollisionEnter(colRef1, colRef2);
+				}
+
 				continue;
 			}
 
@@ -279,7 +288,16 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 				{
 					if (!col2.IsTrigger && !col1.IsTrigger) // physical collision
 					{
-						if (!Overlap(col1, col2))
+						if (Overlap(col1, col2))
+						{
+							Contact contact;
+							contact.CollidingBodies[0] = { &GetBody(col1.BodyRef), &col1 };
+							contact.CollidingBodies[1] = { &GetBody(col2.BodyRef), &col2 };
+							contact.Resolve();
+							_contactListener->OnCollisionEnter(colRefAabb1.ColRef, colRefAabb2.ColRef);
+							_colRefPairs.insert(colPair);
+						}
+						else
 						{
 							_contactListener->OnCollisionExit(colRefAabb1.ColRef, colRefAabb2.ColRef);
 							_colRefPairs.erase(colPair);
@@ -293,21 +311,6 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 						_contactListener->OnTriggerExit(colPair.ColRefA, colPair.ColRefB);
 						_colRefPairs.erase(colPair);
 					}
-					continue;
-				}
-
-				if (!col2.IsTrigger && !col1.IsTrigger) // physical collision
-				{
-					if (Overlap(col1, col2))
-					{
-						Contact contact;
-						contact.CollidingBodies[0] = { &GetBody(col1.BodyRef), &col1 };
-						contact.CollidingBodies[1] = { &GetBody(col2.BodyRef), &col2 };
-						contact.Resolve();
-						_contactListener->OnCollisionEnter(colRefAabb1.ColRef, colRefAabb2.ColRef);
-						_colRefPairs.insert(colPair);
-					}
-
 					continue;
 				}
 

@@ -3,7 +3,6 @@
 void Contact::Resolve()
 {
 	const auto delta = CollidingBodies[0].body->Position - CollidingBodies[1].body->Position;
-	//Position = CollidingBodies[0].body->Position + delta / 2;
 
 	switch (CollidingBodies[0].collider->Shape.index())
 	{
@@ -30,13 +29,12 @@ void Contact::Resolve()
 
 			float distance = delta.Length();
 
+			Penetration = circle.Radius() - distance;
+
 			if (distance >= Math::Epsilon)
 			{
 				Normal = -delta.Normalized();
-				Penetration = circle.Radius() - distance;
 			}
-
-			//Position = CollidingBodies[0].body->Position + Normal * (circle.Radius() - Penetration);
 
 		}
 		break;
@@ -63,13 +61,13 @@ void Contact::Resolve()
 			{
 				Normal = delta.X > 0 ? Math::Vec2F(1.0f, 0.0f) : Math::Vec2F(-1.0f, 0.0f);
 
-				Penetration = penetration.X;
+				Penetration = penetration.Normalized().X;
 			}
 			else
 			{
 				Normal = delta.Y > 0 ? Math::Vec2F(0.f, 1.0f) : Math::Vec2F(0.f, -1.0f);
 
-				Penetration = penetration.Y;
+				Penetration = penetration.Normalized().Y;
 			}
 		}
 		break;
@@ -159,31 +157,10 @@ void Contact::ResolveInterpenetration() noexcept
 	// Apply the penetration resolution to dynamic bodies.
 	if (CollidingBodies[0].body->type == BodyType::DYNAMIC)
 	{
-		auto impulse = movePerIMass * inverseMass1;
-
-		if (CollidingBodies[0].collider->Shape.index() == static_cast<int>(Math::ShapeType::Circle) && impulse.Length() <= 0.1f)
-		{
-			impulse = impulse.Normalized() / 15;
-		}
-		else if (CollidingBodies[0].collider->Shape.index() == static_cast<int>(Math::ShapeType::Rectangle))
-		{
-			impulse = impulse.Normalized() / 5;
-		}
-
-		CollidingBodies[0].body->Position += impulse;
+		CollidingBodies[0].body->Position += movePerIMass * inverseMass1;
 	}
 	if (CollidingBodies[1].body->type == BodyType::DYNAMIC)
 	{
-		auto impulse = movePerIMass * inverseMass2;
-
-		if (CollidingBodies[1].collider->Shape.index() == static_cast<int>(Math::ShapeType::Circle) && impulse.Length() <= 0.1f)
-		{
-			impulse = impulse.Normalized() / 15;
-		}
-		else if (CollidingBodies[1].collider->Shape.index() == static_cast<int>(Math::ShapeType::Rectangle))
-		{
-			impulse = impulse.Normalized() / 5;
-		}
-		CollidingBodies[1].body->Position -= impulse;
+		CollidingBodies[1].body->Position -= movePerIMass * inverseMass2;
 	}
 }
