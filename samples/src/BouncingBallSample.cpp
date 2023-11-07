@@ -43,11 +43,11 @@ void BouncingBallSample::SampleSetUp() noexcept
 	auto colRef1 = _world.CreateCollider(bodyRef1);
 	_colRefs.push_back(colRef1);
 	auto& col1 = _world.GetCollider(colRef1);
-	col1.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS);
+	col1.Shape = Math::RectangleF({ -200,-100 }, { 200,100 });
 	col1.BodyPosition = body1.Position;
 
 	GraphicsData bd;
-	bd.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS) + body1.Position;
+	bd.Shape = Math::RectangleF({ -200,-100 }, { 200,100 }) + body1.Position;
 	AllGraphicsData.push_back(bd);
 
 	//CreateBall({ Metrics::Width / 2, Metrics::Height / 5 });

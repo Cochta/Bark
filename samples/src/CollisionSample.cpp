@@ -44,7 +44,7 @@ void CollisionSample::SampleSetUp() noexcept
 		auto bodyRef1 = _world.CreateBody();
 		_bodyRefs.push_back(bodyRef1);
 		auto& body1 = _world.GetBody(bodyRef1);
-		body1.type = BodyType::STATIC;
+		//body1.type = BodyType::STATIC;
 
 		body1.Mass = 1;
 

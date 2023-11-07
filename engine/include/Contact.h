@@ -55,7 +55,7 @@ public:
 	float Penetration{};
 	void Resolve();
 	float CalculateSeparateVelocity() const noexcept;
-	void ResolveVelocity() const noexcept;
-	void ResolveInterpenetration() const noexcept;
+	void ResolveVelocity() noexcept;
+	void ResolveInterpenetration() noexcept;
 
 };
