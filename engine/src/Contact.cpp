@@ -28,17 +28,16 @@ void Contact::Resolve()
 				Math::Clamp(CollidingBodies[0].body->Position.X + circle.Center().X, rectangle.MinBound().X + CollidingBodies[1].body->Position.X, rectangle.MaxBound().X + CollidingBodies[1].body->Position.X),
 				Math::Clamp(CollidingBodies[0].body->Position.Y + circle.Center().Y, rectangle.MinBound().Y + CollidingBodies[1].body->Position.Y, rectangle.MaxBound().Y + CollidingBodies[1].body->Position.Y));
 
-			Math::Vec2F delta = CollidingBodies[0].body->Position - circle.Center() - closest;
+			Math::Vec2F delta = CollidingBodies[0].body->Position + circle.Center() - closest;
 
 			float distance = delta.Length();
 
-			Penetration = circle.Radius() - distance; // false
+			Penetration = circle.Radius() - distance; // faux samer
 
 			if (distance > 0.f)
 			{
 				Normal = delta.Normalized();
 			}
-
 		}
 		break;
 		}

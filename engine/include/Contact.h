@@ -39,22 +39,51 @@ public:
 	virtual void OnCollisionExit(ColliderRef colRef1, ColliderRef colRef2) noexcept = 0;
 };
 
+/**
+ * @struct CollidingBody
+ * @brief Represents a pair of colliding bodies.
+ * @var CollidingBody::body The pointer to the body involved in the collision.
+ * @var CollidingBody::collider The pointer to the collider associated with the body.
+ */
 struct CollidingBody
 {
 	Body* body = nullptr;
 	Collider* collider = nullptr;
 };
 
+/**
+ * @class Contact
+ * @brief Represents a collision event and provides methods for resolving it.
+ */
+
 class Contact
 {
 public:
-	std::array<CollidingBody, 2> CollidingBodies{};
-	Math::Vec2F Normal{};
-	float Restitution{ 1 };
-	float Penetration{};
+
+	std::array<CollidingBody, 2> CollidingBodies{}; // An array containing the two colliding bodies.
+	Math::Vec2F Normal{}; // The collision normal vector.
+	float Restitution{ 1 }; // The coefficient of restitution for the collision.
+	float Penetration{}; // The penetration depth of the collision.
+
+	/**
+	 * @brief Resolve the collision between two bodies.
+	 */
 	void Resolve();
+
+	/**
+	 * @brief Calculate the separate velocity of the two colliding bodies.
+	 * @return The separate velocity.
+	 */
 	float CalculateSeparateVelocity() const noexcept;
+
+	/**
+	 * @brief Resolve the velocity component of the collision.
+	 */
 	void ResolveVelocity() noexcept;
+
+	/**
+	 * @brief Resolve the interpenetration between the two colliding bodies.
+	 */
 	void ResolveInterpenetration() noexcept;
 
 };
