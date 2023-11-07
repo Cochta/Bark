@@ -47,7 +47,7 @@ void BouncingBallSample::SampleSetUp() noexcept
 	auto& col1 = _world.GetCollider(colRef1);
 	col1.Shape = Math::RectangleF({ -Metrics::Width / 3, 0 }, { Metrics::Width / 3, 10 });
 	col1.BodyPosition = body1.Position;
-	col1.Restitution = 0.f;
+	col1.Restitution = 1.f;
 
 	AllGraphicsData.emplace_back();
 
@@ -103,7 +103,10 @@ void BouncingBallSample::CreateBall(Math::Vec2F position) noexcept
 		auto colRef1 = _world.CreateCollider(bodyRef1);
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::RectangleF({ -20,-20 }, { 20,20 });
+		col1.Shape = Math::RectangleF(
+			{ -Math::Random::Range(1.f,4.f) * 10.f,-Math::Random::Range(1.f,4.f) * 10.f },
+			{ Math::Random::Range(1.f,4.f) * 10.f,Math::Random::Range(1.f,4.f) * 10.f }
+		);
 		col1.BodyPosition = body1.Position;
 		col1.Restitution = 0.f;
 	}
@@ -120,7 +123,7 @@ void BouncingBallSample::CreateBall(Math::Vec2F position) noexcept
 		auto circleColRef = _world.CreateCollider(circleBodyRef);
 		_colRefs.push_back(circleColRef);
 		auto& circleCol = _world.GetCollider(circleColRef);
-		circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
+		circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), Math::Random::Range(10.f, 40.f));
 		circleCol.BodyPosition = circleBody.Position;
 		circleCol.Restitution = 0.f;
 	}

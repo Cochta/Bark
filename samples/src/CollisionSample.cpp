@@ -58,11 +58,11 @@ void CollisionSample::SampleSetUp() noexcept
 		auto colRef1 = _world.CreateCollider(bodyRef1);
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::Circle({100,100}, CIRCLE_RADIUS);
+		col1.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
 		col1.BodyPosition = body1.Position;
 
 		GraphicsData bd;
-		bd.Shape = Math::Circle({ 100,100 }, CIRCLE_RADIUS) + body1.Position;
+		bd.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS) + body1.Position;
 		AllGraphicsData.push_back(bd);
 	}
 
@@ -174,13 +174,6 @@ void CollisionSample::SampleUpdate() noexcept
 			break;
 		}
 	}
-	//float accumalated = 0;
-	//for each (auto ref in _bodyRefs)
-	//{
-	//	accumalated += _world.GetBody(ref).Velocity.Length();
-	//	
-	//}
-	//printf("%f\n", accumalated);
 
 	_quadTreeGraphicsData.clear();
 	DrawQuadtree(&_world._quadTree);

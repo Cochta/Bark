@@ -8,7 +8,7 @@
 class BouncingBallSample : public Sample, public ContactListener
 {
 private:
-	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.3f);
+
 	static constexpr float SPEED = 200;
 
 	bool WhichForm = false;

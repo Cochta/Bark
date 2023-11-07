@@ -28,15 +28,15 @@ void Contact::Resolve()
 				Math::Clamp(CollidingBodies[0].body->Position.X + circle.Center().X, rectangle.MinBound().X + CollidingBodies[1].body->Position.X, rectangle.MaxBound().X + CollidingBodies[1].body->Position.X),
 				Math::Clamp(CollidingBodies[0].body->Position.Y + circle.Center().Y, rectangle.MinBound().Y + CollidingBodies[1].body->Position.Y, rectangle.MaxBound().Y + CollidingBodies[1].body->Position.Y));
 
-			Math::Vec2F delta = closest - CollidingBodies[0].body->Position - circle.Center();
+			Math::Vec2F delta = CollidingBodies[0].body->Position - circle.Center() - closest;
 
 			float distance = delta.Length();
 
-			Penetration = circle.Radius() - distance;
+			Penetration = circle.Radius() - distance; // false
 
-			if (distance >= Math::Epsilon)
+			if (distance > 0.f)
 			{
-				Normal = -delta.Normalized();
+				Normal = delta.Normalized();
 			}
 
 		}
@@ -101,7 +101,7 @@ void Contact::ResolveVelocity() noexcept
 	const float separatingVelocity = CalculateSeparateVelocity();
 
 	if (separatingVelocity > 0) {
-		return; 
+		return;
 	}
 
 	const float newSeparatingVelocity = -separatingVelocity * Restitution;
@@ -125,7 +125,7 @@ void Contact::ResolveVelocity() noexcept
 	}
 	else if (CollidingBodies[0].body->type == BodyType::STATIC)
 	{
-		CollidingBodies[1].body->Velocity -= impulsePerIMass * inverseMass1;
+		CollidingBodies[1].body->Velocity -= impulsePerIMass * inverseMass2;
 	}
 
 	if (CollidingBodies[1].body->type == BodyType::DYNAMIC)
@@ -134,7 +134,7 @@ void Contact::ResolveVelocity() noexcept
 	}
 	else if (CollidingBodies[1].body->type == BodyType::STATIC)
 	{
-		CollidingBodies[0].body->Velocity += impulsePerIMass * inverseMass2;
+		CollidingBodies[0].body->Velocity += impulsePerIMass * inverseMass1;
 	}
 }
 
@@ -157,10 +157,8 @@ void Contact::ResolveInterpenetration() noexcept
 		CollidingBodies[0].body->Position += movePerIMass * inverseMass1;
 	}
 
-
 	if (CollidingBodies[1].body->type == BodyType::DYNAMIC)
 	{
 		CollidingBodies[1].body->Position -= movePerIMass * inverseMass2;
 	}
-
 }
