@@ -12,16 +12,16 @@ std::string BouncingBallSample::GetDescription() noexcept
 
 void BouncingBallSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept
 {
-	//	AllGraphicsData[col1.Index].Color = {
-//Math::Random::Range(0, 255),
-//	Math::Random::Range(0, 255),
-//	Math::Random::Range(0, 255),
-//	255 };
-//	AllGraphicsData[col2.Index].Color = {
-//		Math::Random::Range(0, 255),
-//			Math::Random::Range(0, 255),
-//			Math::Random::Range(0, 255),
-//			255 };
+	//		AllGraphicsData[col1.Index].Color = {
+	//Math::Random::Range(0, 255),
+	//	Math::Random::Range(0, 255),
+	//	Math::Random::Range(0, 255),
+	//	255 };
+	//	AllGraphicsData[col2.Index].Color = {
+	//		Math::Random::Range(0, 255),
+	//			Math::Random::Range(0, 255),
+	//			Math::Random::Range(0, 255),
+	//			255 };
 }
 
 void BouncingBallSample::OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept
@@ -38,18 +38,20 @@ void BouncingBallSample::SampleSetUp() noexcept
 	_bodyRefs.push_back(bodyRef1);
 	auto& body1 = _world.GetBody(bodyRef1);
 	body1.type = BodyType::STATIC;
+	//body1.Mass = 1000;
 
 	body1.Position = { Metrics::Width / 2, Metrics::Height - Metrics::Height / 5 };
 
 	auto colRef1 = _world.CreateCollider(bodyRef1);
 	_colRefs.push_back(colRef1);
 	auto& col1 = _world.GetCollider(colRef1);
-	col1.Shape = Math::RectangleF({ -Metrics::Width / 2 , 0 }, { Metrics::Width / 2 ,Metrics::Height / 6 });
+	col1.Shape = Math::RectangleF({ -Metrics::Width / 3, 0 }, { Metrics::Width / 3, 10 });
 	col1.BodyPosition = body1.Position;
+	col1.Restitution = 0.f;
 
 	AllGraphicsData.emplace_back();
 
-	CreateBall({ Metrics::Width / 2, Metrics::Height / 5 });
+	//CreateBall({ Metrics::Width / 2, Metrics::Height / 5 });
 }
 void BouncingBallSample::SampleUpdate() noexcept
 {
@@ -101,9 +103,9 @@ void BouncingBallSample::CreateBall(Math::Vec2F position) noexcept
 		auto colRef1 = _world.CreateCollider(bodyRef1);
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::RectangleF({ -20,-20 }, { 40,40 });
+		col1.Shape = Math::RectangleF({ -20,-20 }, { 20,20 });
 		col1.BodyPosition = body1.Position;
-		col1.Restitution = 0.5f;
+		col1.Restitution = 0.f;
 	}
 	else
 	{
@@ -120,7 +122,7 @@ void BouncingBallSample::CreateBall(Math::Vec2F position) noexcept
 		auto& circleCol = _world.GetCollider(circleColRef);
 		circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
 		circleCol.BodyPosition = circleBody.Position;
-		circleCol.Restitution = 0.5f;
+		circleCol.Restitution = 0.f;
 	}
 	AllGraphicsData.emplace_back();
 	WhichForm = !WhichForm;

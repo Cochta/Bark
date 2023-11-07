@@ -55,33 +55,14 @@ void CollisionSample::SampleSetUp() noexcept
 		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
 						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
 
-		//if (i % 2 == 0)
-		//{
-		//	body1.Mass = 1;
-
-		//	body1.Velocity = Math::Vec2F(100, 0);
-
-
-		//	body1.Position = { 200.f*i, 200.f };
-		//}
-		//else
-		//{
-		//	body1.Mass = 1;
-
-		//	body1.Velocity = Math::Vec2F(0, 0);
-
-
-		//	body1.Position = { 400.f*i, 200.f };
-		//}
-
 		auto colRef1 = _world.CreateCollider(bodyRef1);
 		_colRefs.push_back(colRef1);
 		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
+		col1.Shape = Math::Circle({100,100}, CIRCLE_RADIUS);
 		col1.BodyPosition = body1.Position;
 
 		GraphicsData bd;
-		bd.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS) + body1.Position;
+		bd.Shape = Math::Circle({ 100,100 }, CIRCLE_RADIUS) + body1.Position;
 		AllGraphicsData.push_back(bd);
 	}
 
