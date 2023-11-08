@@ -2,7 +2,7 @@
 
 std::string FormsTriggerSample::GetName() noexcept
 {
- return "Forms intersect"; 
+	return "Forms intersect";
 }
 
 std::string FormsTriggerSample::GetDescription() noexcept
@@ -46,42 +46,32 @@ void FormsTriggerSample::SampleSetUp() noexcept
 	triangleCol.Shape = Math::Polygon(verticesTriangle);
 	triangleCol.IsTrigger = true;
 
-	GraphicsData bdPol;
-	bdPol.Shape = Math::Polygon(verticesTriangle) + triangle.Position;
-	AllGraphicsData.push_back(bdPol);
+	GraphicsData gdTriangle;
+	gdTriangle.Shape = Math::Polygon(verticesTriangle) + triangle.Position;
+	AllGraphicsData.push_back(gdTriangle);
 
 
 	_movableTriangleRef = _world.CreateBody();
-	auto& starBody = _world.GetBody(_movableTriangleRef);
-	starBody.Position = { static_cast<float>(Metrics::Width) / 2,
+	auto& movableTriangleBody = _world.GetBody(_movableTriangleRef);
+	movableTriangleBody.Position = { static_cast<float>(Metrics::Width) / 2,
 						 static_cast<float>(Metrics::Height) / 2 };
-	starBody.Mass = 1.f;
+	movableTriangleBody.Mass = 1.f;
 	_bodyRefs.push_back(_movableTriangleRef);
 
-	auto starColRef = _world.CreateCollider(_movableTriangleRef);
-	_colRefs.push_back(starColRef);
-	auto& starCol = _world.GetCollider(starColRef);
+	auto movableTriangleColRef = _world.CreateCollider(_movableTriangleRef);
+	_colRefs.push_back(movableTriangleColRef);
+	auto& movableTriangleCol = _world.GetCollider(movableTriangleColRef);
 
-	std::vector<Math::Vec2F> verticesStar = {
-			{Metrics::MetersToPixels(0.0f),    Metrics::MetersToPixels(0.f)},
-			{Metrics::MetersToPixels(0.0f),    Metrics::MetersToPixels(-0.3f)},
-			{Metrics::MetersToPixels(0.075f),  Metrics::MetersToPixels(-0.075f)},
-			{Metrics::MetersToPixels(0.3f),    Metrics::MetersToPixels(0.0f)},
-			{Metrics::MetersToPixels(0.1f),    Metrics::MetersToPixels(0.1f)},
-			{Metrics::MetersToPixels(0.15f),   Metrics::MetersToPixels(0.3f)},
-			{Metrics::MetersToPixels(0.0f),    Metrics::MetersToPixels(0.15f)},
-			{Metrics::MetersToPixels(-0.15f),  Metrics::MetersToPixels(0.3f)},
-			{Metrics::MetersToPixels(-0.1f),   Metrics::MetersToPixels(0.1f)},
-			{Metrics::MetersToPixels(-0.3f),   Metrics::MetersToPixels(0.0f)},
-			{Metrics::MetersToPixels(-0.075f), Metrics::MetersToPixels(-0.075f)}
-	};
+	std::vector<Math::Vec2F> verticesMovableTriangle = { {0, Metrics::MetersToPixels(0.5f)},
+											 {-Metrics::MetersToPixels(0.5f), Metrics::MetersToPixels(0.5f)},
+											 {Metrics::MetersToPixels(0.5f), -Metrics::MetersToPixels(0.5f)} };
 
-	starCol.Shape = Math::Polygon(verticesTriangle);
-	starCol.IsTrigger = true;
+	movableTriangleCol.Shape = Math::Polygon(verticesMovableTriangle);
+	movableTriangleCol.IsTrigger = true;
 
-	GraphicsData bdStar;
-	bdStar.Shape = Math::Polygon(verticesTriangle) + starBody.Position;
-	AllGraphicsData.push_back(bdStar);
+	GraphicsData gdMovableTriangle;
+	gdMovableTriangle.Shape = Math::Polygon(verticesMovableTriangle) + movableTriangleBody.Position;
+	AllGraphicsData.push_back(gdMovableTriangle);
 
 
 	auto circleBodyRef = _world.CreateBody();
@@ -94,9 +84,9 @@ void FormsTriggerSample::SampleSetUp() noexcept
 	circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f));
 	circleCol.IsTrigger = true;
 
-	GraphicsData bd;
-	bd.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f)) + circleBody.Position;
-	AllGraphicsData.push_back(bd);
+	GraphicsData gdCircle;
+	gdCircle.Shape = Math::Circle(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.3f)) + circleBody.Position;
+	AllGraphicsData.push_back(gdCircle);
 
 	auto rectRef = _world.CreateBody();
 	auto& rect = _world.GetBody(rectRef);
@@ -115,12 +105,12 @@ void FormsTriggerSample::SampleSetUp() noexcept
 									Metrics::MetersToPixels(2)));
 	colRect.IsTrigger = true;
 
-	GraphicsData rbd;
-	rbd.Shape = Math::Rectangle(Math::Vec2F::Zero(),
-								Math::Vec2F(
-								Metrics::MetersToPixels(2),
-								Metrics::MetersToPixels(2))) + rect.Position;
-	AllGraphicsData.push_back(rbd);
+	GraphicsData gdRect;
+	gdRect.Shape = Math::Rectangle(Math::Vec2F::Zero(),
+								   Math::Vec2F(
+								   Metrics::MetersToPixels(2),
+								   Metrics::MetersToPixels(2))) + rect.Position;
+	AllGraphicsData.push_back(gdRect);
 }
 
 void FormsTriggerSample::SampleUpdate() noexcept

@@ -84,6 +84,6 @@ public:
 	/**
 	 * @brief Resolve the interpenetration between the two colliding bodies.
 	 */
-	void ResolveInterpenetration() noexcept;
+	void ResolveInterpenetration() const noexcept;
 
 };

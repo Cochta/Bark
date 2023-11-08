@@ -14,7 +14,14 @@ void Contact::Resolve()
 
 			const auto delta = CollidingBodies[0].body->Position + circle0.Center() - CollidingBodies[1].body->Position - circle1.Center();
 
-			Normal = delta.Normalized();
+			if (delta.Length() > 0.f)
+			{
+				Normal = delta.Normalized();
+			}
+			else
+			{
+				Normal = Math::Vec2F::Down();
+			}
 			Penetration = std::get<Math::CircleF>(CollidingBodies[0].collider->Shape).Radius() +
 				std::get<Math::CircleF>(CollidingBodies[1].collider->Shape).Radius() - delta.Length();
 		}
@@ -32,12 +39,17 @@ void Contact::Resolve()
 
 			const float distance = delta.Length();
 
-			Penetration = circle.Radius() - distance; // faux samer
+			Penetration = circle.Radius() - distance;
 
 			if (distance > 0.f)
 			{
 				Normal = delta.Normalized();
 			}
+			else
+			{
+				Normal = Math::Vec2F::Down();
+			}
+			
 		}
 		break;
 		}
@@ -107,8 +119,8 @@ void Contact::ResolveVelocity() const noexcept
 
 	const float deltaVelocity = newSeparatingVelocity - separatingVelocity;
 
-	const float inverseMass1 = 1 / CollidingBodies[0].body->Mass;
-	const float inverseMass2 = 1 / CollidingBodies[1].body->Mass;
+	const float inverseMass1 = 1.f / CollidingBodies[0].body->Mass;
+	const float inverseMass2 = 1.f / CollidingBodies[1].body->Mass;
 	const float totalInverseMass = inverseMass1 + inverseMass2;
 
 	if (totalInverseMass <= 0) {
@@ -137,12 +149,12 @@ void Contact::ResolveVelocity() const noexcept
 	}
 }
 
-void Contact::ResolveInterpenetration() noexcept
+void Contact::ResolveInterpenetration() const noexcept
 {
 	if (Penetration <= 0) return;
 
-	const float inverseMass1 = 1 / CollidingBodies[0].body->Mass;
-	const float inverseMass2 = 1 / CollidingBodies[1].body->Mass;
+	const float inverseMass1 = 1.f / CollidingBodies[0].body->Mass;
+	const float inverseMass2 = 1.f / CollidingBodies[1].body->Mass;
 	const float totalInverseMass = inverseMass1 + inverseMass2;
 
 	if (totalInverseMass <= 0) {

@@ -97,7 +97,7 @@ void GroundCollisionSample::CreateBall(Math::Vec2F position) noexcept
 	auto& circleCol = _world.GetCollider(circleColRef);
 	circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), Math::Random::Range(10.f, 40.f));
 	circleCol.BodyPosition = circleBody.Position;
-	circleCol.Restitution = 0.f;
+	circleCol.Restitution = 0.5f;
 
 	GraphicsData gd;
 	gd.Color = {
