@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(GTest CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 option(ENABLE_ADDRESS_SANITIZER "Enable Address Sanitizer" OFF)
 
@@ -75,6 +76,7 @@ set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Engine PUBLIC engine/include/)
 target_include_directories(Engine PUBLIC libs/Math/include/)
 target_include_directories(Engine PUBLIC common/include/)
+target_link_libraries(Engine PUBLIC fmt::fmt)
 
 if (USE_TRACY)
     target_compile_definitions(Engine PUBLIC TRACY_ENABLE)

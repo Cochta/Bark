@@ -12,7 +12,8 @@ void Sample::Update() noexcept
     SampleUpdate();
     _timer.Tick();
     _world.Update(_timer.DeltaTime);
-    _wasMouseReleased = false;
+    _mouseLeftReleased = false;
+    _mouseRightReleased = false;
 }
 
 void Sample::TearDown() noexcept
@@ -29,7 +30,12 @@ void Sample::GetMousePos(const Math::Vec2F mousePos) noexcept
     _mousePos = mousePos;
 }
 
-void Sample::OnClick() noexcept
+void Sample::OnLeftClick() noexcept
 {
-    _wasMouseReleased = true;
+    _mouseLeftReleased = true;
+}
+
+void Sample::OnRightClick() noexcept
+{
+    _mouseRightReleased = true;
 }

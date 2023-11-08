@@ -5,6 +5,7 @@
     "gtest",
     "benchmark",
     "sdl2",
+    "fmt",
     {
       "name": "imgui",
       "features": [ "sdl2-binding", "sdl2-renderer-binding" ]

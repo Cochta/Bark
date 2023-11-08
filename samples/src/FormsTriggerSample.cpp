@@ -2,12 +2,12 @@
 
 std::string FormsTriggerSample::GetName() noexcept
 {
- return "Forms Intersect"; 
+ return "Forms intersect"; 
 }
 
 std::string FormsTriggerSample::GetDescription() noexcept
 {
-	return "In Developement Implementation not finished yet";
+	return "Move the triangle using the mouse to check if the collisions are functional.";
 }
 
 void FormsTriggerSample::OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept
@@ -41,7 +41,6 @@ void FormsTriggerSample::SampleSetUp() noexcept
 
 	std::vector<Math::Vec2F> verticesTriangle = { {0.f,                         0.f},
 												 {-Metrics::MetersToPixels(2), -Metrics::MetersToPixels(1)},
-																{-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(1)},
 												 {-Metrics::MetersToPixels(1), -Metrics::MetersToPixels(2)} };
 
 	triangleCol.Shape = Math::Polygon(verticesTriangle);
@@ -52,14 +51,14 @@ void FormsTriggerSample::SampleSetUp() noexcept
 	AllGraphicsData.push_back(bdPol);
 
 
-	_starBodyRef = _world.CreateBody();
-	auto& starBody = _world.GetBody(_starBodyRef);
+	_movableTriangleRef = _world.CreateBody();
+	auto& starBody = _world.GetBody(_movableTriangleRef);
 	starBody.Position = { static_cast<float>(Metrics::Width) / 2,
 						 static_cast<float>(Metrics::Height) / 2 };
 	starBody.Mass = 1.f;
-	_bodyRefs.push_back(_starBodyRef);
+	_bodyRefs.push_back(_movableTriangleRef);
 
-	auto starColRef = _world.CreateCollider(_starBodyRef);
+	auto starColRef = _world.CreateCollider(_movableTriangleRef);
 	_colRefs.push_back(starColRef);
 	auto& starCol = _world.GetCollider(starColRef);
 
@@ -77,11 +76,11 @@ void FormsTriggerSample::SampleSetUp() noexcept
 			{Metrics::MetersToPixels(-0.075f), Metrics::MetersToPixels(-0.075f)}
 	};
 
-	starCol.Shape = Math::Polygon(verticesStar);
+	starCol.Shape = Math::Polygon(verticesTriangle);
 	starCol.IsTrigger = true;
 
 	GraphicsData bdStar;
-	bdStar.Shape = Math::Polygon(verticesStar) + starBody.Position;
+	bdStar.Shape = Math::Polygon(verticesTriangle) + starBody.Position;
 	AllGraphicsData.push_back(bdStar);
 
 
@@ -126,7 +125,7 @@ void FormsTriggerSample::SampleSetUp() noexcept
 
 void FormsTriggerSample::SampleUpdate() noexcept
 {
-	auto& mouseBody = _world.GetBody(_starBodyRef);
+	auto& mouseBody = _world.GetBody(_movableTriangleRef);
 	mouseBody.Position = _mousePos;
 
 	AllGraphicsData[1].Shape = std::get<Math::PolygonF>(_world.GetCollider(_colRefs[1]).Shape) + mouseBody.Position;

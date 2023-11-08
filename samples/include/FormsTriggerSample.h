@@ -8,7 +8,7 @@ class FormsTriggerSample : public Sample, public ContactListener
 private:
     std::vector<int> _triggerNbrPerCollider;
 
-    BodyRef _starBodyRef;
+    BodyRef _movableTriangleRef{};
 
 public:
     std::string GetName() noexcept override;

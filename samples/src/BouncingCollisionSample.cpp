@@ -1,32 +1,39 @@
-#include "QuadTreeTriggerSample.h"
+#include "BouncingCollisionSample.h"
 
-std::string QuadTreeTriggerSample::GetName() noexcept
+std::string BouncingCollisionSample::GetName() noexcept
 {
-	return "Trigger";
+	return "Collision";
 }
 
-std::string QuadTreeTriggerSample::GetDescription() noexcept
+std::string BouncingCollisionSample::GetDescription() noexcept
 {
-	return "Randomly generated objects, they become green if they detect a trigger otherwise they stay blue, the trigger detection uses a QuadTree. ";
+	return "Randomly generated objects, they become green when they detect a physical collision otherwise they stay blue, the collision detection uses a QuadTree. ";
 }
 
-void QuadTreeTriggerSample::OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept
+void BouncingCollisionSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept
 {
-	_triggerNbrPerCollider[col1.Index]++;
-	_triggerNbrPerCollider[col2.Index]++;
+	AllGraphicsData[col1.Index].Color = {
+Math::Random::Range(0, 255),
+	Math::Random::Range(0, 255),
+	Math::Random::Range(0, 255),
+	255 };
+	AllGraphicsData[col2.Index].Color = {
+		Math::Random::Range(0, 255),
+			Math::Random::Range(0, 255),
+			Math::Random::Range(0, 255),
+			255 };
 }
 
-void QuadTreeTriggerSample::OnTriggerExit(ColliderRef col1, ColliderRef col2) noexcept
+void BouncingCollisionSample::OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept
 {
-	_triggerNbrPerCollider[col1.Index]--;
-	_triggerNbrPerCollider[col2.Index]--;
+
 }
 
-void QuadTreeTriggerSample::SampleSetUp() noexcept
+void BouncingCollisionSample::SampleSetUp() noexcept
 {
 	_world.SetContactListener(this);
-	_nbObjects = CIRCLE_NBR + RECTANGLE_NBR + TRIANGLE_NBR;
-	_triggerNbrPerCollider.resize(_nbObjects, 0);
+	_nbObjects = CIRCLE_NBR + RECTANGLE_NBR;
+	_collisionNbrPerCollider.resize(_nbObjects, 0);
 	AllGraphicsData.reserve(_nbObjects);
 	_bodyRefs.reserve(_nbObjects);
 	_colRefs.reserve(_nbObjects);
@@ -37,9 +44,13 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
 		auto bodyRef1 = _world.CreateBody();
 		_bodyRefs.push_back(bodyRef1);
 		auto& body1 = _world.GetBody(bodyRef1);
+		//body1.Type = BodyType::STATIC;
+
+		body1.Mass = 1;
 
 		body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
 			Math::Random::Range(-1.f, 1.f)) * SPEED;
+
 
 		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
 						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
@@ -49,7 +60,6 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
 		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
 
 		GraphicsData bd;
 		bd.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS) + body1.Position;
@@ -74,39 +84,14 @@ void QuadTreeTriggerSample::SampleSetUp() noexcept
 		auto& col1 = _world.GetCollider(colRef1);
 		col1.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS);
 		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
 
 		GraphicsData bd;
 		bd.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS) + body1.Position;
 		AllGraphicsData.push_back(bd);
 	}
-	//Create Triangles
-	for (std::size_t i = 0; i < TRIANGLE_NBR; ++i)
-	{
-		auto bodyRef1 = _world.CreateBody();
-		_bodyRefs.push_back(bodyRef1);
-		auto& body1 = _world.GetBody(bodyRef1);
-
-		body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
-			Math::Random::Range(-1.f, 1.f)) * SPEED;
-
-		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
-						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
-
-		auto colRef1 = _world.CreateCollider(bodyRef1);
-		_colRefs.push_back(colRef1);
-		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::PolygonF(TRIANGLE_VERTICES);
-		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
-
-		GraphicsData bd;
-		bd.Shape = Math::PolygonF(TRIANGLE_VERTICES) + body1.Position;
-		AllGraphicsData.push_back(bd);
-	}
 }
 
-void QuadTreeTriggerSample::DrawQuadtree(const QuadNode* node)
+void BouncingCollisionSample::DrawQuadtree(const QuadNode* node)
 {
 	if (node->Children[0] == nullptr)
 	{
@@ -121,7 +106,7 @@ void QuadTreeTriggerSample::DrawQuadtree(const QuadNode* node)
 	}
 }
 
-void QuadTreeTriggerSample::SampleUpdate() noexcept
+void BouncingCollisionSample::SampleUpdate() noexcept
 {
 	if (_nbObjects < AllGraphicsData.size())
 	{
@@ -129,7 +114,7 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
 	}
 
 	for (std::size_t i = 0; i < _colRefs.size(); ++i)
-	{		
+	{
 		auto& col = _world.GetCollider(_colRefs[i]);
 		auto& bounds = col.GetBounds();
 		auto& body = _world.GetBody(col.BodyRef);
@@ -161,21 +146,6 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
 		case static_cast<int>(Math::ShapeType::Rectangle):
 			AllGraphicsData[i].Shape = std::get<Math::RectangleF>(shape) + col.BodyPosition;
 			break;
-		case static_cast<int>(Math::ShapeType::Polygon):
-			AllGraphicsData[i].Shape = std::get<Math::PolygonF>(shape) + col.BodyPosition;
-			break;
-		}
-	}
-
-	for (int i = 0; i < _colRefs.size(); ++i)
-	{
-		if (_triggerNbrPerCollider[i] > 0)
-		{
-			AllGraphicsData[i].Color = { 0, 255, 0, 255 };
-		}
-		else
-		{
-			AllGraphicsData[i].Color = { 0, 0, 255, 255 };
 		}
 	}
 
@@ -184,8 +154,8 @@ void QuadTreeTriggerSample::SampleUpdate() noexcept
 	AllGraphicsData.insert(AllGraphicsData.end(), _quadTreeGraphicsData.begin(), _quadTreeGraphicsData.end());
 }
 
-void QuadTreeTriggerSample::SampleTearDown() noexcept
+void BouncingCollisionSample::SampleTearDown() noexcept
 {
-	_triggerNbrPerCollider.clear();
+	_collisionNbrPerCollider.clear();
 	_quadTreeGraphicsData.clear();
 }

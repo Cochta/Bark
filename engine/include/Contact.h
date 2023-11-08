@@ -79,7 +79,7 @@ public:
 	/**
 	 * @brief Resolve the velocity component of the collision.
 	 */
-	void ResolveVelocity() noexcept;
+	void ResolveVelocity()const noexcept;
 
 	/**
 	 * @brief Resolve the interpenetration between the two colliding bodies.

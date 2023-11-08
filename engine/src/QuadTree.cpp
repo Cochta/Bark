@@ -5,13 +5,13 @@ void QuadNode::Subdivide() noexcept // pas besoin de mettre depth dans le neud
 	const Math::Vec2F halfSize = (Bounds.MaxBound() - Bounds.MinBound()) / 2;
 	const Math::Vec2F minBound = Bounds.MinBound();
 
-	Children[0] = std::make_unique<QuadNode>(QuadNode({ minBound, minBound + halfSize }));
+	Children[0] = std::make_unique<QuadNode>(QuadNode({ minBound, minBound + halfSize }, Alloc));
 	Children[1] = std::make_unique<QuadNode>(QuadNode({ {minBound.X,              minBound.Y + halfSize.Y},
-								{minBound.X + halfSize.X, minBound.Y + 2 * halfSize.Y} }));
+								{minBound.X + halfSize.X, minBound.Y + 2 * halfSize.Y} }, Alloc));
 	Children[2] = std::make_unique<QuadNode>(QuadNode({ {minBound.X + halfSize.X,     minBound.Y},
-								{minBound.X + 2 * halfSize.X, minBound.Y + halfSize.Y} }));
+								{minBound.X + 2 * halfSize.X, minBound.Y + halfSize.Y} }, Alloc));
 	Children[3] = std::make_unique<QuadNode>(QuadNode(
-		{ {minBound.X + halfSize.X, minBound.Y + halfSize.Y}, Bounds.MaxBound() }));
+		{ {minBound.X + halfSize.X, minBound.Y + halfSize.Y}, Bounds.MaxBound() }, Alloc));
 
 	for (const auto& child : Children)
 	{
@@ -97,9 +97,22 @@ void QuadNode::Insert(const ColliderRefAabb& colliderRefAabb) noexcept
 	//}
 }
 
+QuadNode::QuadNode(Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{alloc}), Alloc(alloc)//todo: chaner ordre
+{
+
+}
+
+QuadNode::QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{ alloc }), Bounds(bounds), Alloc(alloc)
+{
+}
+
 void QuadNode::SetUpRoot(const Math::RectangleF& bounds) noexcept
 {
+#ifdef TRACY_ENABLE
+	ZoneScoped;
+#endif
 	ColliderRefAabbs.clear();
+
 	for (auto& child : Children)
 	{
 		child = nullptr;

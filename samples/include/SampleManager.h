@@ -3,9 +3,9 @@
 #include "DefaultSample.h"
 #include "StarSystemSample.h"
 #include "FormsTriggerSample.h"
-#include "QuadTreeTriggerSample.h"
-#include "CollisionSample.h"
-#include "BouncingBallSample.h"
+#include "TriggerSample.h"
+#include "BouncingCollisionSample.h"
+#include "GroundCollisionSample.h"
 
 
 #include "UniquePtr.h"
@@ -26,7 +26,7 @@ public:
 
 	void SetUp() noexcept;
 
-	void UpdateSample() noexcept;
+	void UpdateSample() const noexcept;
 
 	void ChangeSample(int idx) noexcept;
 
@@ -34,11 +34,13 @@ public:
 
 	void PreviousSample() noexcept;
 
-	void RegenerateSample() noexcept;
+	void RegenerateSample() const noexcept;
 
-	[[nodiscard]] std::vector<GraphicsData>& GetSampleData() noexcept;
+	[[nodiscard]] std::vector<GraphicsData>& GetSampleData() const noexcept;
 
-	void GiveMousePositionToSample(Math::Vec2F mousePosition) noexcept;
+	void GiveMousePositionToSample(Math::Vec2F mousePosition) const noexcept;
 
-	void GiveMouseClickToSample() noexcept;
+	void GiveLeftMouseClickToSample() const noexcept;
+
+	void GiveRightMouseClickToSample() const noexcept;
 };

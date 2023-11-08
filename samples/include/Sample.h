@@ -34,7 +34,8 @@ protected:
 
     Math::Vec2F _mousePos;
 
-    bool _wasMouseReleased = false;
+    bool _mouseLeftReleased = false;
+    bool _mouseRightReleased = false;
 
 private:
     Timer _timer;
@@ -51,7 +52,9 @@ public:
 
     void GetMousePos(Math::Vec2F mousePos) noexcept;
 
-    void OnClick() noexcept;
+    void OnLeftClick() noexcept;
+
+    void OnRightClick() noexcept;
 
     virtual ~Sample() noexcept = default;
 

@@ -8,7 +8,7 @@ template<typename T>
 class UniquePtr
 {
 private:
-    T *_ptr; // The managed pointer to the object.
+    T *_ptr = nullptr; // The managed pointer to the object.
 
 public:
     /**
@@ -119,7 +119,7 @@ template<typename T>
  * @param args Arguments to construct the object of type T.
  * @return A UniquePtr that uniquely owns the created object.
  */
-UniquePtr<T> MakeUnique(T value) noexcept
+UniquePtr<T> MakeUnique(T value) noexcept //todo: Allocator& allocator faire pour tracker new et delete
 {
     return UniquePtr<T>(new T(value));
 }

@@ -5,13 +5,20 @@
 #include "Random.h"
 
 
-class BouncingBallSample : public Sample, public ContactListener
+class BouncingCollisionSample : public Sample, public ContactListener
 {
 private:
+	std::vector<GraphicsData> _quadTreeGraphicsData;
+	std::vector<int> _collisionNbrPerCollider;
 
+	static constexpr Math::Vec2F RECTANGLE_BOUNDS = { Metrics::MetersToPixels(0.6f), Metrics::MetersToPixels(0.6f) };
+	static constexpr float CIRCLE_RADIUS = Metrics::MetersToPixels(0.3f);
 	static constexpr float SPEED = 200;
 
-	bool WhichForm = false;
+	static constexpr std::size_t CIRCLE_NBR = 50;
+	static constexpr std::size_t RECTANGLE_NBR = 50;
+
+	std::size_t _nbObjects{};
 
 public:
 	std::string GetName() noexcept override;
@@ -33,6 +40,6 @@ protected:
 	void SampleTearDown() noexcept override;
 
 private:
-	void CreateBall(Math::Vec2F position) noexcept;
+	void DrawQuadtree(const QuadNode* node);
 
 };

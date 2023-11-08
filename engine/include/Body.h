@@ -5,7 +5,6 @@
 enum class BodyType
 {
     DYNAMIC,
-    KINEMATIC,
     STATIC,
     NONE
 };
@@ -20,9 +19,9 @@ public:
     Math::Vec2F Position = Math::Vec2F::Zero();
     Math::Vec2F Velocity = Math::Vec2F::Zero();
     float Mass = -1.f; // Body is disabled if mass is negative
+    BodyType Type = BodyType::DYNAMIC;
+private:
     Math::Vec2F _force = Math::Vec2F::Zero(); // Total force acting on the body
-    BodyType type = BodyType::DYNAMIC;
-
 public:
     /**
      * @brief Default constructor for Body.

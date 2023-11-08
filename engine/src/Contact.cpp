@@ -24,13 +24,13 @@ void Contact::Resolve()
 			const Math::CircleF& circle = std::get<Math::CircleF>(CollidingBodies[0].collider->Shape);
 			const Math::RectangleF& rectangle = std::get<Math::RectangleF>(CollidingBodies[1].collider->Shape);
 
-			Math::Vec2F closest(
+			const Math::Vec2F closest(
 				Math::Clamp(CollidingBodies[0].body->Position.X + circle.Center().X, rectangle.MinBound().X + CollidingBodies[1].body->Position.X, rectangle.MaxBound().X + CollidingBodies[1].body->Position.X),
 				Math::Clamp(CollidingBodies[0].body->Position.Y + circle.Center().Y, rectangle.MinBound().Y + CollidingBodies[1].body->Position.Y, rectangle.MaxBound().Y + CollidingBodies[1].body->Position.Y));
 
-			Math::Vec2F delta = CollidingBodies[0].body->Position + circle.Center() - closest;
+			const Math::Vec2F delta = CollidingBodies[0].body->Position + circle.Center() - closest;
 
-			float distance = delta.Length();
+			const float distance = delta.Length();
 
 			Penetration = circle.Radius() - distance; // faux samer
 
@@ -94,7 +94,7 @@ float Contact::CalculateSeparateVelocity() const noexcept
 	return relativeVelocity.Dot(Normal);
 }
 
-void Contact::ResolveVelocity() noexcept
+void Contact::ResolveVelocity() const noexcept
 {
 	// Calculate the separating velocity.
 	const float separatingVelocity = CalculateSeparateVelocity();
@@ -118,22 +118,22 @@ void Contact::ResolveVelocity() noexcept
 	const float impulse = deltaVelocity / totalInverseMass;
 	const auto impulsePerIMass = Normal * impulse;
 
-	if (CollidingBodies[0].body->type == BodyType::DYNAMIC)
+	if (CollidingBodies[0].body->Type == BodyType::DYNAMIC)
 	{
 		CollidingBodies[0].body->Velocity += impulsePerIMass * inverseMass1;
 	}
-	else if (CollidingBodies[0].body->type == BodyType::STATIC)
+	if (CollidingBodies[1].body->Type == BodyType::DYNAMIC)
 	{
 		CollidingBodies[1].body->Velocity -= impulsePerIMass * inverseMass2;
 	}
 
-	if (CollidingBodies[1].body->type == BodyType::DYNAMIC)
+	if (CollidingBodies[0].body->Type == BodyType::STATIC)
 	{
-		CollidingBodies[1].body->Velocity -= impulsePerIMass * inverseMass2;
+		CollidingBodies[1].body->Velocity -= impulsePerIMass * inverseMass1;
 	}
-	else if (CollidingBodies[1].body->type == BodyType::STATIC)
+	if (CollidingBodies[1].body->Type == BodyType::STATIC)
 	{
-		CollidingBodies[0].body->Velocity += impulsePerIMass * inverseMass1;
+		CollidingBodies[0].body->Velocity += impulsePerIMass * inverseMass2;
 	}
 }
 
@@ -151,12 +151,12 @@ void Contact::ResolveInterpenetration() noexcept
 
 	const auto movePerIMass = Normal * (Penetration / totalInverseMass);
 
-	if (CollidingBodies[0].body->type == BodyType::DYNAMIC)
+	if (CollidingBodies[0].body->Type == BodyType::DYNAMIC)
 	{
 		CollidingBodies[0].body->Position += movePerIMass * inverseMass1;
 	}
 
-	if (CollidingBodies[1].body->type == BodyType::DYNAMIC)
+	if (CollidingBodies[1].body->Type == BodyType::DYNAMIC)
 	{
 		CollidingBodies[1].body->Position -= movePerIMass * inverseMass2;
 	}

@@ -44,7 +44,7 @@ void SDLApp::SetUp()
 	// Initialize ImGui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGui::StyleColorsDark;
+	ImGui::StyleColorsDark();
 
 	ImGui_ImplSDL2_InitForSDLRenderer(_window, _renderer);
 	ImGui_ImplSDLRenderer2_Init(_renderer);
@@ -103,7 +103,10 @@ void SDLApp::Run() noexcept
 			case SDL_MOUSEBUTTONUP:
 				// Handle mouse button release here
 				if (e.button.button == SDL_BUTTON_LEFT) {
-					_sampleManager.GiveMouseClickToSample();
+					_sampleManager.GiveLeftMouseClickToSample();
+				}
+				else if (e.button.button == SDL_BUTTON_RIGHT) {
+					_sampleManager.GiveRightMouseClickToSample();
 				}
 				break;
 			}

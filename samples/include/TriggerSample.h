@@ -5,14 +5,14 @@
 #include "Random.h"
 
 
-class QuadTreeTriggerSample : public Sample, public ContactListener
+class TriggerSample : public Sample, public ContactListener
 {
 private:
 	std::vector<GraphicsData> _quadTreeGraphicsData;
 	std::vector<int> _triggerNbrPerCollider;
 
 
-	std::vector<Math::Vec2F> TRIANGLE_VERTICES = {
+	inline static const std::vector<Math::Vec2F> TRIANGLE_VERTICES = {
 		{Metrics::MetersToPixels(0.0f),    Metrics::MetersToPixels(-0.2f)},
 		{Metrics::MetersToPixels(0.2f),    Metrics::MetersToPixels(0.2f)},
 		{Metrics::MetersToPixels(-0.2f),  Metrics::MetersToPixels(0.2f)},
@@ -22,10 +22,10 @@ private:
 	static constexpr float SPEED = 100;
 
 	static constexpr std::size_t CIRCLE_NBR = 100;
-	static constexpr std::size_t RECTANGLE_NBR = 0;
-	static constexpr std::size_t TRIANGLE_NBR = 0;
+	static constexpr std::size_t RECTANGLE_NBR = 100;
+	static constexpr std::size_t TRIANGLE_NBR = 100;
 
-	std::size_t _nbObjects;
+	std::size_t _nbObjects{};
 
 public:
 	std::string GetName() noexcept override;

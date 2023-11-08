@@ -5,15 +5,15 @@ void SampleManager::SetUp() noexcept
     _samples.push_back(UniquePtr<DefaultSample>(new DefaultSample()));
     _samples.push_back(UniquePtr<StarSystemSample>(new StarSystemSample()));
     _samples.push_back(UniquePtr<FormsTriggerSample>(new FormsTriggerSample()));
-    _samples.push_back(UniquePtr<QuadTreeTriggerSample>(new QuadTreeTriggerSample()));
-    _samples.push_back(UniquePtr<CollisionSample>(new CollisionSample()));
-    _samples.push_back(UniquePtr<BouncingBallSample>(new BouncingBallSample()));
+    _samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
+    _samples.push_back(UniquePtr<BouncingCollisionSample>(new BouncingCollisionSample()));
+    _samples.push_back(UniquePtr<GroundCollisionSample>(new GroundCollisionSample()));
 
 
     _samples[_sampleIdx]->SetUp();
 }
 
-void SampleManager::UpdateSample() noexcept
+void SampleManager::UpdateSample() const noexcept
 {
     _samples[_sampleIdx]->Update();
 }
@@ -45,23 +45,28 @@ void SampleManager::PreviousSample() noexcept
     _samples[_sampleIdx]->SetUp();
 }
 
-void SampleManager::RegenerateSample() noexcept
+void SampleManager::RegenerateSample() const noexcept
 {
     _samples[_sampleIdx]->TearDown();
     _samples[_sampleIdx]->SetUp();
 }
 
-std::vector<GraphicsData> &SampleManager::GetSampleData() noexcept
+std::vector<GraphicsData> &SampleManager::GetSampleData() const noexcept
 {
     return _samples[_sampleIdx]->AllGraphicsData;
 }
 
-void SampleManager::GiveMousePositionToSample(const Math::Vec2F mousePosition) noexcept
+void SampleManager::GiveMousePositionToSample(const Math::Vec2F mousePosition) const noexcept
 {
     _samples[_sampleIdx]->GetMousePos(mousePosition);
 }
 
-void SampleManager::GiveMouseClickToSample() noexcept
+void SampleManager::GiveLeftMouseClickToSample() const noexcept
 {
-    _samples[_sampleIdx]->OnClick();
+    _samples[_sampleIdx]->OnLeftClick();
+}
+
+void SampleManager::GiveRightMouseClickToSample() const noexcept
+{
+    _samples[_sampleIdx]->OnRightClick();
 }

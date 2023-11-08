@@ -17,20 +17,20 @@ class QuadNode
 public:
 	Math::RectangleF Bounds{ Math::Vec2F::Zero(), Math::Vec2F::Zero() };
 	std::array<std::unique_ptr<QuadNode>, 4> Children{ nullptr, nullptr, nullptr, nullptr };
-	UniquePtr<Allocator> HeapAlloc = UniquePtr<Allocator>(new HeapAllocator());
-	CustomlyAllocatedVector<ColliderRefAabb> ColliderRefAabbs{ *HeapAlloc };
+
+	CustomlyAllocatedVector<ColliderRefAabb> ColliderRefAabbs;
 private:
-	static constexpr int _MAX_COL_NBR = 1000;
+	Allocator& Alloc;
+	static constexpr int _MAX_COL_NBR = 16;
 
 	static constexpr int _MAX_DEPTH = 5;
 
 	int _depth = 0;
 
 public:
-	QuadNode() noexcept = default;
+	QuadNode(Allocator& alloc) noexcept;
 
-	explicit QuadNode(const Math::RectangleF& bounds) noexcept : Bounds(bounds)
-	{};
+	explicit QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept;
 
 	void SetUpRoot(const Math::RectangleF& bounds) noexcept;
 

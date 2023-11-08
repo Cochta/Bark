@@ -17,15 +17,15 @@ private:
 	std::vector<Collider> _colliders; /**< A collection of all the colliders in the world. */
 
 	int _colliderIdCount = 0; /**< Counter for generating unique collider IDs. */
-
-	std::unordered_set<ColliderRefPair, ColliderRefPairHash> _colRefPairs; /**< A set of colliderRef pairs for collision detection. */
+	HeapAllocator _heapAlloc;
+	std::unordered_set<ColliderRefPair, ColliderRefPairHash, std::equal_to<ColliderRefPair>, StandardAllocator<ColliderRefPair>> _colRefPairs{ _heapAlloc }; /**< A set of colliderRef pairs for collision detection. */
 
 	ContactListener* _contactListener = nullptr; /**< A listener for contact events between colliders. */
 
 public:
 	std::vector<size_t> BodyGenIndices; /**< Indices of generated bodies. */
 	std::vector<size_t> ColliderGenIndices; /**< Indices of generated colliders. */
-	QuadNode _quadTree;/**< QuadTree for collision checks */
+	QuadNode _quadTree{ _heapAlloc };/**< QuadTree for collision checks */
 	/**
 	 * @brief Default constructor for the _world class.
 	 */
