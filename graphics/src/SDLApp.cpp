@@ -84,31 +84,31 @@ void SDLApp::Run() noexcept
 			switch (e.type)
 			{
 			case SDL_QUIT:
-				quit = true;
-				break;
+			quit = true;
+			break;
 			case SDL_KEYUP:
-				switch (e.key.keysym.sym)
-				{
-				case SDLK_LEFT:
-					_sampleManager.PreviousSample();
-					break;
-				case SDLK_RIGHT:
-					_sampleManager.NextSample();
-					break;
-				case SDLK_SPACE:
-					_sampleManager.RegenerateSample();
-					break;
-				}
-				break;
+			switch (e.key.keysym.sym)
+			{
+			case SDLK_LEFT:
+			_sampleManager.PreviousSample();
+			break;
+			case SDLK_RIGHT:
+			_sampleManager.NextSample();
+			break;
+			case SDLK_SPACE:
+			_sampleManager.RegenerateSample();
+			break;
+			}
+			break;
 			case SDL_MOUSEBUTTONUP:
-				// Handle mouse button release here
-				if (e.button.button == SDL_BUTTON_LEFT) {
-					_sampleManager.GiveLeftMouseClickToSample();
-				}
-				else if (e.button.button == SDL_BUTTON_RIGHT) {
-					_sampleManager.GiveRightMouseClickToSample();
-				}
-				break;
+			// Handle mouse button release here
+			if (e.button.button == SDL_BUTTON_LEFT) {
+				_sampleManager.GiveLeftMouseClickToSample();
+			}
+			else if (e.button.button == SDL_BUTTON_RIGHT) {
+				_sampleManager.GiveRightMouseClickToSample();
+			}
+			break;
 			}
 		}
 
@@ -177,7 +177,7 @@ void SDLApp::Run() noexcept
 		SDL_RenderClear(_renderer);
 
 		SDL_GetMouseState(&MousePos.X, &MousePos.Y);
-		_sampleManager.GiveMousePositionToSample(static_cast<Math::Vec2F>(MousePos));
+		_sampleManager.GiveMousePositionToSample({ (float)MousePos.X, Metrics::Height - (float)MousePos.Y });
 		_sampleManager.UpdateSample();
 
 		DrawAllGraphicsData();
@@ -190,7 +190,7 @@ void SDLApp::Run() noexcept
 		FrameMark;
 #endif // TRACY_ENABLE
 	}
-	}
+}
 
 void SDLApp::DrawCircle(const Math::Vec2F center, const float radius, const int segments, const SDL_Color& col) noexcept
 {
@@ -209,7 +209,7 @@ void SDLApp::DrawCircle(const Math::Vec2F center, const float radius, const int 
 		auto angle = Math::Radian(2.f * Math::Pi * static_cast<float>(i) / static_cast<float>(segments));
 		float x = center.X + radius * Math::Cos(angle);
 		float y = center.Y + radius * Math::Sin(angle);
-		_vertices.push_back({ {x, y}, col, {1.0f, 1.0f} });
+		_vertices.push_back({ {x, Metrics::Height - y}, col, {1.0f, 1.0f} });
 	}
 
 	// Calculate indices to create triangles for filling the Circle
@@ -232,10 +232,10 @@ void SDLApp::DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBoun
 	_indices.reserve(_indices.size() + 6);
 
 
-	_vertices.push_back({ {minBound.X, minBound.Y}, col, {1.0f, 1.0f} });
-	_vertices.push_back({ {maxBound.X, minBound.Y}, col, {1.0f, 1.0f} });
-	_vertices.push_back({ {minBound.X, maxBound.Y}, col, {1.0f, 1.0f} });
-	_vertices.push_back({ {maxBound.X, maxBound.Y}, col, {1.0f, 1.0f} });
+	_vertices.push_back({ {minBound.X,Metrics::Height - minBound.Y}, col, {1.0f, 1.0f} });
+	_vertices.push_back({ {maxBound.X,Metrics::Height - minBound.Y}, col, {1.0f, 1.0f} });
+	_vertices.push_back({ {minBound.X, Metrics::Height - maxBound.Y}, col, {1.0f, 1.0f} });
+	_vertices.push_back({ {maxBound.X,Metrics::Height - maxBound.Y}, col, {1.0f, 1.0f} });
 
 	_indices.push_back(offset);                 // Top left vertex
 	_indices.push_back(offset + 1);             // Top right vertex
@@ -277,7 +277,7 @@ void SDLApp::DrawPolygon(const std::vector<Math::Vec2F>& vertices, const SDL_Col
 	// Add vertices to the _vertices vector.
 	for (const Math::Vec2F& v : vertices)
 	{
-		_vertices.push_back({ {v.X, v.Y}, col, {1.0f, 1.0f} });
+		_vertices.push_back({ { v.X,Metrics::Height - v.Y}, col, {1.0f, 1.0f} });
 	}
 
 	// Add indices to connect the vertices and form triangles.
@@ -312,7 +312,7 @@ void SDLApp::DrawAllGraphicsData() noexcept
 					static_cast<Uint8>(bd.Color.g),
 					static_cast<Uint8>(bd.Color.b),
 					static_cast<Uint8>(bd.Color.a)
-				});
+					   });
 		}
 		else if (bd.Shape.index() == (int)Math::ShapeType::Rectangle)
 		{
@@ -324,7 +324,7 @@ void SDLApp::DrawAllGraphicsData() noexcept
 						static_cast<Uint8>(bd.Color.g),
 						static_cast<Uint8>(bd.Color.b),
 						static_cast<Uint8>(bd.Color.a)
-					});
+									});
 			}
 			else
 			{
@@ -333,7 +333,7 @@ void SDLApp::DrawAllGraphicsData() noexcept
 						static_cast<Uint8>(bd.Color.g),
 						static_cast<Uint8>(bd.Color.b),
 						static_cast<Uint8>(bd.Color.a)
-					});
+							  });
 			}
 		}
 		else if (bd.Shape.index() == (int)Math::ShapeType::Polygon)
@@ -344,7 +344,7 @@ void SDLApp::DrawAllGraphicsData() noexcept
 					static_cast<Uint8>(bd.Color.g),
 					static_cast<Uint8>(bd.Color.b),
 					static_cast<Uint8>(bd.Color.a)
-				});
+						});
 		}
 	}
 #ifdef TRACY_ENABLE
