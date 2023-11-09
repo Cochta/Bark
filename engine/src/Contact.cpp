@@ -20,7 +20,7 @@ void Contact::Resolve()
 			}
 			else
 			{
-				Normal = Math::Vec2F::Down();
+				Normal = Math::Vec2F::Up();
 			}
 			Penetration = std::get<Math::CircleF>(CollidingBodies[0].collider->Shape).Radius() +
 				std::get<Math::CircleF>(CollidingBodies[1].collider->Shape).Radius() - delta.Length();
@@ -47,7 +47,7 @@ void Contact::Resolve()
 			}
 			else
 			{
-				Normal = Math::Vec2F::Down();
+				Normal = Math::Vec2F::Up();
 			}
 			
 		}
@@ -96,7 +96,7 @@ void Contact::Resolve()
 
 	Restitution = (mass1 * rest1 + mass2 * rest2) / (mass1 + mass2);
 
-	ResolveVelocity();
+	ResolveVelocityAndInterpenetration();
 	ResolveInterpenetration();
 }
 
@@ -106,7 +106,7 @@ float Contact::CalculateSeparateVelocity() const noexcept
 	return relativeVelocity.Dot(Normal);
 }
 
-void Contact::ResolveVelocity() const noexcept
+void Contact::ResolveVelocityAndInterpenetration() const noexcept
 {
 	// Calculate the separating velocity.
 	const float separatingVelocity = CalculateSeparateVelocity();
@@ -121,6 +121,7 @@ void Contact::ResolveVelocity() const noexcept
 
 	const float inverseMass1 = 1.f / CollidingBodies[0].body->Mass;
 	const float inverseMass2 = 1.f / CollidingBodies[1].body->Mass;
+
 	const float totalInverseMass = inverseMass1 + inverseMass2;
 
 	if (totalInverseMass <= 0) {

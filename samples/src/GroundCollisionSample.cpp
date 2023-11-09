@@ -29,13 +29,14 @@ void GroundCollisionSample::SampleSetUp() noexcept
 	_bodyRefs.push_back(groundRef);
 	auto& groundBody = _world.GetBody(groundRef);
 	groundBody.Type = BodyType::STATIC;
+	groundBody.Mass = 1;
 
-	groundBody.Position = { Metrics::Width / 2.f, Metrics::Height - Metrics::Height / 5.f };
+	groundBody.Position = { Metrics::Width / 2.f,  Metrics::Height / 5.f };
 
 	const auto groundColRef = _world.CreateCollider(groundRef);
 	_colRefs.push_back(groundColRef);
 	auto& groundCol = _world.GetCollider(groundColRef);
-	groundCol.Shape = Math::RectangleF({ -Metrics::Width / 3.f, 0.f }, { Metrics::Width / 3.f, 10.f });
+	groundCol.Shape = Math::RectangleF({ -Metrics::Width / 3.f, 0.f }, { Metrics::Width / 3.f, Metrics::MetersToPixels(0.2f)});
 	groundCol.BodyPosition = groundBody.Position;
 	groundCol.Restitution = 1.f;
 
@@ -61,13 +62,13 @@ void GroundCollisionSample::SampleUpdate() noexcept
 		switch (shape.index())
 		{
 		case static_cast<int>(Math::ShapeType::Circle):
-		_world.GetBody(col.BodyRef).ApplyForce({ 0,500 });
+		_world.GetBody(col.BodyRef).ApplyForce({ 0,-500 });
 		AllGraphicsData[i].Shape = std::get<Math::CircleF>(shape) + col.BodyPosition;
 		break;
 		case static_cast<int>(Math::ShapeType::Rectangle):
 		if (i != 0)
 		{
-			_world.GetBody(col.BodyRef).ApplyForce({ 0,500 });
+			_world.GetBody(col.BodyRef).ApplyForce({ 0,-500 });
 		}
 		AllGraphicsData[i].Shape = std::get<Math::RectangleF>(shape) + col.BodyPosition;
 		break;
@@ -97,7 +98,7 @@ void GroundCollisionSample::CreateBall(Math::Vec2F position) noexcept
 	auto& circleCol = _world.GetCollider(circleColRef);
 	circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), Math::Random::Range(10.f, 40.f));
 	circleCol.BodyPosition = circleBody.Position;
-	circleCol.Restitution = 0.5f;
+	circleCol.Restitution = 0.f;
 
 	GraphicsData gd;
 	gd.Color = {

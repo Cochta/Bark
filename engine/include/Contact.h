@@ -59,17 +59,20 @@ struct CollidingBody
 class Contact
 {
 public:
-
 	std::array<CollidingBody, 2> CollidingBodies{}; // An array containing the two colliding bodies.
+
+private:
 	Math::Vec2F Normal{}; // The collision normal vector.
 	float Restitution{ 1 }; // The coefficient of restitution for the collision.
 	float Penetration{}; // The penetration depth of the collision.
 
+public:
 	/**
 	 * @brief Resolve the collision between two bodies.
 	 */
 	void Resolve();
 
+private:
 	/**
 	 * @brief Calculate the separate velocity of the two colliding bodies.
 	 * @return The separate velocity.
@@ -79,7 +82,7 @@ public:
 	/**
 	 * @brief Resolve the velocity component of the collision.
 	 */
-	void ResolveVelocity()const noexcept;
+	void ResolveVelocityAndInterpenetration()const noexcept;
 
 	/**
 	 * @brief Resolve the interpenetration between the two colliding bodies.
