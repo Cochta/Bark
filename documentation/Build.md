@@ -24,6 +24,8 @@
 
 - Step 8: Press `Open Project` (if it does nothing, go to `Build` and Open `Bark.sln` with `Visual Studio`)
 
+![Setup Project](images/visual_studio_setup.png)
+
 - Step 9: Right click on `Main`
 
 - Step 10: Press `Set as Startup Project`
