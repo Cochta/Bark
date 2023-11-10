@@ -4,7 +4,7 @@
  * @brief A timer for measuring time intervals and calculating delta time.
  * @note This class is used to measure time intervals and calculate the time difference between ticks.
  */
-class Timer // todo: test timer
+class Timer
 {
 private:
     std::chrono::time_point<std::chrono::high_resolution_clock> _startTime; // The starting time point.

@@ -41,7 +41,7 @@ public:
  * @struct ColliderPair
  * @brief Represents a pair of colliders involved in a collision.
  */
-struct ColliderRefPair // todo; colliderRef au lieu de collider
+struct ColliderRefPair
 {
 	ColliderRef ColRefA; /**< The first colliderRef in the pair. */
 	ColliderRef ColRefB; /**< The second colliderRef in the pair. */

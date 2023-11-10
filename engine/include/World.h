@@ -34,7 +34,7 @@ public:
 	/**
 	 * @brief Set up the initial state of the world.
 	 */
-	void SetUp() noexcept;
+	void SetUp(int initSize = 100) noexcept;
 
 	/**
 	 * @brief Tear down the world and release resources.

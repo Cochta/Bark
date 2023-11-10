@@ -42,7 +42,6 @@ public:
     {
         _ptr = other._ptr;
         other._ptr = nullptr;
-        //todo: check for std::swap(Ptr, other.Ptr);
     }
 
     /**
@@ -58,7 +57,6 @@ public:
             _ptr = other._ptr;
             other._ptr = nullptr;
         }
-        //todo: check for std::swap(Ptr, other.Ptr);
         return *this;
     }
 

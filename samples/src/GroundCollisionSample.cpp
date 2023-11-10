@@ -2,12 +2,12 @@
 
 std::string GroundCollisionSample::GetName() noexcept
 {
-	return "Bouncing Forms";
+	return "Bouncing Ground";
 }
 
 std::string GroundCollisionSample::GetDescription() noexcept
 {
-	return "CONTROLS: Left click to create a circle, right click to create a rectangle.\nFloor has 1 x bounciness, Circles and rectangles have 0 x bounciness";
+	return "CONTROLS: Left click to create a circle, right click to create a rectangle.\n\nFloor has 1 x bounciness, Circles and rectangles have 0 x bounciness";
 }
 
 void GroundCollisionSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept

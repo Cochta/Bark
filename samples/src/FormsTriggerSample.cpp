@@ -7,7 +7,7 @@ std::string FormsTriggerSample::GetName() noexcept
 
 std::string FormsTriggerSample::GetDescription() noexcept
 {
-	return "Move the triangle using the mouse to check if the collisions are functional.";
+	return "CONTROLS: Move the triangle using the mouse.\n\nForms become green if they detect a trigger otherwise they stay blue. ";
 }
 
 void FormsTriggerSample::OnTriggerEnter(ColliderRef col1, ColliderRef col2) noexcept
@@ -115,10 +115,10 @@ void FormsTriggerSample::SampleSetUp() noexcept
 
 void FormsTriggerSample::SampleUpdate() noexcept
 {
-	auto& mouseBody = _world.GetBody(_movableTriangleRef);
-	mouseBody.Position = _mousePos;
+	auto& movableTriangleBody = _world.GetBody(_movableTriangleRef);
+	movableTriangleBody.Position = _mousePos;
 
-	AllGraphicsData[1].Shape = std::get<Math::PolygonF>(_world.GetCollider(_colRefs[1]).Shape) + mouseBody.Position;
+	AllGraphicsData[1].Shape = std::get<Math::PolygonF>(_world.GetCollider(_colRefs[1]).Shape) + movableTriangleBody.Position;
 	for (int i = 0; i < _colRefs.size(); ++i)
 	{
 		if (_triggerNbrPerCollider[i] > 0)

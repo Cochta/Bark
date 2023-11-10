@@ -6,10 +6,8 @@
 #include <TracyC.h>
 #endif // TRACY_ENABLE
 
-void World::SetUp() noexcept
+void World::SetUp(int initSize) noexcept
 {
-	int initSize = 100;//todo: mettre en parametre setup
-
 	_bodies.resize(initSize);
 	BodyGenIndices.resize(initSize, 0);
 	_colliders.resize(initSize);

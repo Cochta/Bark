@@ -34,75 +34,75 @@ void TriggerSample::SampleSetUp() noexcept
 	//Create Circles
 	for (std::size_t i = 0; i < CIRCLE_NBR; ++i)
 	{
-		auto bodyRef1 = _world.CreateBody();
-		_bodyRefs.push_back(bodyRef1);
-		auto& body1 = _world.GetBody(bodyRef1);
+		const auto circleBodyRef = _world.CreateBody();
+		_bodyRefs.push_back(circleBodyRef);
+		auto& circleBody = _world.GetBody(circleBodyRef);
 
-		body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
+		circleBody.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
 			Math::Random::Range(-1.f, 1.f)) * SPEED;
 
-		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
+		circleBody.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
 						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
 
-		auto colRef1 = _world.CreateCollider(bodyRef1);
-		_colRefs.push_back(colRef1);
-		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
-		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
+		const auto circleColRef = _world.CreateCollider(circleBodyRef);
+		_colRefs.push_back(circleColRef);
+		auto& circleCol = _world.GetCollider(circleColRef);
+		circleCol.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS);
+		circleCol.BodyPosition = circleBody.Position;
+		circleCol.IsTrigger = true;
 
-		GraphicsData bd;
-		bd.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS) + body1.Position;
-		AllGraphicsData.push_back(bd);
+		GraphicsData cgd;
+		cgd.Shape = Math::Circle(Math::Vec2F::Zero(), CIRCLE_RADIUS) + circleBody.Position;
+		AllGraphicsData.push_back(cgd);
 	}
 
 	//Create Rectangles
 	for (std::size_t i = 0; i < RECTANGLE_NBR; ++i)
 	{
-		auto bodyRef1 = _world.CreateBody();
-		_bodyRefs.push_back(bodyRef1);
-		auto& body1 = _world.GetBody(bodyRef1);
+		const auto rectBodyRef = _world.CreateBody();
+		_bodyRefs.push_back(rectBodyRef);
+		auto& rectBody = _world.GetBody(rectBodyRef);
 
-		body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
+		rectBody.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
 			Math::Random::Range(-1.f, 1.f)) * SPEED;
 
-		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
+		rectBody.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
 						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
 
-		auto colRef1 = _world.CreateCollider(bodyRef1);
-		_colRefs.push_back(colRef1);
-		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS);
-		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
+		const auto rectColRef = _world.CreateCollider(rectBodyRef);
+		_colRefs.push_back(rectColRef);
+		auto& rectCol = _world.GetCollider(rectColRef);
+		rectCol.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS);
+		rectCol.BodyPosition = rectBody.Position;
+		rectCol.IsTrigger = true;
 
-		GraphicsData bd;
-		bd.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS) + body1.Position;
-		AllGraphicsData.push_back(bd);
+		GraphicsData rbd;
+		rbd.Shape = Math::RectangleF(Math::Vec2F::Zero(), RECTANGLE_BOUNDS) + rectBody.Position;
+		AllGraphicsData.push_back(rbd);
 	}
 	//Create Triangles
 	for (std::size_t i = 0; i < TRIANGLE_NBR; ++i)
 	{
-		auto bodyRef1 = _world.CreateBody();
-		_bodyRefs.push_back(bodyRef1);
-		auto& body1 = _world.GetBody(bodyRef1);
+		const auto triangleBodyRef = _world.CreateBody();
+		_bodyRefs.push_back(triangleBodyRef);
+		auto& triangleBody = _world.GetBody(triangleBodyRef);
 
-		body1.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
+		triangleBody.Velocity = Math::Vec2F(Math::Random::Range(-1.f, 1.f),
 			Math::Random::Range(-1.f, 1.f)) * SPEED;
 
-		body1.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
+		triangleBody.Position = { Math::Random::Range(100.f, Metrics::Width - 100.f),
 						  Math::Random::Range(100.f, Metrics::Height - 100.f) };
 
-		auto colRef1 = _world.CreateCollider(bodyRef1);
-		_colRefs.push_back(colRef1);
-		auto& col1 = _world.GetCollider(colRef1);
-		col1.Shape = Math::PolygonF(TRIANGLE_VERTICES);
-		col1.BodyPosition = body1.Position;
-		col1.IsTrigger = true;
+		const auto triangleColRef = _world.CreateCollider(triangleBodyRef);
+		_colRefs.push_back(triangleColRef);
+		auto& triangleCol = _world.GetCollider(triangleColRef);
+		triangleCol.Shape = Math::PolygonF(TRIANGLE_VERTICES);
+		triangleCol.BodyPosition = triangleBody.Position;
+		triangleCol.IsTrigger = true;
 
-		GraphicsData bd;
-		bd.Shape = Math::PolygonF(TRIANGLE_VERTICES) + body1.Position;
-		AllGraphicsData.push_back(bd);
+		GraphicsData tbd;
+		tbd.Shape = Math::PolygonF(TRIANGLE_VERTICES) + triangleBody.Position;
+		AllGraphicsData.push_back(tbd);
 	}
 }
 
@@ -156,19 +156,16 @@ void TriggerSample::SampleUpdate() noexcept
 		switch (shape.index())
 		{
 		case static_cast<int>(Math::ShapeType::Circle):
-			AllGraphicsData[i].Shape = std::get<Math::CircleF>(shape) + col.BodyPosition;
+			AllGraphicsData[i].Shape = std::get<Math::CircleF>(shape) + body.Position;
 			break;
 		case static_cast<int>(Math::ShapeType::Rectangle):
-			AllGraphicsData[i].Shape = std::get<Math::RectangleF>(shape) + col.BodyPosition;
+			AllGraphicsData[i].Shape = std::get<Math::RectangleF>(shape) + body.Position;
 			break;
 		case static_cast<int>(Math::ShapeType::Polygon):
-			AllGraphicsData[i].Shape = std::get<Math::PolygonF>(shape) + col.BodyPosition;
+			AllGraphicsData[i].Shape = std::get<Math::PolygonF>(shape) + body.Position;
 			break;
 		}
-	}
 
-	for (int i = 0; i < _colRefs.size(); ++i)
-	{
 		if (_triggerNbrPerCollider[i] > 0)
 		{
 			AllGraphicsData[i].Color = { 0, 255, 0, 255 };

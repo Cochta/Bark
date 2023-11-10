@@ -97,7 +97,7 @@ void QuadNode::Insert(const ColliderRefAabb& colliderRefAabb) noexcept
 	//}
 }
 
-QuadNode::QuadNode(Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{alloc}), Alloc(alloc)//todo: chaner ordre
+QuadNode::QuadNode(Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{alloc}), Alloc(alloc)//todo: changer ordre
 {
 
 }

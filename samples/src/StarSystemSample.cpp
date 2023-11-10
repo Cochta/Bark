@@ -19,10 +19,10 @@ void StarSystemSample::SampleSetUp() noexcept
         sun.Mass = 1000000;
 
         _bodyRefs.push_back(_sunRef);
-        GraphicsData sbd;
+        GraphicsData sgd;
         _circles.emplace_back(Math::Vec2F::Zero(), Metrics::MetersToPixels(0.03f));
-        sbd.Color = {255, 255, 0, 255};
-        AllGraphicsData.push_back(sbd);
+        sgd.Color = {255, 255, 0, 255};
+        AllGraphicsData.push_back(sgd);
 
         for (std::size_t i = 0; i < PLANET_NBR; ++i)
         {
@@ -38,18 +38,18 @@ void StarSystemSample::SampleSetUp() noexcept
 
             // Graphics
             _bodyRefs.push_back(bodyRef);
-            GraphicsData pbd;
+            GraphicsData gd;
             _circles.emplace_back(Math::Vec2F::Zero(),
                                   Math::Random::Range(
                                           Metrics::MetersToPixels(0.05f),
                                           Metrics::MetersToPixels(0.15f)));
-            pbd.Color = {
+            gd.Color = {
                     Math::Random::Range(0, 255),
                     Math::Random::Range(0, 255),
                     Math::Random::Range(0, 255),
                     255};
 
-            AllGraphicsData.push_back(pbd);
+            AllGraphicsData.push_back(gd);
         }
     }
 }
