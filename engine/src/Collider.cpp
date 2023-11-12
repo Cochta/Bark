@@ -37,8 +37,8 @@ Math::RectangleF Collider::GetBounds() const noexcept
 
  bool ColliderRefPair::operator==(const ColliderRefPair& other) const
  {
-	 return ColRefA.Index == other.ColRefA.Index && ColRefB.Index == other.ColRefB.Index ||
-		 ColRefA.Index == other.ColRefB.Index && ColRefB.Index == other.ColRefA.Index;
+	 return (ColRefA == other.ColRefA && ColRefB == other.ColRefB) ||
+		 (ColRefA == other.ColRefB && ColRefB == other.ColRefA);
  }
 
 

@@ -1,6 +1,6 @@
 #include "QuadTree.h"
 
-void QuadNode::Subdivide() noexcept // pas besoin de mettre depth dans le neud
+void QuadNode::Subdivide() noexcept
 {
 	const Math::Vec2F halfSize = (Bounds.MaxBound() - Bounds.MinBound()) / 2;
 	const Math::Vec2F minBound = Bounds.MinBound();
@@ -51,59 +51,16 @@ void QuadNode::Insert(const ColliderRefAabb& colliderRefAabb) noexcept
 	{
 		ColliderRefAabbs.push_back(colliderRefAabb);
 	}
-
-	//if (Children[0] != nullptr)
-	//{
-	//	for (auto& child : Children)
-	//	{
-	//		if (Math::Intersect(colliderRefAabb.Aabb, child->Bounds))
-	//		{
-	//			child->Insert(colliderRefAabb);
-	//		}
-	//	}
-	//}
-	//else if (ColliderRefAabbs.size() >= MaxColNbr && _depth < _maxDepth)
-	//{
-	//	Subdivide();
-	//	ColliderRefAabbs.push_back(colliderRefAabb);
-	//	std::vector<ColliderRefAabb> cra;
-	//	for (auto& col : ColliderRefAabbs)
-	//	{
-	//		int nbIntersect = 0;
-	//		QuadNode* node = nullptr;
-	//		for (auto& child : Children)
-	//		{
-	//			if (Math::Intersect(col.Aabb, child->Bounds))
-	//			{
-	//				nbIntersect++;
-	//				node = child.get();
-	//			}
-	//		}
-	//		if (nbIntersect == 1)
-	//		{
-	//			node->Insert(col);
-	//		}
-	//		else
-	//		{
-	//			cra.push_back(col);
-	//		}
-	//	}
-	//	ColliderRefAabbs.clear();
-	//	ColliderRefAabbs = std::move(cra);
-	//}
-	//else
-	//{
-	//	ColliderRefAabbs.push_back(colliderRefAabb);
-	//}
 }
 
-QuadNode::QuadNode(Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{alloc}), Alloc(alloc)//todo: changer ordre
+QuadNode::QuadNode(Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{alloc}), Alloc(alloc)
 {
-
+	ColliderRefAabbs.reserve(16);
 }
 
 QuadNode::QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{ alloc }), Bounds(bounds), Alloc(alloc)
 {
+	ColliderRefAabbs.reserve(16);
 }
 
 void QuadNode::SetUpRoot(const Math::RectangleF& bounds) noexcept
@@ -120,3 +77,12 @@ void QuadNode::SetUpRoot(const Math::RectangleF& bounds) noexcept
 	Bounds = bounds;
 }
 
+//QuadTree::QuadTree()
+//{
+//	std::size_t result = 0;
+//	for (size_t i = 0; i < _MAX_DEPTH; i++)
+//	{
+//		result += Math::Pow(4, i);
+//	}
+//	Nodes.resize(result);
+//}

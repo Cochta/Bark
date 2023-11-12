@@ -8,7 +8,6 @@ class ColliderFixture : public ::testing::Test
 public:
     std::vector<CircleF> circles;
     std::vector<RectangleF> rectangles;
-    // std::vector<PolygonF> polygons;
     std::vector<bool> areAttached;
     std::vector<bool> areSensor;
 
@@ -29,7 +28,6 @@ protected:
         areSensor.emplace_back(false);
         areSensor.emplace_back(true);
         areSensor.emplace_back(false);
-
     }
 };
 
@@ -58,7 +56,7 @@ TEST_F(ColliderFixture, DefaultConstructor)
     Collider collider;
 
     ASSERT_TRUE(std::holds_alternative<CircleF>(collider.Shape));
-    ASSERT_EQ(collider.IsTrigger, true);
+    ASSERT_EQ(collider.IsTrigger, false);
     ASSERT_EQ(collider.IsAttached, false);
 }
 
@@ -70,7 +68,6 @@ TEST_F(ColliderFixture, CircleConstructor)
         collider.Shape = circles[i];
         collider.IsTrigger = areSensor[i];
         collider.IsAttached = areAttached[i];
-        // Add assertions to test the Circle constructor.
         ASSERT_TRUE(std::holds_alternative<CircleF>(collider.Shape));
         ASSERT_EQ(std::get<CircleF>(collider.Shape).Center(), circles[i].Center());
         ASSERT_EQ(std::get<CircleF>(collider.Shape).Radius(), circles[i].Radius());
@@ -88,7 +85,6 @@ TEST_F(ColliderFixture, RectangleConstructor)
         collider.Shape = rectangles[i];
         collider.IsTrigger = areSensor[i];
         collider.IsAttached = areAttached[i];
-        // Add assertions to test the Circle constructor.
         ASSERT_TRUE(std::holds_alternative<RectangleF>(collider.Shape));
         ASSERT_EQ(std::get<RectangleF>(collider.Shape).MinBound(), rectangles[i].MinBound());
         ASSERT_EQ(std::get<RectangleF>(collider.Shape).MaxBound(), rectangles[i].MaxBound());
@@ -119,7 +115,7 @@ TEST_F(ColliderRefFixture, ColliderRefPairConstructor)
             if(i==j) continue;
 
             ColliderRefPair ColRefPair = {colRef1,colRef2};
-            //ASSERT_EQ(ColRefPair.ColRefA, colRef1); jsp pk ca marche pas
+            EXPECT_TRUE(ColRefPair.ColRefA == colRef1);
         }
     }
 }

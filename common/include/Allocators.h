@@ -27,7 +27,7 @@ public:
 class LinearAllocator : public Allocator
 {
 public:
-    LinearAllocator(std::size_t size) : _size(size), _ptr(new char[size]), _offset(0)//todo: donner juste le pointer
+    LinearAllocator(std::size_t size) : _size(size), _ptr(new char[size]), _offset(0)
     {}
 
     ~LinearAllocator() override
@@ -35,7 +35,7 @@ public:
         delete[] _ptr;
     }
 
-    void *Allocate(std::size_t size, std::size_t typeSize) override // todo: ajouter alignement
+    void *Allocate(std::size_t size, std::size_t typeSize) override 
     {
         if (_offset + size * typeSize > _size)
         {
@@ -83,30 +83,22 @@ public:
             throw std::runtime_error("StackAllocator out of memory");
         }
 
-        // Calculate the size of the allocation header
         std::size_t headerSize = sizeof(AllocationHeader);
 
-        // Calculate the total size needed for the allocation
         std::size_t totalSize = size * typeSize + headerSize;
 
-        // Get a pointer to the memory for this allocation
         char *allocationPtr = _ptr + _top;
 
-        // Set the allocation header
         AllocationHeader *header = reinterpret_cast<AllocationHeader *>(allocationPtr);
         header->size = totalSize;
 
-        // Move the top of the stack to the next available memory location
         _top += totalSize;
 
-        // Return a pointer to the user data (after the header)
         return allocationPtr + headerSize;
     }
 
-    void Deallocate(void *ptr) override // todo: checker que celui a desalouer soit le top
+    void Deallocate(void *ptr) override 
     {
-        // To deallocate, we use the allocation header to get the size
-        // and then move the top of the stack back by that amount.
         char *allocationPtr = reinterpret_cast<char *>(ptr) - sizeof(AllocationHeader);
         AllocationHeader *header = reinterpret_cast<AllocationHeader *>(allocationPtr);
         _top -= header->size;
@@ -158,7 +150,6 @@ public:
 
     void Deallocate(void *ptr) override
     {
-        // Forward the deallocation request to the wrapped allocator
         _targetAllocator.Deallocate(ptr);
     }
 
@@ -198,14 +189,12 @@ public:
             {
                 if (current->size > count * typeSize)
                 {
-                    // Split the block if it's larger than needed
                     char *newBlockPtr = reinterpret_cast<char *>(current) + count * typeSize;
                     FreeBlock *newBlockHeader = reinterpret_cast<FreeBlock *>(newBlockPtr);
                     newBlockHeader->size = current->size - count * typeSize;
                     newBlockHeader->next = current->next;
                 }
 
-                // Update the free list
                 if (prev)
                 {
                     prev->next = current->next;
@@ -214,7 +203,6 @@ public:
                     _freeList = reinterpret_cast<char *>(current) + count * typeSize;
                 }
 
-                // Return a pointer to the user data (after the header)
                 return current + 1;
             }
 
@@ -235,7 +223,6 @@ public:
         char *blockPtr = reinterpret_cast<char *>(ptr) - sizeof(FreeBlock);
         FreeBlock *firstBlock = reinterpret_cast<FreeBlock *>(blockPtr);
 
-        // Insert the deallocated block into the free list
         firstBlock->next = reinterpret_cast<FreeBlock *>(_freeList);
         _freeList = blockPtr;
     }
@@ -326,9 +313,6 @@ private:
     }
 };
 
-/**
- * \brief Custom proxy allocator respecting allocator_traits
- */
 template<typename T>
 class StandardAllocator
 {

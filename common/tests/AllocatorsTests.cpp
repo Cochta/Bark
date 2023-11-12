@@ -23,7 +23,6 @@ protected:
     }
 };
 
-// Test the Allocate function
 TEST_F(AllocatorTests, LinearAllocate)
 {
     void *ptr = LinearAlloc.Allocate(4, sizeof(int));
@@ -31,7 +30,6 @@ TEST_F(AllocatorTests, LinearAllocate)
     EXPECT_TRUE(ptr != nullptr);
 }
 
-// Test the Reset function
 TEST_F(AllocatorTests, LinearReset)
 {
     void *ptr = LinearAlloc.Allocate(4, sizeof(int));
@@ -43,7 +41,6 @@ TEST_F(AllocatorTests, LinearReset)
     EXPECT_TRUE(newPtr != nullptr);
 }
 
-// Test the Allocate and Deallocate functions
 TEST_F(AllocatorTests, StackAllocateAndDeallocate)
 {
     void *ptr = StackAlloc.Allocate(4, sizeof(int));
@@ -53,7 +50,6 @@ TEST_F(AllocatorTests, StackAllocateAndDeallocate)
     StackAlloc.Deallocate(ptr);
 }
 
-// Test the Reset function
 TEST_F(AllocatorTests, StackReset)
 {
     void *ptr = StackAlloc.Allocate(4, sizeof(int));
@@ -99,7 +95,7 @@ TEST_F(AllocatorTests, FreeListReset) {
     EXPECT_TRUE(newPtr != nullptr);
 }
 TEST_F(AllocatorTests, PoolAllocateAndDeallocate) {
-    void* ptr = PoolAlloc.Allocate(1, sizeof(int)); // Allocate a single int
+    void* ptr = PoolAlloc.Allocate(1, sizeof(int));
 
     EXPECT_TRUE(ptr != nullptr);
 
@@ -107,7 +103,7 @@ TEST_F(AllocatorTests, PoolAllocateAndDeallocate) {
 }
 
 TEST_F(AllocatorTests, PoolReset) {
-    void* ptr = PoolAlloc.Allocate(1, sizeof(int)); // Allocate a single int
+    void* ptr = PoolAlloc.Allocate(1, sizeof(int));
     PoolAlloc.Reset();
 
     void* newPtr = PoolAlloc.Allocate(1, sizeof(int));

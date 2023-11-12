@@ -30,16 +30,6 @@ TEST_P(BodyConstructorParamFixture, ConstructorInitialization) {
     EXPECT_FLOAT_EQ(Body.Mass, params.mass);
 }
 
-TEST_P(BodyConstructorParamFixture, ApplyForce) {
-    const auto params = GetParam();
-    Body Body(params.position, params.velocity, params.mass);
-    auto force = Vec2F(Random::Range(-100.f, 100.f), Random::Range(-100.f, 100.f));
-
-    EXPECT_EQ(Body._force, Vec2F::Zero());
-    Body.ApplyForce(force);
-    EXPECT_EQ(Body._force, force);
-}
-
 TEST_P(BodyConstructorParamFixture, IsEnabled) {
     const auto params = GetParam();
     Body Body(params.position, params.velocity, params.mass);

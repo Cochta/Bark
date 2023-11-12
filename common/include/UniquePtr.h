@@ -117,7 +117,7 @@ template<typename T>
  * @param args Arguments to construct the object of type T.
  * @return A UniquePtr that uniquely owns the created object.
  */
-UniquePtr<T> MakeUnique(T value) noexcept //todo: Allocator& allocator faire pour tracker new et delete
+UniquePtr<T> MakeUnique(T value) noexcept
 {
     return UniquePtr<T>(new T(value));
 }
