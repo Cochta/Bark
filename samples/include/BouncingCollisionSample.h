@@ -40,6 +40,6 @@ protected:
 	void SampleTearDown() noexcept override;
 
 private:
-	void DrawQuadtree(const QuadNode* node);
+	void DrawQuadtree(const QuadNode& node) noexcept;
 
 };

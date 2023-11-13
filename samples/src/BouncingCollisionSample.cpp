@@ -91,17 +91,17 @@ void BouncingCollisionSample::SampleSetUp() noexcept
 	}
 }
 
-void BouncingCollisionSample::DrawQuadtree(const QuadNode* node)
+void BouncingCollisionSample::DrawQuadtree(const QuadNode& node) noexcept
 {
-	if (node->Children[0] == nullptr)
+	if (node.Children[0] == nullptr)
 	{
-		_quadTreeGraphicsData.push_back({ Math::RectangleF(node->Bounds), false });
+		_quadTreeGraphicsData.push_back({ Math::RectangleF(node.Bounds), false });
 	}
 	else
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			DrawQuadtree(node->Children[i].get());
+			DrawQuadtree(*node.Children[i]);
 		}
 	}
 }
@@ -150,7 +150,7 @@ void BouncingCollisionSample::SampleUpdate() noexcept
 	}
 
 	_quadTreeGraphicsData.clear();
-	DrawQuadtree(&_world._quadTree);
+	DrawQuadtree(_world._quadTree.Nodes[0]);
 	AllGraphicsData.insert(AllGraphicsData.end(), _quadTreeGraphicsData.begin(), _quadTreeGraphicsData.end());
 }
 

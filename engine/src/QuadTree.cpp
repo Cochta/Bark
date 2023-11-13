@@ -1,88 +1,95 @@
 #include "QuadTree.h"
 
-void QuadNode::Subdivide() noexcept
+QuadNode::QuadNode(Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{alloc})
 {
-	const Math::Vec2F halfSize = (Bounds.MaxBound() - Bounds.MinBound()) / 2;
-	const Math::Vec2F minBound = Bounds.MinBound();
-
-	Children[0] = std::make_unique<QuadNode>(QuadNode({ minBound, minBound + halfSize }, Alloc));
-	Children[1] = std::make_unique<QuadNode>(QuadNode({ {minBound.X,              minBound.Y + halfSize.Y},
-								{minBound.X + halfSize.X, minBound.Y + 2 * halfSize.Y} }, Alloc));
-	Children[2] = std::make_unique<QuadNode>(QuadNode({ {minBound.X + halfSize.X,     minBound.Y},
-								{minBound.X + 2 * halfSize.X, minBound.Y + halfSize.Y} }, Alloc));
-	Children[3] = std::make_unique<QuadNode>(QuadNode(
-		{ {minBound.X + halfSize.X, minBound.Y + halfSize.Y}, Bounds.MaxBound() }, Alloc));
-
-	for (const auto& child : Children)
-	{
-		child->_depth = _depth + 1;
-	}
+	ColliderRefAabbs.reserve(16);
 }
 
-void QuadNode::Insert(const ColliderRefAabb& colliderRefAabb) noexcept
+QuadNode::QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{ alloc }), Bounds(bounds)
 {
-	if (Children[0] != nullptr)
+	ColliderRefAabbs.reserve(16);
+}
+
+QuadTree::QuadTree(Allocator& alloc) noexcept : Alloc(alloc), Nodes{ StandardAllocator<QuadNode>{alloc} }
+{
+	std::size_t result = 0;
+	for (size_t i = 0; i <= _MAX_DEPTH; i++)
 	{
-		for (const auto& child : Children)
+		result += Math::Pow(4, i);
+	}
+	Nodes.resize(result, QuadNode(Alloc));
+}
+
+void QuadTree::SubdivideNode(QuadNode& node) noexcept
+{
+	const Math::Vec2F halfSize = (node.Bounds.MaxBound() - node.Bounds.MinBound()) / 2;
+	const Math::Vec2F minBound = node.Bounds.MinBound();
+
+	node.Children[0] = &Nodes[NodeIndex];
+	node.Children[0]->Bounds = { minBound, minBound + halfSize };
+
+	node.Children[1] = &Nodes[NodeIndex + 1];
+	node.Children[1]->Bounds = { {minBound.X, minBound.Y + halfSize.Y},{minBound.X + halfSize.X, minBound.Y + 2 * halfSize.Y} };
+
+	node.Children[2] = &Nodes[NodeIndex + 2];
+	node.Children[2]->Bounds = { {minBound.X + halfSize.X, minBound.Y},{minBound.X + 2 * halfSize.X, minBound.Y + halfSize.Y} };
+
+	node.Children[3] = &Nodes[NodeIndex + 3];
+	node.Children[3]->Bounds = { {minBound.X + halfSize.X, minBound.Y + halfSize.Y}, node.Bounds.MaxBound() };
+
+
+	for (const auto& child : node.Children)
+	{
+		child->Depth = node.Depth + 1;
+	}
+	NodeIndex += 4;
+}
+
+void QuadTree::Insert(QuadNode& node, const ColliderRefAabb& colliderRefAabb) noexcept
+{
+	if (node.Children[0] != nullptr)
+	{
+		for (const auto& child : node.Children)
 		{
 			if (Math::Intersect(colliderRefAabb.Aabb, child->Bounds))
 			{
-				child->Insert(colliderRefAabb);
+				Insert(*child, colliderRefAabb);
 			}
 		}
 	}
-	else if (ColliderRefAabbs.size() >= _MAX_COL_NBR && _depth < _MAX_DEPTH)
+	else if (node.ColliderRefAabbs.size() >= _MAX_COL_NBR && node.Depth < _MAX_DEPTH)
 	{
-		Subdivide();
-		ColliderRefAabbs.push_back(colliderRefAabb);
-		for (const auto& child : Children)
+		SubdivideNode(node);
+		node.ColliderRefAabbs.push_back(colliderRefAabb);
+		for (const auto& child : node.Children)
 		{
-			for (auto& col : ColliderRefAabbs)
+			for (auto& col : node.ColliderRefAabbs)
 			{
 				if (Math::Intersect(col.Aabb, child->Bounds))
 				{
-					child->Insert(col);
+					Insert(*child, col);
 				}
 			}
 		}
-		ColliderRefAabbs.clear();
+		node.ColliderRefAabbs.clear();
 	}
 	else
 	{
-		ColliderRefAabbs.push_back(colliderRefAabb);
+		node.ColliderRefAabbs.push_back(colliderRefAabb);
 	}
 }
 
-QuadNode::QuadNode(Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{alloc}), Alloc(alloc)
-{
-	ColliderRefAabbs.reserve(16);
-}
-
-QuadNode::QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept : ColliderRefAabbs(StandardAllocator<ColliderRefPair>{ alloc }), Bounds(bounds), Alloc(alloc)
-{
-	ColliderRefAabbs.reserve(16);
-}
-
-void QuadNode::SetUpRoot(const Math::RectangleF& bounds) noexcept
+void QuadTree::SetUpRoot(const Math::RectangleF& bounds) noexcept
 {
 #ifdef TRACY_ENABLE
 	ZoneScoped;
 #endif
-	ColliderRefAabbs.clear();
-
-	for (auto& child : Children)
+	for (auto& node : Nodes)
 	{
-		child = nullptr;
+		node.ColliderRefAabbs.clear();
+		std::fill(node.Children.begin(), node.Children.end(), nullptr);
 	}
-	Bounds = bounds;
-}
+	Nodes[0].Bounds = bounds;
 
-//QuadTree::QuadTree()
-//{
-//	std::size_t result = 0;
-//	for (size_t i = 0; i < _MAX_DEPTH; i++)
-//	{
-//		result += Math::Pow(4, i);
-//	}
-//	Nodes.resize(result);
-//}
+	NodeIndex = 1;
+}

@@ -16,7 +16,6 @@ private:
 	std::vector<Body> _bodies; /**< A collection of all the bodies in the world. */
 	std::vector<Collider> _colliders; /**< A collection of all the colliders in the world. */
 
-	int _colliderIdCount = 0; /**< Counter for generating unique collider IDs. */
 	HeapAllocator _heapAlloc;
 	std::unordered_set<ColliderRefPair, ColliderRefPairHash, std::equal_to<ColliderRefPair>, StandardAllocator<ColliderRefPair>> _colRefPairs{ _heapAlloc }; /**< A set of colliderRef pairs for collision detection. */
 
@@ -25,7 +24,7 @@ private:
 public:
 	std::vector<size_t> BodyGenIndices; /**< Indices of generated bodies. */
 	std::vector<size_t> ColliderGenIndices; /**< Indices of generated colliders. */
-	QuadNode _quadTree{ _heapAlloc };/**< QuadTree for collision checks */
+	QuadTree _quadTree{ _heapAlloc };/**< QuadTree for collision checks */
 	/**
 	 * @brief Default constructor for the _world class.
 	 */
@@ -95,7 +94,6 @@ public:
 	}
 private:
 	void UpdateBodies(const float deltaTime) noexcept;
-	void UpdateCollisions() noexcept;
 	void SetUpQuadTree() noexcept;
 	void UpdateQuadTreeCollisions(const QuadNode& node)noexcept;
 

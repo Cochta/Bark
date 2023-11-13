@@ -12,42 +12,42 @@ struct ColliderRefAabb
 	const ColliderRef ColRef;
 };
 
-//class QuadTree {
-//public:
-//	std::vector<QuadNode> Nodes;
-//	static constexpr int _MAX_COL_NBR = 16;
-//
-//	static constexpr int _MAX_DEPTH = 5;
-//
-//	QuadNode root;
-//};
-
 class QuadNode
 {
 public:
 	Math::RectangleF Bounds{ Math::Vec2F::Zero(), Math::Vec2F::Zero() };
 
-	std::array<std::unique_ptr<QuadNode>, 4> Children{ nullptr, nullptr, nullptr, nullptr };
+	std::array<QuadNode*, 4> Children{ nullptr, nullptr, nullptr, nullptr };
 
 	CustomlyAllocatedVector<ColliderRefAabb> ColliderRefAabbs;
-private:
-	Allocator& Alloc;
-	static constexpr int _MAX_COL_NBR = 16;
 
-	static constexpr int _MAX_DEPTH = 5;
-
-	int _depth = 0;
+	int Depth = 0;
 
 public:
 	QuadNode(Allocator& alloc) noexcept;
 
 	explicit QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept;
 
+};
+
+class QuadTree {
+public:
+	CustomlyAllocatedVector<QuadNode> Nodes;
+
+	static constexpr int _MAX_COL_NBR = 16;
+
+	static constexpr int _MAX_DEPTH = 5;
+
+	int NodeIndex = 1;
+
+	Allocator& Alloc;
+
+	QuadTree(Allocator& alloc) noexcept;
+
 	void SetUpRoot(const Math::RectangleF& bounds) noexcept;
 
-	void Insert(const ColliderRefAabb& colliderRefAabb) noexcept;
+	void Insert(QuadNode& node, const ColliderRefAabb& colliderRefAabb) noexcept;
 
-private:
-	void Subdivide() noexcept;
-
+	void SubdivideNode(QuadNode& node) noexcept;
 };
+
