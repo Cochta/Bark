@@ -46,9 +46,9 @@ But I quickly noticed that the program started to lag severely as soon as I adde
 
 Here is an example with 100 circles, 100 rectangles and 100 triangles.
 
-![89'700 checks]("ressource/Tracy_Update_AllXAll.PNG")
+![89'700 checks](ressource/Tracy_Update_AllXAll.PNG)
 
-![We can see how slow and lagged it is]("ressource/Video_Update_AllXAll.mp4")
+![We can see how slow and lagged it is](ressource/Video_Update_AllXAll.mp4)
 
 ### Second implementation
 
@@ -66,9 +66,9 @@ for (std::size_t i = 0; i < _colliders.size() - 1; ++i)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Here is the same example with 100 circles, 100 rectangles and 100 triangles.
 
-![44'850 checks]("ressource/Tracy_Update_AllXOther.PNG")
+![44'850 checks](ressource/Tracy_Update_AllXOther.PNG)
 
-![A bit faster and fewer lags but still not good enough]("ressource/Video_Update_AllXOther.mp4")
+![A bit faster and fewer lags but still not good enough](ressource/Video_Update_AllXOther.mp4)
 
 QuadTree implementation
 --------------------------------------------------------------
@@ -108,9 +108,9 @@ We can now see it is already way better than the naive implementation.
 
 Here is again the same example with 100 circles, 100 rectangles and 100 triangles.
 
-![The collision update now takes only half the frame]("ressource/Tracy_Update_QuadTree_First.PNG")
+![The collision update now takes only half the frame](ressource/Tracy_Update_QuadTree_First.PNG)
 
-![We can see that it is way smoother]("ressource/Video_Update_QuadTree_First.mp4")
+![We can see that it is way smoother](ressource/Video_Update_QuadTree_First.mp4)
 
 #### Some statistics
 
@@ -138,9 +138,9 @@ For the second implementation the goal was to reduce the number of memory alloca
 
 To do so, instead of deleting and creating nodes at the start of the frame, I now use a vector of pre created nodes.
 
-![First implementation, at the start of the the frame, we see a huge spike of allocations/deallocations]("ressource/TracyMemoryFirst.PNG")
+![First implementation, at the start of the the frame, we see a huge spike of allocations/deallocations](ressource/TracyMemoryFirst.PNG)
 
-![Second implementation, the only allocations/deallocations left are those of the unordered_set]("ressource/TracyMemorySecond.PNG")
+![Second implementation, the only allocations/deallocations left are those of the unordered_set](ressource/TracyMemorySecond.PNG)
 
 Thank you for reading so far !!!
 ==============================================================
