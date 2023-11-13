@@ -16,7 +16,7 @@ private:
 	std::vector<Body> _bodies; /**< A collection of all the bodies in the world. */
 	std::vector<Collider> _colliders; /**< A collection of all the colliders in the world. */
 
-	HeapAllocator _heapAlloc;
+	HeapAllocator _heapAlloc; /**< Allocator used to track memory usage. */
 	std::unordered_set<ColliderRefPair, ColliderRefPairHash, std::equal_to<ColliderRefPair>, StandardAllocator<ColliderRefPair>> _colRefPairs{ _heapAlloc }; /**< A set of colliderRef pairs for collision detection. */
 
 	ContactListener* _contactListener = nullptr; /**< A listener for contact events between colliders. */
@@ -24,7 +24,7 @@ private:
 public:
 	std::vector<size_t> BodyGenIndices; /**< Indices of generated bodies. */
 	std::vector<size_t> ColliderGenIndices; /**< Indices of generated colliders. */
-	QuadTree _quadTree{ _heapAlloc };/**< QuadTree for collision checks */
+	QuadTree QuadTree{ _heapAlloc };/**< QuadTree for collision checks */
 	/**
 	 * @brief Default constructor for the _world class.
 	 */
@@ -93,8 +93,19 @@ public:
 		_contactListener = listener;
 	}
 private:
+	/**
+	 * @brief Updates all the bodies.
+	 * @param deltaTime The time step for the simulation.
+	 */
 	void UpdateBodies(const float deltaTime) noexcept;
+	/**
+	 * @brief Initialisation of the QuadTree.
+	 */
 	void SetUpQuadTree() noexcept;
+	/**
+	 * @brief recursive update of the QuadTree.
+	 * @param node the root node
+	 */
 	void UpdateQuadTreeCollisions(const QuadNode& node)noexcept;
 
 	/**

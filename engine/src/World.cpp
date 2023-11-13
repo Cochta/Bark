@@ -35,7 +35,7 @@ void World::Update(const float deltaTime) noexcept
 
 	SetUpQuadTree();
 
-	UpdateQuadTreeCollisions(_quadTree.Nodes[0]);
+	UpdateQuadTreeCollisions(QuadTree.Nodes[0]);
 }
 
 [[nodiscard]] BodyRef World::CreateBody() noexcept
@@ -175,13 +175,13 @@ void World::SetUpQuadTree() noexcept {
 		maxBounds.Y = std::max(maxBounds.Y, bounds.MaxBound().Y);
 	}
 
-	_quadTree.SetUpRoot(Math::RectangleF(minBounds, maxBounds));
+	QuadTree.SetUpRoot(Math::RectangleF(minBounds, maxBounds));
 #ifdef TRACY_ENABLE
 	ZoneNamedN(Insert, "Insert in QuadTree", true);
 #endif
 	for (std::size_t i = 0; i < _colliders.size(); ++i) {
 		if (_colliders[i].IsAttached) {
-			_quadTree.Insert(_quadTree.Nodes[0],{ _colliders[i].GetBounds(), { i, ColliderGenIndices[i] } });
+			QuadTree.Insert(QuadTree.Nodes[0],{ _colliders[i].GetBounds(), { i, ColliderGenIndices[i] } });
 		}
 	}
 }

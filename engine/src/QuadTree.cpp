@@ -13,7 +13,7 @@ QuadNode::QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept : 
 QuadTree::QuadTree(Allocator& alloc) noexcept : Alloc(alloc), Nodes{ StandardAllocator<QuadNode>{alloc} }
 {
 	std::size_t result = 0;
-	for (size_t i = 0; i <= _MAX_DEPTH; i++)
+	for (size_t i = 0; i <= MAX_DEPTH; i++)
 	{
 		result += Math::Pow(4, i);
 	}
@@ -57,7 +57,7 @@ void QuadTree::Insert(QuadNode& node, const ColliderRefAabb& colliderRefAabb) no
 			}
 		}
 	}
-	else if (node.ColliderRefAabbs.size() >= _MAX_COL_NBR && node.Depth < _MAX_DEPTH)
+	else if (node.ColliderRefAabbs.size() >= MAX_COL_NBR && node.Depth < MAX_DEPTH)
 	{
 		SubdivideNode(node);
 		node.ColliderRefAabbs.push_back(colliderRefAabb);
