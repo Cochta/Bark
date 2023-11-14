@@ -40,24 +40,24 @@ void World::Update(const float deltaTime) noexcept
 
 [[nodiscard]] BodyRef World::CreateBody() noexcept
 {
-	auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body& body) {
+	const auto it = std::find_if(_bodies.begin(), _bodies.end(), [](const Body& body) {
 		return !body.IsEnabled(); // Get first disabled body
 		});
 
 	if (it != _bodies.end())
 	{
-		std::size_t index = std::distance(_bodies.begin(), it);
-		auto bodyRef = BodyRef{ index, BodyGenIndices[index] };
+		const std::size_t index = std::distance(_bodies.begin(), it);
+		const auto bodyRef = BodyRef{ index, BodyGenIndices[index] };
 		GetBody(bodyRef).Enable();
 		return bodyRef;
 	}
 
-	std::size_t previousSize = _bodies.size();
+	const std::size_t previousSize = _bodies.size();
 
 	_bodies.resize(previousSize * 2, Body());
 	BodyGenIndices.resize(previousSize * 2, 0);
 
-	BodyRef bodyRef = { previousSize, BodyGenIndices[previousSize] };
+	const BodyRef bodyRef = { previousSize, BodyGenIndices[previousSize] };
 	GetBody(bodyRef).Enable();
 	return bodyRef;
 }
@@ -84,14 +84,14 @@ void World::DestroyBody(const BodyRef bodyRef)
 
 ColliderRef World::CreateCollider(const BodyRef bodyRef) noexcept
 {
-	auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider& collider) {
+	const auto it = std::find_if(_colliders.begin(), _colliders.end(), [](const Collider& collider) {
 		return !collider.IsAttached; // Get first disabled collider
 		});
 
 	if (it != _colliders.end())
 	{
-		std::size_t index = std::distance(_colliders.begin(), it);
-		auto colRef = ColliderRef{ index, ColliderGenIndices[index] };
+		const std::size_t index = std::distance(_colliders.begin(), it);
+		const auto colRef = ColliderRef{ index, ColliderGenIndices[index] };
 		auto& col = GetCollider(colRef);
 		col.IsAttached = true;
 		col.BodyRef = bodyRef;
@@ -99,12 +99,12 @@ ColliderRef World::CreateCollider(const BodyRef bodyRef) noexcept
 		return colRef;
 	}
 
-	std::size_t previousSize = _colliders.size();
+	const std::size_t previousSize = _colliders.size();
 
 	_colliders.resize(previousSize * 2, Collider());
 	ColliderGenIndices.resize(previousSize * 2, 0);
 
-	ColliderRef colRef = { previousSize, ColliderGenIndices[previousSize] };
+	const ColliderRef colRef = { previousSize, ColliderGenIndices[previousSize] };
 	auto& col = GetCollider(colRef);
 	col.IsAttached = true;
 	col.BodyRef = bodyRef;
@@ -167,7 +167,7 @@ void World::SetUpQuadTree() noexcept {
 
 		collider.BodyPosition = GetBody(collider.BodyRef).Position;
 
-		auto bounds = collider.GetBounds();
+		const auto bounds = collider.GetBounds();
 
 		minBounds.X = std::min(minBounds.X, bounds.MinBound().X);
 		minBounds.Y = std::min(minBounds.Y, bounds.MinBound().Y);
@@ -181,7 +181,7 @@ void World::SetUpQuadTree() noexcept {
 #endif
 	for (std::size_t i = 0; i < _colliders.size(); ++i) {
 		if (_colliders[i].IsAttached) {
-			QuadTree.Insert(QuadTree.Nodes[0],{ _colliders[i].GetBounds(), { i, ColliderGenIndices[i] } });
+			QuadTree.Insert(QuadTree.Nodes[0], { _colliders[i].GetBounds(), { i, ColliderGenIndices[i] } });
 		}
 	}
 }
@@ -205,7 +205,7 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 			{
 				auto& col2 = GetCollider(node.ColliderRefAabbs[j].ColRef);
 
-				if (!col2.IsTrigger && !col1.IsTrigger) // physical collision
+				if (!col2.IsTrigger && !col1.IsTrigger) // Physical collision
 				{
 					if (Overlap(col1, col2))
 					{
@@ -232,12 +232,12 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 				{
 					continue;
 				}
-
+				// Trigger collision
 				const ColliderRefPair& colPair = { node.ColliderRefAabbs[i].ColRef, node.ColliderRefAabbs[j].ColRef };
 
 				if (_colRefPairs.find(colPair) != _colRefPairs.end())
 				{
-					if (!Overlap(col1, col2)) // Trigger collision
+					if (!Overlap(col1, col2))
 					{
 						_contactListener->OnTriggerExit(colPair.ColRefA, colPair.ColRefB);
 						_colRefPairs.erase(colPair);
@@ -245,7 +245,7 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 					continue;
 				}
 
-				if (Overlap(col1, col2)) // Trigger collision
+				if (Overlap(col1, col2))
 				{
 					_contactListener->OnTriggerEnter(colPair.ColRefA, colPair.ColRefB);
 					_colRefPairs.insert(colPair);
@@ -273,56 +273,48 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 	const auto log = fmt::format("Shape A: {}, Shape B: {}", names[static_cast<int>(ShapeA)], names[static_cast<int>(ShapeB)]);
 	ZoneText(log.data(), log.size());
 #endif
-	switch (colA.Shape.index())
+
+	switch (ShapeA)
 	{
-	case static_cast<int>(Math::ShapeType::Circle):
+	case Math::ShapeType::Circle:
 	{
 		Math::CircleF circle = std::get<Math::CircleF>(colA.Shape) + GetBody(colA.BodyRef).Position;
-		switch (colB.Shape.index())
+		switch (ShapeB)
 		{
-		case static_cast<int>(Math::ShapeType::Circle):
-			return Math::Intersect(circle,
-				std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
-		case static_cast<int>(Math::ShapeType::Rectangle):
-			return Math::Intersect(circle,
-				std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
-		case static_cast<int>(Math::ShapeType::Polygon):
-			return Math::Intersect(circle,
-				std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Circle:
+			return Math::Intersect(circle, std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Rectangle:
+			return Math::Intersect(circle, std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Polygon:
+			return Math::Intersect(circle, std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		}
 		break;
 	}
-	case static_cast<int>(Math::ShapeType::Rectangle):
+	case Math::ShapeType::Rectangle:
 	{
 		Math::RectangleF rect = std::get<Math::RectangleF>(colA.Shape) + GetBody(colA.BodyRef).Position;
-		switch (colB.Shape.index())
+		switch (ShapeB)
 		{
-		case static_cast<int>(Math::ShapeType::Circle):
-			return Math::Intersect(rect,
-				std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
-		case static_cast<int>(Math::ShapeType::Rectangle):
-			return Math::Intersect(rect,
-				std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
-		case static_cast<int>(Math::ShapeType::Polygon):
-			return Math::Intersect(rect,
-				std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Circle:
+			return Math::Intersect(rect, std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Rectangle:
+			return Math::Intersect(rect, std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Polygon:
+			return Math::Intersect(rect, std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		}
 		break;
 	}
-	case static_cast<int>(Math::ShapeType::Polygon):
+	case Math::ShapeType::Polygon:
 	{
 		Math::PolygonF pol = std::get<Math::PolygonF>(colA.Shape) + GetBody(colA.BodyRef).Position;
-		switch (colB.Shape.index())
+		switch (ShapeB)
 		{
-		case static_cast<int>(Math::ShapeType::Circle):
-			return Math::Intersect(pol,
-				std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
-		case static_cast<int>(Math::ShapeType::Rectangle):
-			return Math::Intersect(pol,
-				std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
-		case static_cast<int>(Math::ShapeType::Polygon):
-			return Math::Intersect(pol,
-				std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Circle:
+			return Math::Intersect(pol, std::get<Math::CircleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Rectangle:
+			return Math::Intersect(pol, std::get<Math::RectangleF>(colB.Shape) + GetBody(colB.BodyRef).Position);
+		case Math::ShapeType::Polygon:
+			return Math::Intersect(pol, std::get<Math::PolygonF>(colB.Shape) + GetBody(colB.BodyRef).Position);
 		}
 		break;
 	}

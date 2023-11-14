@@ -16,7 +16,7 @@ public:
 protected:
     void SetUp() override
     {
-        circles.emplace_back(Vec2F::Zero(), 0.f);
+        circles.emplace_back(Vec2F::Zero(), -0.f);
         circles.emplace_back(-Vec2F::One(), -5.f);
         circles.emplace_back(Vec2F::Right(), 5.f);
         rectangles.emplace_back(Vec2F::Zero(), Vec2F::Zero());
@@ -116,6 +116,9 @@ TEST_F(ColliderRefFixture, ColliderRefPairConstructor)
 
             ColliderRefPair ColRefPair = {colRef1,colRef2};
             EXPECT_TRUE(ColRefPair.ColRefA == colRef1);
+            EXPECT_TRUE(ColRefPair.ColRefB == colRef2);
+            ColliderRefPair ColRefPair2 = { colRef2, colRef1 };
+            EXPECT_TRUE(ColRefPair == ColRefPair2);
         }
     }
 }
