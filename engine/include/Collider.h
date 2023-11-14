@@ -28,7 +28,6 @@ public:
 	Math::Vec2F BodyPosition = Math::Vec2F::Zero();/**< Position of the body associated to the collider. */
 
 	float Restitution = 1.f; /**< Bounciness/Restition of the collider. */
-	//float friction = 1.f;
 
 	bool IsTrigger = false; /**< Flag indicating if the collider is a trigger (non-physical). */
 	bool IsAttached = false; /**< Flag indicating if the collider is attached to a body. */

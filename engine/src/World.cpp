@@ -4,7 +4,7 @@
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>
 #include <TracyC.h>
-#endif // TRACY_ENABLE
+#endif 
 
 void World::SetUp(int initSize) noexcept
 {

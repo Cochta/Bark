@@ -1,7 +1,4 @@
-//
-// Created by Coch on 13.10.2023.
-//
-#include "../include/Timer.h"
+#include "Timer.h"
 
 void Timer::SetUp() noexcept
 {

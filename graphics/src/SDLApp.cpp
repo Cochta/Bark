@@ -1,21 +1,18 @@
-//
-// Created by Coch on 09.10.2023.
-//
 #include "SDLApp.h"
 
 #ifdef TRACY_ENABLE
 #include "Tracy.hpp"
 #include "TracyC.h"
-#endif // TRACY_ENABLE
+#endif 
 
 void SDLApp::SetUp()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
-		// Handle SDL initialization error
 		SDL_Log("SDL_Init Error: %s", SDL_GetError());
 		return;
 	}
+
 	_window = SDL_CreateWindow(
 		Title.data(),
 		SDL_WINDOWPOS_UNDEFINED,
@@ -26,7 +23,6 @@ void SDLApp::SetUp()
 
 	if (_window == nullptr)
 	{
-		// Handle window creation error
 		SDL_Log("SDL_CreateWindow Error: %s", SDL_GetError());
 		return;
 	}
@@ -35,13 +31,10 @@ void SDLApp::SetUp()
 	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (_renderer == nullptr)
 	{
-		// Handle renderer creation error
 		SDL_Log("SDL_CreateRenderer Error: %s", SDL_GetError());
 		return;
 	}
 
-
-	// Initialize ImGui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -80,7 +73,7 @@ void SDLApp::Run() noexcept
 
 		while (SDL_PollEvent(&e))
 		{
-			ImGui_ImplSDL2_ProcessEvent(&e); // Process ImGui events
+			ImGui_ImplSDL2_ProcessEvent(&e);
 			switch (e.type)
 			{
 			case SDL_QUIT:
@@ -101,7 +94,7 @@ void SDLApp::Run() noexcept
 			}
 			break;
 			case SDL_MOUSEBUTTONUP:
-			// Handle mouse button release here
+
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				_sampleManager.GiveLeftMouseClickToSample();
 			}
@@ -112,7 +105,6 @@ void SDLApp::Run() noexcept
 			}
 		}
 
-		// Start the Dear ImGui frame
 		ImGui_ImplSDLRenderer2_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
@@ -172,7 +164,6 @@ void SDLApp::Run() noexcept
 
 		ImGui::Render();
 
-		// Clear the renderer
 		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
 		SDL_RenderClear(_renderer);
 
@@ -182,13 +173,12 @@ void SDLApp::Run() noexcept
 
 		DrawAllGraphicsData();
 
-		// Present the renderer
 		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 		SDL_RenderPresent(_renderer);
 
 #ifdef TRACY_ENABLE
 		FrameMark;
-#endif // TRACY_ENABLE
+#endif 
 	}
 }
 
@@ -199,11 +189,9 @@ void SDLApp::DrawCircle(const Math::Vec2F center, const float radius, const int 
 #endif
 	int offset = static_cast<int>(_vertices.size());
 
-	// Reserve space for the vertices and indices in advance to avoid reallocation.
 	_vertices.reserve(offset + segments - 1);
 	_indices.reserve(_indices.size() + (segments - 1) * 3);
 
-	// Calculate vertices for the Circle
 	for (int i = 0; i < segments; ++i)
 	{
 		auto angle = Math::Radian(2.f * Math::Pi * static_cast<float>(i) / static_cast<float>(segments));
@@ -212,22 +200,21 @@ void SDLApp::DrawCircle(const Math::Vec2F center, const float radius, const int 
 		_vertices.push_back({ {x, Metrics::Height - y}, col, {1.0f, 1.0f} });
 	}
 
-	// Calculate indices to create triangles for filling the Circle
 	for (int i = 0; i < segments - 1; ++i)
 	{
-		_indices.push_back(offset); // Center point
+		_indices.push_back(offset); 
 		_indices.push_back(offset + i);
 		_indices.push_back(offset + i + 1);
 	}
-	_indices.push_back(offset); // Center point
+	_indices.push_back(offset); 
 	_indices.push_back(offset + segments - 1);
-	_indices.push_back(offset);  // Connect the last vertex to the center
+	_indices.push_back(offset);
 }
 
 void SDLApp::DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBound, const SDL_Color& col) noexcept
 {
 	auto offset = static_cast<int>(_vertices.size());
-	// Reserve space for the vertices and indices in advance to avoid reallocation.
+
 	_vertices.reserve(offset + 4);
 	_indices.reserve(_indices.size() + 6);
 
@@ -247,16 +234,12 @@ void SDLApp::DrawRectangle(const Math::Vec2F minBound, const Math::Vec2F maxBoun
 
 void SDLApp::DrawRectangleBorder(const Math::Vec2F minBound, const Math::Vec2F maxBound, const SDL_Color& col) noexcept
 {
-	// Draw the top border
 	DrawRectangle(minBound, { maxBound.X, minBound.Y + 1.0f }, col);
 
-	// Draw the left border
 	DrawRectangle(minBound, { minBound.X + 1.0f, maxBound.Y }, col);
 
-	// Draw the bottom border
 	DrawRectangle({ minBound.X, maxBound.Y - 1.0f }, maxBound, col);
 
-	// Draw the right border
 	DrawRectangle({ maxBound.X - 1.0f, minBound.Y }, maxBound, col);
 }
 
@@ -270,17 +253,14 @@ void SDLApp::DrawPolygon(const std::vector<Math::Vec2F>& vertices, const SDL_Col
 	size_t offset = _vertices.size();
 	size_t numVertices = vertices.size();
 
-	// Reserve space for the vertices and indices in advance to avoid reallocation.
 	_vertices.reserve(offset + numVertices);
 	_indices.reserve(_indices.size() + numVertices * 3);
 
-	// Add vertices to the _vertices vector.
 	for (const Math::Vec2F& v : vertices)
 	{
 		_vertices.push_back({ { v.X,Metrics::Height - v.Y}, col, {1.0f, 1.0f} });
 	}
 
-	// Add indices to connect the vertices and form triangles.
 	for (size_t i = 0; i < numVertices - 1; ++i)
 	{
 		_indices.push_back(offset);
@@ -288,7 +268,6 @@ void SDLApp::DrawPolygon(const std::vector<Math::Vec2F>& vertices, const SDL_Col
 		_indices.push_back(offset + i + 1);
 	}
 
-	// Connect the last vertex to the first vertex to close the polygon.
 	_indices.push_back(offset);
 	_indices.push_back(offset + numVertices - 1);
 	_indices.push_back(offset + 1);

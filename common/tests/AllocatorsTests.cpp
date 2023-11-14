@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include "Allocators.h"
 
-// Define a test fixture for LinearAllocator
 class AllocatorTests : public ::testing::Test
 {
 protected:

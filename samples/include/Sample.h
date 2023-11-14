@@ -1,6 +1,3 @@
-//
-// Created by const on 18/10/2023.
-//
 #pragma once
 
 #include "World.h"

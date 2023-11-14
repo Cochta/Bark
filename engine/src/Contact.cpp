@@ -108,7 +108,6 @@ float Contact::CalculateSeparateVelocity() const noexcept
 
 void Contact::ResolveVelocityAndInterpenetration() const noexcept
 {
-	// Calculate the separating velocity.
 	const float separatingVelocity = CalculateSeparateVelocity();
 
 	if (separatingVelocity > 0) {

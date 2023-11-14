@@ -12,16 +12,14 @@ std::string BouncingCollisionSample::GetDescription() noexcept
 
 void BouncingCollisionSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept
 {
-	AllGraphicsData[col1.Index].Color = {
-Math::Random::Range(0, 255),
+
+	Color color = {
+	Math::Random::Range(0, 255),
 	Math::Random::Range(0, 255),
 	Math::Random::Range(0, 255),
 	255 };
-	AllGraphicsData[col2.Index].Color = {
-		Math::Random::Range(0, 255),
-			Math::Random::Range(0, 255),
-			Math::Random::Range(0, 255),
-			255 };
+	AllGraphicsData[col1.Index].Color = color;
+	AllGraphicsData[col2.Index].Color = color;
 }
 
 void BouncingCollisionSample::OnCollisionExit(ColliderRef col1, ColliderRef col2) noexcept
@@ -44,7 +42,6 @@ void BouncingCollisionSample::SampleSetUp() noexcept
 		auto bodyRef1 = _world.CreateBody();
 		_bodyRefs.push_back(bodyRef1);
 		auto& body1 = _world.GetBody(bodyRef1);
-		//body1.Type = BodyType::STATIC;
 
 		body1.Mass = 1;
 
