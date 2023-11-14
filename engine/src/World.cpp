@@ -193,7 +193,7 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 #endif
 	if (node.Children[0] == nullptr)
 	{
-		if (node.ColliderRefAabbs.size() <= 0)
+		if (node.ColliderRefAabbs.empty())
 		{
 			return;
 		}
@@ -248,7 +248,7 @@ void World::UpdateQuadTreeCollisions(const QuadNode& node) noexcept
 				if (Overlap(col1, col2))
 				{
 					_contactListener->OnTriggerEnter(colPair.ColRefA, colPair.ColRefB);
-					_colRefPairs.insert(colPair);
+					_colRefPairs.emplace(colPair);
 				}
 			}
 		}

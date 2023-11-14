@@ -33,7 +33,6 @@ public:
 	bool IsTrigger = false; /**< Flag indicating if the collider is a trigger (non-physical). */
 	bool IsAttached = false; /**< Flag indicating if the collider is attached to a body. */
 
-
 	[[nodiscard]] Math::RectangleF GetBounds() const noexcept;
 };
 

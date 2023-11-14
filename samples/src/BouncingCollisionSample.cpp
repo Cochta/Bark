@@ -7,7 +7,7 @@ std::string BouncingCollisionSample::GetName() noexcept
 
 std::string BouncingCollisionSample::GetDescription() noexcept
 {
-	return "Randomly generated objects, they become green when they detect a physical collision otherwise they stay blue, the collision detection uses a QuadTree. ";
+	return "Randomly generated objects, they change color on contact with another object, the collision detection uses a QuadTree. ";
 }
 
 void BouncingCollisionSample::OnCollisionEnter(ColliderRef col1, ColliderRef col2) noexcept

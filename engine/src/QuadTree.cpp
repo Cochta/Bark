@@ -10,14 +10,14 @@ QuadNode::QuadNode(const Math::RectangleF& bounds, Allocator& alloc) noexcept : 
 	ColliderRefAabbs.reserve(16);
 }
 
-QuadTree::QuadTree(Allocator& alloc) noexcept : Alloc(alloc), Nodes{ StandardAllocator<QuadNode>{alloc} }
+QuadTree::QuadTree(Allocator& alloc) noexcept : _alloc(alloc), Nodes{ StandardAllocator<QuadNode>{alloc} }
 {
 	std::size_t result = 0;
 	for (size_t i = 0; i <= MAX_DEPTH; i++)
 	{
 		result += Math::Pow(4, i);
 	}
-	Nodes.resize(result, QuadNode(Alloc));
+	Nodes.resize(result, QuadNode(_alloc));
 }
 
 void QuadTree::SubdivideNode(QuadNode& node) noexcept
@@ -25,16 +25,16 @@ void QuadTree::SubdivideNode(QuadNode& node) noexcept
 	const Math::Vec2F halfSize = (node.Bounds.MaxBound() - node.Bounds.MinBound()) / 2;
 	const Math::Vec2F minBound = node.Bounds.MinBound();
 
-	node.Children[0] = &Nodes[NodeIndex];
+	node.Children[0] = &Nodes[_nodeIndex];
 	node.Children[0]->Bounds = { minBound, minBound + halfSize };
 
-	node.Children[1] = &Nodes[NodeIndex + 1];
+	node.Children[1] = &Nodes[_nodeIndex + 1];
 	node.Children[1]->Bounds = { {minBound.X, minBound.Y + halfSize.Y},{minBound.X + halfSize.X, minBound.Y + 2 * halfSize.Y} };
 
-	node.Children[2] = &Nodes[NodeIndex + 2];
+	node.Children[2] = &Nodes[_nodeIndex + 2];
 	node.Children[2]->Bounds = { {minBound.X + halfSize.X, minBound.Y},{minBound.X + 2 * halfSize.X, minBound.Y + halfSize.Y} };
 
-	node.Children[3] = &Nodes[NodeIndex + 3];
+	node.Children[3] = &Nodes[_nodeIndex + 3];
 	node.Children[3]->Bounds = { {minBound.X + halfSize.X, minBound.Y + halfSize.Y}, node.Bounds.MaxBound() };
 
 
@@ -42,7 +42,7 @@ void QuadTree::SubdivideNode(QuadNode& node) noexcept
 	{
 		child->Depth = node.Depth + 1;
 	}
-	NodeIndex += 4;
+	_nodeIndex += 4;
 }
 
 void QuadTree::Insert(QuadNode& node, const ColliderRefAabb& colliderRefAabb) noexcept
@@ -91,5 +91,5 @@ void QuadTree::SetUpRoot(const Math::RectangleF& bounds) noexcept
 	}
 	Nodes[0].Bounds = bounds;
 
-	NodeIndex = 1;
+	_nodeIndex = 1;
 }
