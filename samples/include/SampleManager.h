@@ -7,13 +7,10 @@
 #include "BouncingCollisionSample.h"
 #include "GroundCollisionSample.h"
 
-
-#include "UniquePtr.h"
-
 class SampleManager
 {
 private:
-	std::vector<UniquePtr<Sample>> _samples;
+	std::vector<std::unique_ptr<Sample>> _samples;
 
 	std::size_t _sampleIdx = 0;
 
@@ -21,8 +18,8 @@ public:
 	[[nodiscard]] int GetSampleNbr() noexcept { return _samples.size(); }
 	[[nodiscard]] int GetCurrentIndex() noexcept { return _sampleIdx; }
 
-	[[nodiscard]] std::string GetSampleName(int idx) { return _samples[idx].Get()->GetName(); }
-	[[nodiscard]] std::string GetSampleDescription(int idx) { return _samples[idx].Get()->GetDescription(); }
+	[[nodiscard]] std::string GetSampleName(int idx) { return _samples[idx]->GetName(); }
+	[[nodiscard]] std::string GetSampleDescription(int idx) { return _samples[idx]->GetDescription(); }
 
 	void SetUp() noexcept;
 

@@ -2,12 +2,12 @@
 
 void SampleManager::SetUp() noexcept
 {
-    _samples.push_back(UniquePtr<DefaultSample>(new DefaultSample()));
-    _samples.push_back(UniquePtr<StarSystemSample>(new StarSystemSample()));
-    _samples.push_back(UniquePtr<FormsTriggerSample>(new FormsTriggerSample()));
-    _samples.push_back(UniquePtr<TriggerSample>(new TriggerSample()));
-    _samples.push_back(UniquePtr<BouncingCollisionSample>(new BouncingCollisionSample()));
-    _samples.push_back(UniquePtr<GroundCollisionSample>(new GroundCollisionSample()));
+    _samples.push_back(std::make_unique<DefaultSample>());
+    _samples.push_back(std::make_unique<StarSystemSample>());
+    _samples.push_back(std::make_unique<FormsTriggerSample>());
+    _samples.push_back(std::make_unique<TriggerSample>());
+    _samples.push_back(std::make_unique<BouncingCollisionSample>());
+    _samples.push_back(std::make_unique<GroundCollisionSample>());
 
     _samples[_sampleIdx]->SetUp();
 }
