@@ -109,9 +109,6 @@ void SDLApp::Run() noexcept
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		static float f = 0.0f;
-		static int counter = 0;
-
 		if (adjustWindow)
 		{
 			ImGui::SetNextWindowSize(ImVec2(Metrics::Width / 3, Metrics::Height / 5));
