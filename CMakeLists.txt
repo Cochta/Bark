@@ -5,8 +5,20 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(GTest CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
+find_package(imgui-sfml CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
+
+option(use_SDL2 "use SDL2 for samples" ON)
+option(use_SFML "use SFML for samples" OFF)
+
+if(use_SDL2)
+    set(use_SFML FALSE)
+    add_compile_definitions(SDL_ENABLE)
+else()
+    set(use_SFML TRUE)
+    add_compile_definitions(SFML_ENABLE)
+endif()
 
 option(ENABLE_ADDRESS_SANITIZER "Enable Address Sanitizer" OFF)
 
@@ -109,17 +121,36 @@ target_include_directories(Samples PUBLIC engine/include/)
 target_include_directories(Samples PUBLIC libs/Math/include/)
 target_include_directories(Samples PUBLIC common/include/)
 
-# Graphics library
-file(GLOB_RECURSE GRAPHICS_FILES graphics/include/*.h graphics/src/*.cpp)
+# Graphics library using SDL2
+
+if(use_SDL2)
+    file(GLOB_RECURSE GRAPHICS_FILES graphics/SDL/include/*.h graphics/SDL/src/*.cpp)
+else()
+    file(GLOB_RECURSE GRAPHICS_FILES graphics/SFML/include/*.h graphics/SFML/src/*.cpp)
+endif()
+
+
 add_library(Graphics ${GRAPHICS_FILES})
 set_target_properties(Graphics PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Graphics PUBLIC graphics/include/)
+
+if(use_SDL2)
+    target_include_directories(Graphics PUBLIC graphics/SDL/include/)
+else()
+    target_include_directories(Graphics PUBLIC graphics/SFML/include/)
+endif()
+
 target_include_directories(Graphics PUBLIC engine/include/)
 target_include_directories(Graphics PUBLIC libs/Math/include/)
 target_include_directories(Graphics PUBLIC common/include/)
 target_include_directories(Graphics PUBLIC samples/include/)
 
-target_link_libraries(Graphics PUBLIC Samples Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main> $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> imgui::imgui)
+if(use_SDL2)
+    target_link_libraries(Graphics PUBLIC Samples Engine Common $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main> $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> imgui::imgui)
+else()
+    target_link_libraries(Graphics PUBLIC Samples Engine Common sfml-system sfml-network sfml-graphics sfml-window ImGui-SFML::ImGui-SFML)
+endif()
+
+
 if (USE_TRACY)
     target_compile_definitions(Graphics PUBLIC TRACY_ENABLE)
     # Link the TracyClient library
